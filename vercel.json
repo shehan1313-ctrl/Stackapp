@@ -1,11 +1,4 @@
 {
-  "cleanUrls": true,
-  "headers": [
-    {
-      "source": "/(.*)",
-      "headers": [
-        { "key": "X-Content-Type-Options", "value": "nosniff" }
-      ]
-    }
-  ]
+  "buildCommand": "echo no build needed",
+  "outputDirectory": "."
 }
