@@ -12,6 +12,9 @@
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
+  <!-- Vercel Web Analytics: pageviews + referrers. Turn on in Vercel dashboard → Analytics tab. Harmless if not enabled. -->
+  <script>window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };</script>
+  <script defer src="/_vercel/insights/script.js"></script>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -664,6 +667,24 @@
     .home-demo-chips { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 12px; }
     .home-demo-chip { font-size: 11px; font-weight: 700; padding: 4px 9px; border-radius: 99px; background: rgba(47,122,85,0.1); color: var(--accent); }
     .home-demo-cta { font-size: 13px; font-weight: 600; color: var(--accent); }
+    .home-soon { font-size: 9px; font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase; color: var(--amber); background: rgba(194,137,90,0.14); border: 1px solid rgba(194,137,90,0.3); padding: 2px 6px; border-radius: 99px; vertical-align: middle; white-space: nowrap; }
+    /* Embedded live example */
+    .home-example { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r); padding: 16px; box-shadow: var(--sh, 0 1px 2px rgba(70,55,30,.06)); }
+    .home-example-profile { display: flex; align-items: center; gap: 11px; margin-bottom: 14px; }
+    .home-example-name { font-size: 15px; font-weight: 700; letter-spacing: -0.2px; }
+    .home-example-handle { font-size: 12px; color: var(--text-muted); }
+    .home-example-bio { display: flex; align-items: baseline; justify-content: space-between; padding: 12px 14px; background: var(--surface2); border-radius: var(--r-sm); margin-bottom: 12px; }
+    .home-example-bionum { font-family: var(--font-serif); font-size: 30px; color: var(--accent); line-height: 1; }
+    .home-example-biolbl { font-size: 11px; color: var(--text-muted); letter-spacing: 0.5px; text-transform: uppercase; }
+    .home-example-biodelta { font-size: 12px; font-weight: 700; color: var(--accent); }
+    .home-example-item { background: var(--surface2); border: 1px solid var(--border); border-left-width: 3px; border-radius: var(--r-sm); padding: 11px 13px; margin-bottom: 8px; }
+    .home-example-iname { font-size: 14px; font-weight: 600; }
+    .home-example-iyr { font-size: 10px; color: var(--text-dim); font-weight: 500; margin-left: 4px; }
+    .home-example-iwhy { font-size: 12px; color: var(--text-muted); line-height: 1.45; margin: 4px 0 8px; }
+    .home-example-iget { font-size: 11px; font-weight: 600; color: var(--accent); display: flex; align-items: center; gap: 8px; }
+    .home-example-icost { color: var(--text-dim); font-weight: 500; margin-left: auto; }
+    .home-example-link { display: block; width: 100%; margin-top: 6px; background: none; border: none; color: var(--accent); font-family: var(--font-sans); font-size: 13px; font-weight: 600; cursor: pointer; padding: 8px; }
+    .home-example-link:hover { text-decoration: underline; }
 
     .home-footer { margin: 0 20px; padding: 28px 22px; text-align: center; background: linear-gradient(135deg, rgba(47,122,85,0.1), rgba(90,155,116,0.05)); border: 1px solid rgba(47,122,85,0.2); border-radius: var(--r); }
     .home-footer-title { font-family: var(--font-serif); font-size: 24px; letter-spacing: -0.5px; margin-bottom: 18px; }
@@ -673,6 +694,25 @@
 <div id="root"></div>
 <script type="text/babel">
 const { useState, useEffect, useRef, useCallback } = React;
+
+// ── ANALYTICS ─────────────────────────────────────────────────────────────────
+// To enable product analytics + funnels, paste your PostHog project key below.
+// (Free tier at posthog.com → Project settings → Project API Key.)
+const POSTHOG_KEY = "";  // e.g. "phc_xxxxx"
+const POSTHOG_HOST = "https://us.i.posthog.com";
+(function initPostHog() {
+  if (!POSTHOG_KEY) return;
+  !function(t,e){var o,n,p,r;e.__SV||(window.posthog=e,e._i=[],e.init=function(i,s,a){function g(t,e){var o=e.split(".");2==o.length&&(t=t[o[0]],e=o[1]),t[e]=function(){t.push([e].concat(Array.prototype.slice.call(arguments,0)))}}(p=t.createElement("script")).type="text/javascript",p.async=!0,p.src=s.api_host+"/static/array.js",(r=t.getElementsByTagName("script")[0]).parentNode.insertBefore(p,r);var u=e;for(void 0!==a?u=e[a]=[]:a="posthog",u.people=u.people||[],u.toString=function(t){var e="posthog";return"posthog"!==a&&(e+="."+a),t||(e+=" (stub)"),e},u.people.toString=function(){return u.toString(1)+".people (stub)"},o="capture identify alias people.set people.set_once set_config register register_once unregister opt_out_capturing has_opted_out_capturing opt_in_capturing reset isFeatureEnabled onFeatureFlags getFeatureFlag getFeatureFlagPayload reloadFeatureFlags group updateEarlyAccessFeatureEnrollment getEarlyAccessFeatures getActiveMatchingSurveys getSurveys".split(" "),n=0;n<o.length;n++)g(u,o[n]);e._i.push([i,s,a])},e.__SV=1)}(document,window.posthog||[]);
+  window.posthog.init(POSTHOG_KEY, { api_host: POSTHOG_HOST });
+})();
+
+// Fire an event to whatever analytics tools are present (PostHog, Vercel, Plausible).
+function track(event, props) {
+  try { if (window.posthog) window.posthog.capture(event, props || {}); } catch (_) {}
+  try { if (window.va) window.va("event", { name: event, ...(props || {}) }); } catch (_) {}
+  try { if (window.plausible) window.plausible(event, { props: props || {} }); } catch (_) {}
+  if (!POSTHOG_KEY) console.debug("[track]", event, props || {});
+}
 
 // ── CONSTANTS ─────────────────────────────────────────────────────────────────
 
@@ -1437,6 +1477,7 @@ function ClaimModal({ stack, onClaim, onClose, celebrate }) {
     if (!valid) return;
     // ── BACKEND ──: this is where a real signup request would fire.
     const updated = claimStack(stack.username, email.trim());
+    track("waitlist_joined", { username: stack.username });
     setDone(true);
     if (window.confetti) window.confetti({ particleCount: 90, spread: 70, origin: { y: 0.4 }, colors: ["#2F7A55", "#5A9B74", "#C2895A"] });
     setTimeout(() => { onClaim(updated); onClose(); }, 1400);
@@ -1578,6 +1619,7 @@ function StackPage({ username }) {
       </div>
       <div className="action-bar">
         <button className="btn btn-outline" onClick={async () => {
+          track("share_clicked", { username, source: "stack_page" });
           if (navigator.share) { try { await navigator.share({ title: `${stack.name}'s StackPage`, url }); return; } catch(_) {} }
           try { await navigator.clipboard.writeText(url); toast("Link copied ✓"); } catch(_) {}
         }}>
@@ -1610,12 +1652,14 @@ Build yours in 2 min (you can scan your bottles with your camera) and earn when 
 ${inviteUrl}`;
 
   async function share() {
+    track("invite_shared", { username });
     if (navigator.share) {
       try { await navigator.share({ title: "Build your StackPage", text: message }); return; } catch(_) {}
     }
     try { await navigator.clipboard.writeText(message); onToast("Invite message copied ✓"); } catch(_) {}
   }
   async function copyLink() {
+    track("invite_link_copied", { username });
     try { await navigator.clipboard.writeText(inviteUrl); onToast("Invite link copied ✓"); } catch(_) {}
   }
 
@@ -1679,6 +1723,7 @@ function EarningsPage({ username }) {
   const maxMonth = Math.max(...e.months, 1);
 
   async function shareStack() {
+    track("share_clicked", { username, source: "earnings_page" });
     if (navigator.share) { try { await navigator.share({ title: `${stack.name}'s StackPage`, url: stackUrl }); return; } catch(_) {} }
     try { await navigator.clipboard.writeText(stackUrl); toast("Stack link copied ✓"); } catch(_) {}
   }
@@ -1854,6 +1899,7 @@ function BuildFlow() {
       ...(referredBy && referredBy !== username ? { referredBy } : {}),
     };
     saveStack(stack);
+    track("stack_created", { items: items.length, has_highlight: !!hl, has_avatar: !!stack.avatarUrl, referred: !!referredBy });
     clearRef();
     // Flag so the stack page knows to surface the "claim your stack" prompt
     try { sessionStorage.setItem("sp_justBuilt", username); } catch(_) {}
@@ -2378,14 +2424,14 @@ const LAND_SLIDES = [
 
 const HOME_STEPS = [
   { icon: "📷", color: "var(--teal)",   bg: "rgba(90,155,116,0.12)", title: "Add your stack", desc: "Scan a label with your camera or pick from our list." },
-  { icon: "🔗", color: "var(--accent)", bg: "rgba(47,122,85,0.12)",  title: "Share one link",  desc: "Followers copy your exact protocol with one tap." },
-  { icon: "💸", color: "var(--amber)",  bg: "rgba(194,137,90,0.12)", title: "Earn on every buy", desc: "Get a commission when people buy from your links." },
+  { icon: "🔗", color: "var(--accent)", bg: "rgba(47,122,85,0.12)",  title: "Share one link",  desc: "Friends copy your exact protocol with one tap." },
+  { icon: "💸", color: "var(--amber)",  bg: "rgba(194,137,90,0.12)", title: "Earn on every buy", desc: "Get a commission when people buy from your links.", soon: true },
 ];
 
 const HOME_VALUES = [
-  { icon: "🧬", title: "Built-in credibility", desc: "Protocol scores, bio age, and verified badges make your recommendations trustworthy — not just a list of links." },
   { icon: "📲", title: "Made to be shared", desc: "One link, a scannable QR code, and native sharing. Your whole protocol travels in a single tap." },
-  { icon: "💰", title: "Turns habits into income", desc: "Affiliate links are built into every item, plus referral rewards when you invite other creators." },
+  { icon: "✨", title: "Not just a link list", desc: "Linktree gives people a pile of links. StackPage gives the story — what you take, why, how long, and the results — so people actually trust it and copy it." },
+  { icon: "💰", title: "Can turn habits into income", desc: "Affiliate links are built into every item, plus referral rewards when you invite other creators.", soon: true },
 ];
 
 function HomePage() {
@@ -2398,25 +2444,49 @@ function HomePage() {
 
       {/* HERO */}
       <div className="home-hero anim-0">
-        <div className="home-eyebrow">THE LINK-IN-BIO FOR YOUR HEALTH STACK</div>
-        <h1 className="home-headline">Share your protocol.<br/><em>Get paid</em> for it.</h1>
+        <div className="home-eyebrow">YOUR HEALTH STACK, WORTH SHARING</div>
+        <h1 className="home-headline">Share what works.<br/><em>Get paid</em> if you want.</h1>
         <p className="home-sub">
-          StackPage turns the supplements, wearables, and labs you already use into one beautiful,
-          shareable page — with credibility scores, your bio age, and affiliate links built in.
+          The fun way to show friends exactly what you take, use, and test — one beautiful link.
+          Affiliate links are built in, so you can earn from it whenever you're ready.
         </p>
         <div className="home-hero-cta">
           <button className="btn btn-primary" style={{ padding: "14px 22px", fontSize: 15 }} onClick={() => navigate("#/build")}>Build my stack — free →</button>
-          <button className="btn btn-outline" style={{ padding: "14px 22px", fontSize: 15 }} onClick={() => navigate("#/stack/shehan")}>See a live example</button>
         </div>
-        <div className="home-trust">No account to start · Setup in 2 min · Free forever</div>
+        <div className="home-trust">Free to share · No account to start · Setup in 2 min</div>
       </div>
 
-      {/* WHO IT'S FOR / USE CASE */}
-      <div className="home-usecase anim-1">
-        <div className="home-usecase-quote">
-          “Everyone kept asking what I take. Now I just send my link —<br/>and earn when they buy it.”
+      {/* EMBEDDED LIVE EXAMPLE (no click needed) */}
+      <div className="home-section anim-1" style={{ marginBottom: 28 }}>
+        <div className="home-section-label">A REAL STACKPAGE</div>
+        <div className="home-example">
+          <div className="home-example-profile">
+            <div className="avatar" style={{ width: 46, height: 46, fontSize: 16 }}>SC</div>
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <div className="home-example-name">Shehan Chandrasekera</div>
+              <div className="home-example-handle">@TheCryptoCPA</div>
+            </div>
+            <span className="badge-verified" style={{ marginTop: 0 }}>
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+              Verified
+            </span>
+          </div>
+          <div className="home-example-bio">
+            <div><span className="home-example-bionum">34</span> <span className="home-example-biolbl">bio age</span></div>
+            <div className="home-example-biodelta">−7 yrs younger</div>
+          </div>
+          <div className="home-example-item" style={{ borderLeftColor: "#5A9B74" }}>
+            <div className="home-example-iname">NMN 500mg <span className="home-example-iyr">2yr</span></div>
+            <div className="home-example-iwhy">Core longevity molecule — supports NAD+ production.</div>
+            <div className="home-example-iget">Get it ↗ <span className="home-example-icost">$45/mo</span></div>
+          </div>
+          <div className="home-example-item" style={{ borderLeftColor: "#2F7A55" }}>
+            <div className="home-example-iname">Oura Ring Gen 4 <span className="home-example-iyr">2yr</span></div>
+            <div className="home-example-iwhy">Most accurate consumer sleep tracker.</div>
+            <div className="home-example-iget">Get it ↗ <span className="home-example-icost">$10/mo</span></div>
+          </div>
+          <button className="home-example-link" onClick={() => navigate("#/stack/shehan")}>See the full example →</button>
         </div>
-        <div className="home-usecase-who">Built for biohackers, longevity nerds, trainers, and health creators.</div>
       </div>
 
       {/* HOW IT WORKS */}
@@ -2428,7 +2498,7 @@ function HomePage() {
               <div className="home-step-icon" style={{ background: s.bg }}>{s.icon}</div>
               <div className="home-step-text">
                 <div className="home-step-num" style={{ color: s.color }}>STEP {i + 1}</div>
-                <div className="home-step-title">{s.title}</div>
+                <div className="home-step-title">{s.title} {s.soon && <span className="home-soon">Coming soon</span>}</div>
                 <div className="home-step-desc">{s.desc}</div>
               </div>
             </div>
@@ -2444,29 +2514,11 @@ function HomePage() {
           <div className="home-value" key={i}>
             <div className="home-value-icon">{v.icon}</div>
             <div>
-              <div className="home-value-title">{v.title}</div>
+              <div className="home-value-title">{v.title} {v.soon && <span className="home-soon">Coming soon</span>}</div>
               <div className="home-value-desc">{v.desc}</div>
             </div>
           </div>
         ))}
-      </div>
-
-      {/* DEMO PEEK */}
-      <div className="home-demo anim-4" onClick={() => navigate("#/stack/shehan")}>
-        <div className="home-demo-top">
-          <div className="avatar" style={{ width: 44, height: 44, fontSize: 16 }}>SC</div>
-          <div style={{ flex: 1 }}>
-            <div className="home-demo-name">Shehan Chandrasekera</div>
-            <div className="home-demo-handle">@TheCryptoCPA · Bio age 34</div>
-          </div>
-          <div className="home-demo-arrow">→</div>
-        </div>
-        <div className="home-demo-chips">
-          <span className="home-demo-chip">Longevity A+</span>
-          <span className="home-demo-chip">Sleep A</span>
-          <span className="home-demo-chip">8 items</span>
-        </div>
-        <div className="home-demo-cta">See a real StackPage →</div>
       </div>
 
       {/* FOOTER CTA */}
@@ -2559,7 +2611,12 @@ function Landing() {
 
 function App() {
   const loc = useRouter();
-  useEffect(() => { captureRef(); }, []);  // stash incoming ?ref= for the build flow
+  useEffect(() => {
+    captureRef();  // stash incoming ?ref= for the build flow
+    if (getRefParam()) track("ref_landed", { ref: getRefParam() });
+  }, []);
+  // Fire a pageview on every route change (hash-based SPA)
+  useEffect(() => { track("pageview", { route: loc.route, username: loc.username || "" }); }, [loc.route, loc.username]);
   if (loc.route === "home") return <HomePage />;
   if (loc.route === "tour") return <Landing />;
   if (loc.route === "stack") return <StackPage key={loc.username} username={loc.username} />;
