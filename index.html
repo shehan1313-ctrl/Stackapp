@@ -1,0 +1,2175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>StackPage — Share Your Wellness Stack</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700&display=swap" rel="stylesheet" />
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0A0F0D;
+      --surface: #111A14;
+      --surface2: #182219;
+      --border: #1E2E24;
+      --accent: #1DB954;
+      --teal: #5DCAA5;
+      --amber: #FFB443;
+      --purple: #A67AE0;
+      --blue: #6B8FF0;
+      --red: #FF6B6B;
+      --text: #E8F0EC;
+      --text-muted: #8BA894;
+      --text-dim: #4A6352;
+      --font-serif: 'DM Serif Display', serif;
+      --font-sans: 'DM Sans', sans-serif;
+      --r: 16px;
+      --r-sm: 10px;
+      --r-xs: 6px;
+    }
+
+    html, body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font-sans);
+      font-size: 16px;
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+      min-height: 100vh;
+    }
+    #root { max-width: 480px; margin: 0 auto; min-height: 100vh; position: relative; }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes barGrow { from { width: 0; } to { width: var(--w); } }
+
+    .anim-0 { animation: fadeUp 0.5s ease both; }
+    .anim-1 { animation: fadeUp 0.5s 0.08s ease both; }
+    .anim-2 { animation: fadeUp 0.5s 0.16s ease both; }
+    .anim-3 { animation: fadeUp 0.5s 0.24s ease both; }
+    .anim-4 { animation: fadeUp 0.5s 0.32s ease both; }
+    .anim-5 { animation: fadeUp 0.5s 0.40s ease both; }
+    .anim-6 { animation: fadeUp 0.5s 0.48s ease both; }
+
+    /* Topbar */
+    .topbar {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 16px 20px 12px;
+      position: sticky; top: 0;
+      background: rgba(10,15,13,0.92);
+      backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+      z-index: 100; border-bottom: 1px solid var(--border);
+    }
+    .topbar-logo {
+      font-family: var(--font-serif); font-size: 18px; color: var(--accent);
+      letter-spacing: -0.3px; cursor: pointer;
+    }
+    .topbar-actions { display: flex; gap: 8px; align-items: center; }
+
+    /* Buttons */
+    .btn {
+      display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+      font-family: var(--font-sans); font-weight: 600; font-size: 14px;
+      border: none; cursor: pointer; border-radius: var(--r-sm);
+      transition: all 0.15s ease; text-decoration: none; white-space: nowrap;
+    }
+    .btn:active { transform: scale(0.97); }
+    .btn-primary { background: var(--accent); color: #071209; padding: 10px 18px; }
+    .btn-primary:hover { background: #22d460; }
+    .btn-primary:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+    .btn-outline { background: transparent; color: var(--text); border: 1px solid var(--border); padding: 9px 16px; }
+    .btn-outline:hover { border-color: var(--accent); color: var(--accent); }
+    .btn-ghost { background: var(--surface2); color: var(--text-muted); padding: 9px 14px; font-size: 13px; }
+    .btn-ghost:hover { color: var(--text); background: var(--border); }
+    .btn-sm { padding: 7px 12px; font-size: 12px; }
+    .btn-danger { background: transparent; color: var(--red); border: 1px solid rgba(255,107,107,0.25); padding: 7px 12px; font-size: 12px; }
+
+    /* Page */
+    .page { padding: 0 0 100px; }
+
+    /* Profile */
+    .profile-section { padding: 24px 20px 20px; }
+    .profile-top { display: flex; align-items: flex-start; gap: 14px; margin-bottom: 12px; }
+    .avatar {
+      width: 60px; height: 60px; border-radius: 50%;
+      background: linear-gradient(135deg, var(--accent) 0%, var(--teal) 100%);
+      display: flex; align-items: center; justify-content: center;
+      font-family: var(--font-serif); font-size: 22px; color: #071209; flex-shrink: 0; font-style: italic;
+    }
+    .profile-info { flex: 1; min-width: 0; }
+    .profile-name { font-size: 20px; font-weight: 700; letter-spacing: -0.3px; line-height: 1.2; }
+    .profile-handle { font-size: 13px; color: var(--text-muted); margin-top: 2px; }
+    .badge-verified {
+      display: inline-flex; align-items: center; gap: 4px;
+      font-size: 11px; font-weight: 600; padding: 4px 8px; border-radius: 99px;
+      letter-spacing: 0.3px; margin-top: 8px;
+      background: rgba(93,202,165,0.15); color: var(--teal); border: 1px solid rgba(93,202,165,0.25);
+    }
+
+    /* Bio Age */
+    .bio-age-card {
+      margin: 0 20px 16px; background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--r); padding: 20px; position: relative; overflow: hidden;
+    }
+    .bio-age-card::before {
+      content: ''; position: absolute; inset: 0;
+      background: radial-gradient(ellipse at top right, rgba(29,185,84,0.06) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .bio-age-label { font-size: 11px; font-weight: 600; letter-spacing: 1.2px; text-transform: uppercase; color: var(--text-muted); margin-bottom: 12px; }
+    .bio-age-row { display: flex; align-items: flex-end; gap: 20px; justify-content: center; }
+    .bio-age-col { text-align: center; }
+    .bio-age-num { font-family: var(--font-serif); font-size: 52px; line-height: 1; letter-spacing: -2px; }
+    .bio-age-num.bio { color: var(--accent); }
+    .bio-age-num.chrono { color: var(--text-muted); font-size: 40px; }
+    .bio-age-sublabel { font-size: 11px; font-weight: 500; color: var(--text-muted); margin-top: 4px; letter-spacing: 0.5px; }
+    .bio-age-divider { width: 1px; height: 40px; background: var(--border); margin-bottom: 16px; }
+    .bio-age-delta { margin-top: 14px; text-align: center; font-size: 13px; color: var(--text-muted); }
+    .bio-age-delta span { color: var(--accent); font-weight: 700; }
+
+    /* Scorecard */
+    .scorecard { margin: 0 20px 16px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--r); padding: 18px 20px; }
+    .scorecard-title { font-size: 11px; font-weight: 600; letter-spacing: 1.2px; text-transform: uppercase; color: var(--text-muted); margin-bottom: 16px; }
+    .score-row { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+    .score-row:last-child { margin-bottom: 0; }
+    .score-label { width: 78px; font-size: 12px; font-weight: 600; color: var(--text-muted); flex-shrink: 0; }
+    .score-bar-bg { flex: 1; height: 6px; background: var(--border); border-radius: 99px; overflow: hidden; }
+    .score-bar-fill { height: 100%; border-radius: 99px; animation: barGrow 0.8s ease both; animation-delay: var(--delay, 0s); }
+    .score-grade { width: 28px; text-align: right; font-size: 12px; font-weight: 700; flex-shrink: 0; }
+    .score-num { width: 26px; text-align: right; font-size: 11px; color: var(--text-dim); flex-shrink: 0; }
+
+    /* Insights */
+    .insights-section { margin: 0 20px 16px; }
+    .section-title { font-size: 11px; font-weight: 600; letter-spacing: 1.2px; text-transform: uppercase; color: var(--text-muted); margin-bottom: 10px; }
+    .insight-card {
+      background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-sm);
+      padding: 12px 14px; margin-bottom: 8px; display: flex; gap: 10px; align-items: flex-start;
+    }
+    .insight-card:last-child { margin-bottom: 0; }
+    .insight-icon { font-size: 16px; flex-shrink: 0; margin-top: 1px; }
+    .insight-text { font-size: 13px; color: var(--text-muted); line-height: 1.45; }
+    .insight-text strong { color: var(--text); font-weight: 600; }
+    .insight-card.gap { border-left: 3px solid var(--amber); }
+    .insight-card.strength { border-left: 3px solid var(--accent); }
+    .insight-card.synergy { border-left: 3px solid var(--teal); }
+
+    /* Stack items */
+    .stack-section { margin: 0 20px 16px; }
+    .category-group { margin-bottom: 20px; }
+    .category-group:last-child { margin-bottom: 0; }
+    .category-header { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
+    .category-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+    .category-name { font-size: 12px; font-weight: 700; letter-spacing: 0.8px; text-transform: uppercase; color: var(--text-muted); }
+    .category-count { margin-left: auto; font-size: 11px; color: var(--text-dim); font-weight: 500; }
+    .item-card {
+      background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-sm);
+      padding: 14px 14px 14px 18px; margin-bottom: 8px; border-left-width: 3px;
+    }
+    .item-card:last-child { margin-bottom: 0; }
+    .item-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; margin-bottom: 6px; }
+    .item-name { font-size: 15px; font-weight: 600; letter-spacing: -0.2px; line-height: 1.3; }
+    .item-years { font-size: 11px; color: var(--text-dim); font-weight: 500; flex-shrink: 0; margin-top: 2px; }
+    .item-why { font-size: 13px; color: var(--text-muted); line-height: 1.5; margin-bottom: 10px; }
+    .item-actions { display: flex; align-items: center; gap: 8px; }
+    .btn-getit {
+      background: rgba(29,185,84,0.12); color: var(--accent); border: 1px solid rgba(29,185,84,0.2);
+      padding: 6px 12px; border-radius: var(--r-xs); font-size: 12px; font-weight: 600;
+      cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; gap: 4px;
+      transition: all 0.15s ease; font-family: var(--font-sans);
+    }
+    .btn-getit:hover { background: rgba(29,185,84,0.2); }
+    .btn-getit:active { transform: scale(0.97); }
+    .item-cost { margin-left: auto; font-size: 11px; color: var(--text-dim); }
+
+    /* Cost banner */
+    .cost-banner {
+      margin: 0 20px 16px; background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--r-sm); padding: 12px 16px;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .cost-label { font-size: 12px; color: var(--text-muted); font-weight: 500; }
+    .cost-value { font-size: 18px; font-weight: 700; color: var(--text); }
+    .cost-period { font-size: 11px; color: var(--text-dim); }
+
+    /* QR */
+    .qr-section {
+      margin: 0 20px 16px; background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--r); padding: 24px 20px; text-align: center;
+    }
+    .qr-title { font-size: 12px; font-weight: 600; color: var(--text-muted); letter-spacing: 0.5px; margin-bottom: 16px; }
+    .qr-wrapper {
+      display: inline-block; padding: 12px; background: #ffffff;
+      border-radius: var(--r-sm);
+    }
+    .qr-wrapper canvas, .qr-wrapper img { display: block; border-radius: 2px; }
+    .qr-subtitle { font-size: 12px; color: var(--text-dim); margin-top: 12px; line-height: 1.6; }
+    .qr-copy-link { color: var(--accent); cursor: pointer; font-size: 12px; font-weight: 600; }
+    .qr-copy-link:hover { text-decoration: underline; }
+
+    /* Bottom bar */
+    .action-bar {
+      position: fixed; bottom: 0; left: 50%; transform: translateX(-50%);
+      width: 100%; max-width: 480px;
+      background: rgba(10,15,13,0.95); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+      border-top: 1px solid var(--border); padding: 12px 20px 20px;
+      display: flex; gap: 10px; z-index: 100;
+    }
+    .action-bar .btn { flex: 1; justify-content: center; }
+
+    /* Toast */
+    .toast {
+      position: fixed; bottom: 90px; left: 50%; transform: translateX(-50%);
+      background: var(--surface2); border: 1px solid var(--border); color: var(--text);
+      font-size: 13px; font-weight: 500; padding: 10px 18px; border-radius: 99px;
+      white-space: nowrap; animation: fadeIn 0.2s ease; z-index: 200; pointer-events: none;
+    }
+
+    /* Build flow */
+    .build-page { padding: 0 0 40px; }
+    .build-header { padding: 20px 20px 16px; }
+    .build-back {
+      display: inline-flex; align-items: center; gap: 6px; font-size: 13px; color: var(--text-muted);
+      cursor: pointer; background: none; border: none; font-family: var(--font-sans);
+      margin-bottom: 16px; padding: 0;
+    }
+    .build-back:hover { color: var(--text); }
+    .build-title { font-family: var(--font-serif); font-size: 26px; letter-spacing: -0.5px; line-height: 1.2; margin-bottom: 4px; }
+    .build-subtitle { font-size: 14px; color: var(--text-muted); }
+
+    /* Step indicator */
+    .step-indicator { display: flex; align-items: center; margin: 0 20px 24px; }
+    .step-dot {
+      width: 28px; height: 28px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 12px; font-weight: 700; flex-shrink: 0; transition: all 0.2s ease;
+    }
+    .step-dot.active { background: var(--accent); color: #071209; }
+    .step-dot.done { background: rgba(29,185,84,0.2); color: var(--accent); }
+    .step-dot.pending { background: var(--surface2); color: var(--text-dim); }
+    .step-line { flex: 1; height: 1px; background: var(--border); }
+    .step-line.done { background: var(--accent); }
+
+    /* Form */
+    .form-section { padding: 0 20px; }
+    .form-group { margin-bottom: 16px; }
+    .form-label { display: block; font-size: 12px; font-weight: 600; color: var(--text-muted); margin-bottom: 6px; letter-spacing: 0.3px; }
+    .form-input, .form-select, .form-textarea {
+      width: 100%; background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-sm);
+      color: var(--text); font-family: var(--font-sans); font-size: 15px; padding: 12px 14px; outline: none;
+      transition: border-color 0.15s ease; appearance: none; -webkit-appearance: none;
+    }
+    .form-input:focus, .form-select:focus, .form-textarea:focus { border-color: var(--accent); }
+    .form-input::placeholder, .form-textarea::placeholder { color: var(--text-dim); }
+    .form-textarea { resize: none; line-height: 1.5; min-height: 80px; }
+    .form-select {
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%238BA894' d='M6 8L0 0h12z'/%3E%3C/svg%3E");
+      background-repeat: no-repeat; background-position: right 14px center; padding-right: 36px;
+    }
+    .form-select option { background: #111A14; }
+    .form-row { display: flex; gap: 10px; }
+    .form-row .form-group { flex: 1; }
+    .form-hint { font-size: 11px; color: var(--text-dim); margin-top: 4px; }
+
+    /* Category sections in Step 2 */
+    .cat-section {
+      margin: 0 20px 12px;
+      background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-sm);
+      overflow: hidden;
+    }
+    .cat-section-header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 14px 14px 14px 16px;
+      border-left: 3px solid var(--cat-color, var(--border));
+    }
+    .cat-section-header-left { display: flex; align-items: center; gap: 8px; }
+    .cat-label { font-size: 13px; font-weight: 700; letter-spacing: 0.3px; }
+    .cat-count {
+      font-size: 11px; color: var(--accent); background: rgba(29,185,84,0.1);
+      padding: 2px 7px; border-radius: 99px; font-weight: 600;
+    }
+    .cat-item-row {
+      display: flex; align-items: center; gap: 10px;
+      padding: 9px 14px 9px 19px; border-top: 1px solid var(--border);
+    }
+    .cat-item-name { flex: 1; font-size: 13px; font-weight: 500; }
+    .cat-item-sub { font-size: 11px; color: var(--text-dim); }
+
+    /* Predefined picker */
+    .picker-list {
+      max-height: 240px; overflow-y: auto; margin-bottom: 10px;
+      background: var(--surface2); border: 1px solid var(--border); border-radius: var(--r-sm);
+    }
+    .picker-item {
+      padding: 11px 14px; cursor: pointer; font-size: 14px; font-weight: 500;
+      border-bottom: 1px solid rgba(30,46,36,0.5); transition: background 0.12s ease;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .picker-item:last-child { border-bottom: none; }
+    .picker-item:hover { background: rgba(29,185,84,0.06); }
+    .picker-item.selected { background: rgba(29,185,84,0.1); color: var(--accent); }
+    .picker-item-check { color: var(--accent); font-size: 14px; }
+
+    /* Why suggestion chips */
+    .suggestions-label { font-size: 11px; font-weight: 600; color: var(--text-dim); letter-spacing: 0.5px; text-transform: uppercase; margin-bottom: 6px; }
+    .suggestion-chips { display: flex; flex-direction: column; gap: 6px; margin-bottom: 10px; }
+    .suggestion-chip {
+      display: block; padding: 9px 12px; background: var(--surface2); border: 1px solid var(--border);
+      border-radius: var(--r-xs); font-size: 13px; color: var(--text-muted);
+      cursor: pointer; font-family: var(--font-sans); text-align: left;
+      transition: all 0.15s ease; line-height: 1.4;
+    }
+    .suggestion-chip:hover { border-color: var(--accent); color: var(--text); background: rgba(29,185,84,0.06); }
+    .suggestion-chip:active { transform: scale(0.98); }
+    .suggestion-chip.applied { border-color: var(--accent); color: var(--accent); background: rgba(29,185,84,0.08); }
+
+    /* Build item row */
+    .build-item-card {
+      background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-sm);
+      padding: 12px 14px; margin-bottom: 8px; display: flex; align-items: flex-start; gap: 10px;
+    }
+    .build-item-info { flex: 1; min-width: 0; }
+    .build-item-name { font-size: 14px; font-weight: 600; }
+    .build-item-meta { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+    .build-item-remove {
+      background: none; border: none; color: var(--text-dim); cursor: pointer;
+      font-size: 20px; line-height: 1; padding: 0 2px; font-family: var(--font-sans); flex-shrink: 0;
+    }
+    .build-item-remove:hover { color: var(--red); }
+
+    /* Compare & Edit modals */
+    .modal-bg {
+      position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 200;
+      display: flex; align-items: flex-end; justify-content: center;
+    }
+    .modal-sheet {
+      background: var(--bg); border: 1px solid var(--border); border-radius: var(--r) var(--r) 0 0;
+      width: 100%; max-width: 480px; max-height: 90vh; overflow-y: auto; padding: 20px 20px 40px;
+    }
+    .modal-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
+    .modal-title { font-size: 18px; font-weight: 700; }
+    .modal-close {
+      background: var(--surface2); border: none; color: var(--text-muted); width: 32px; height: 32px;
+      border-radius: 50%; cursor: pointer; font-size: 20px; display: flex; align-items: center; justify-content: center;
+      font-family: var(--font-sans);
+    }
+
+    /* Misc */
+    .divider { height: 1px; background: var(--border); margin: 4px 20px 16px; }
+    .empty-state { text-align: center; padding: 40px 20px; color: var(--text-muted); }
+    .empty-state-icon { font-size: 40px; margin-bottom: 12px; }
+    .not-found {
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      min-height: 60vh; text-align: center; padding: 40px 20px; gap: 16px;
+    }
+    .not-found-title { font-family: var(--font-serif); font-size: 28px; }
+    .not-found-sub { font-size: 14px; color: var(--text-muted); }
+    .scroll-pad { height: 8px; }
+    .search-input-wrap { padding: 0 20px 12px; }
+    .add-panel { padding: 0 20px; }
+    .add-panel-header { display: flex; align-items: center; gap: 8px; margin-bottom: 16px; }
+    .add-panel-title { font-size: 16px; font-weight: 700; }
+
+    /* Camera scan */
+    .scan-btn {
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+      width: 100%; padding: 12px 16px; margin-bottom: 12px;
+      background: var(--surface2); border: 1.5px dashed var(--border);
+      border-radius: var(--r-sm); cursor: pointer; font-family: var(--font-sans);
+      font-size: 14px; font-weight: 600; color: var(--text-muted);
+      transition: all 0.15s ease;
+    }
+    .scan-btn:hover { border-color: var(--accent); color: var(--accent); background: rgba(29,185,84,0.05); }
+    .scan-btn:active { transform: scale(0.98); }
+    .scan-btn-icon { font-size: 20px; line-height: 1; }
+    .photo-preview {
+      position: relative; margin-bottom: 12px; border-radius: var(--r-sm); overflow: hidden;
+      border: 1px solid var(--border);
+    }
+    .photo-preview img { width: 100%; max-height: 180px; object-fit: cover; display: block; }
+    .photo-overlay {
+      position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+      background: rgba(10,15,13,0.6); backdrop-filter: blur(2px);
+      font-size: 13px; font-weight: 600; color: var(--text); gap: 8px; flex-direction: column;
+    }
+    .scan-spinner {
+      width: 24px; height: 24px; border: 2px solid rgba(29,185,84,0.3);
+      border-top-color: var(--accent); border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .photo-remove {
+      position: absolute; top: 8px; right: 8px; background: rgba(10,15,13,0.8);
+      border: none; color: var(--text-muted); width: 28px; height: 28px; border-radius: 50%;
+      cursor: pointer; font-size: 16px; display: flex; align-items: center; justify-content: center;
+      font-family: var(--font-sans);
+    }
+    .photo-remove:hover { color: var(--red); }
+    .picker-item.matched { background: rgba(29,185,84,0.08); }
+    .picker-item.matched .match-label {
+      font-size: 10px; font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase;
+      color: var(--accent); background: rgba(29,185,84,0.15); padding: 2px 6px; border-radius: 99px;
+    }
+    .scan-result-note {
+      font-size: 12px; color: var(--text-muted); margin-bottom: 8px; padding: 8px 12px;
+      background: rgba(29,185,84,0.06); border: 1px solid rgba(29,185,84,0.15);
+      border-radius: var(--r-xs); line-height: 1.4;
+    }
+    .item-photo {
+      width: 44px; height: 44px; border-radius: var(--r-xs); object-fit: cover;
+      flex-shrink: 0; border: 1px solid var(--border);
+    }
+
+    /* ── LANDING / ONBOARDING (Option B: full-screen swipeable steps) ── */
+    .land-page { background: var(--bg); min-height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
+    .land-topbar { padding: 18px 22px 14px; display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; }
+    .land-skip { background: transparent; color: var(--text-muted); border: none; font-size: 13px; font-weight: 600; font-family: var(--font-sans); cursor: pointer; padding: 6px; }
+    .land-skip:hover { color: var(--text); }
+    .land-viewport { flex: 1; overflow: hidden; position: relative; }
+    .land-slides { display: flex; height: 100%; transition: transform 0.45s cubic-bezier(0.4,0,0.2,1); }
+    .land-slide {
+      min-width: 100%; width: 100%; flex-shrink: 0;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      padding: 24px 32px 8px; text-align: center; position: relative; overflow: hidden;
+    }
+    .land-bg-num {
+      position: absolute; font-family: var(--font-serif); font-size: 280px; font-weight: 700;
+      line-height: 1; top: 50%; left: 50%; transform: translate(-50%, -52%);
+      pointer-events: none; user-select: none; letter-spacing: -12px; z-index: 0;
+      color: rgba(29,185,84,0.045);
+    }
+    .land-slide-inner { position: relative; z-index: 1; display: flex; flex-direction: column; align-items: center; width: 100%; }
+    .land-icon-ring {
+      width: 92px; height: 92px; border-radius: 50%; display: flex; align-items: center;
+      justify-content: center; font-size: 42px; margin-bottom: 26px;
+    }
+    .land-step-label { font-size: 11px; font-weight: 700; letter-spacing: 1.6px; text-transform: uppercase; margin-bottom: 12px; }
+    .land-title { font-family: var(--font-serif); font-size: 32px; line-height: 1.15; letter-spacing: -0.6px; margin-bottom: 14px; }
+    .land-desc { font-size: 14px; color: var(--text-muted); line-height: 1.6; max-width: 290px; }
+
+    /* Sample earnings card inside slide 3 */
+    .earn-card {
+      width: 100%; max-width: 300px; margin-top: 26px;
+      background: var(--surface); border: 1px solid var(--border); border-radius: 16px;
+      padding: 16px; text-align: left; box-shadow: 0 12px 40px rgba(0,0,0,0.4);
+    }
+    .earn-card-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+    .earn-card-label { font-size: 11px; font-weight: 600; color: var(--text-muted); letter-spacing: 0.5px; }
+    .earn-card-live { font-size: 10px; font-weight: 700; color: var(--accent); display: flex; align-items: center; gap: 5px; }
+    .earn-live-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); animation: pulse 1.6s ease infinite; }
+    @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.3; } }
+    .earn-amount { font-family: var(--font-serif); font-size: 40px; color: var(--accent); letter-spacing: -1.5px; line-height: 1; margin-bottom: 2px; }
+    .earn-sub { font-size: 11px; color: var(--text-dim); margin-bottom: 14px; }
+    .earn-rows { display: flex; flex-direction: column; gap: 6px; }
+    .earn-row { display: flex; align-items: center; justify-content: space-between; background: var(--surface2); border-radius: 8px; padding: 8px 11px; }
+    .earn-row-name { font-size: 12px; color: var(--text-muted); }
+    .earn-row-val { font-size: 12px; font-weight: 700; color: var(--accent); }
+
+    .land-nav { padding: 18px 24px 30px; display: flex; flex-direction: column; align-items: center; gap: 18px; flex-shrink: 0; }
+    .land-dots { display: flex; gap: 8px; }
+    .land-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--border); transition: all 0.25s; }
+    .land-dot.active { background: var(--accent); width: 26px; border-radius: 4px; }
+    .land-btns { display: flex; gap: 10px; width: 100%; }
+    .land-btn-back {
+      padding: 15px 20px; background: var(--surface2); border: 1px solid var(--border);
+      border-radius: 13px; color: var(--text-muted); font-size: 14px; font-weight: 600;
+      font-family: var(--font-sans); cursor: pointer; transition: opacity 0.2s;
+    }
+    .land-btn-next {
+      flex: 1; padding: 15px; background: var(--accent); border: none; border-radius: 13px;
+      color: #071209; font-size: 15px; font-weight: 700; font-family: var(--font-sans); cursor: pointer;
+      transition: background 0.15s;
+    }
+    .land-btn-next:active { transform: scale(0.98); }
+
+    /* ── CLAIM BANNER (unclaimed owner stack) ── */
+    .claim-banner {
+      margin: 0 20px 16px; padding: 14px 16px; cursor: pointer;
+      background: linear-gradient(135deg, rgba(255,180,67,0.12), rgba(29,185,84,0.1));
+      border: 1px solid rgba(255,180,67,0.25); border-radius: var(--r);
+      display: flex; align-items: center; gap: 12px; transition: all 0.15s ease;
+    }
+    .claim-banner:hover { border-color: rgba(255,180,67,0.5); }
+    .claim-banner:active { transform: scale(0.99); }
+    .claim-banner-icon { font-size: 24px; flex-shrink: 0; }
+    .claim-banner-text { flex: 1; display: flex; flex-direction: column; gap: 2px; }
+    .claim-banner-text strong { font-size: 14px; font-weight: 700; color: var(--text); }
+    .claim-banner-text span { font-size: 12px; color: var(--text-muted); }
+    .claim-banner-arrow { font-size: 18px; color: var(--amber); flex-shrink: 0; }
+
+    /* ── EARNINGS DASHBOARD ── */
+    .earn-locked {
+      margin: 0 20px 20px; padding: 28px 24px; text-align: center;
+      background: var(--surface); border: 1px solid var(--border); border-radius: var(--r);
+      display: flex; flex-direction: column; align-items: center; gap: 8px;
+    }
+    .earn-locked-icon { font-size: 32px; }
+    .earn-locked-title { font-size: 18px; font-weight: 700; }
+    .earn-locked-sub { font-size: 13px; color: var(--text-muted); line-height: 1.5; max-width: 280px; margin-bottom: 8px; }
+    .earn-hero {
+      margin: 0 20px 14px; padding: 24px 20px; text-align: center;
+      background: var(--surface); border: 1px solid var(--border); border-radius: var(--r);
+      position: relative; overflow: hidden;
+    }
+    .earn-hero::before {
+      content: ''; position: absolute; inset: 0;
+      background: radial-gradient(ellipse at top, rgba(29,185,84,0.1) 0%, transparent 65%); pointer-events: none;
+    }
+    .earn-hero-label { font-size: 11px; font-weight: 600; letter-spacing: 1.2px; color: var(--text-muted); margin-bottom: 8px; }
+    .earn-hero-amount { font-family: var(--font-serif); font-size: 56px; line-height: 1; letter-spacing: -2px; color: var(--accent); margin-bottom: 12px; }
+    .earn-hero-row { display: flex; align-items: center; justify-content: center; gap: 12px; }
+    .earn-hero-pill { font-size: 13px; font-weight: 700; }
+    .earn-hero-live { font-size: 10px; font-weight: 700; color: var(--accent); display: flex; align-items: center; gap: 5px; letter-spacing: 0.5px; }
+    .earn-stats { margin: 0 20px 14px; display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; }
+    .earn-stat { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-sm); padding: 14px 10px; text-align: center; }
+    .earn-stat-num { font-size: 22px; font-weight: 700; letter-spacing: -0.5px; }
+    .earn-stat-label { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+    .earn-payout { margin: 0 20px 14px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-sm); padding: 14px 16px; }
+    .earn-payout-row { display: flex; align-items: center; justify-content: space-between; padding: 4px 0; }
+    .earn-payout-label { font-size: 13px; color: var(--text-muted); }
+    .earn-payout-val { font-size: 15px; font-weight: 700; }
+    .earn-payout-note { font-size: 11px; color: var(--text-dim); margin-top: 8px; padding-top: 10px; border-top: 1px solid var(--border); }
+    .earn-chart-card { margin: 0 20px 14px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--r); padding: 18px 16px; }
+    .earn-chart { display: flex; align-items: flex-end; justify-content: space-between; gap: 8px; height: 140px; }
+    .earn-bar-col { flex: 1; display: flex; flex-direction: column; align-items: center; height: 100%; justify-content: flex-end; gap: 6px; }
+    .earn-bar-val { font-size: 10px; color: var(--text-dim); font-weight: 600; }
+    .earn-bar-track { width: 100%; flex: 1; display: flex; align-items: flex-end; }
+    .earn-bar-fill { width: 100%; border-radius: 6px 6px 2px 2px; min-height: 4px; transition: height 0.6s ease; }
+    .earn-bar-label { font-size: 11px; color: var(--text-muted); }
+    .earn-items { margin: 0 20px 14px; }
+    .earn-item-row {
+      display: flex; align-items: center; gap: 10px; background: var(--surface);
+      border: 1px solid var(--border); border-radius: var(--r-sm); padding: 12px 14px; margin-bottom: 8px;
+    }
+    .earn-item-rank { font-size: 12px; font-weight: 700; color: var(--text-dim); width: 14px; }
+    .earn-item-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+    .earn-item-info { flex: 1; min-width: 0; }
+    .earn-item-name { font-size: 14px; font-weight: 600; }
+    .earn-item-meta { font-size: 11px; color: var(--text-muted); margin-top: 1px; }
+    .earn-item-earned { font-size: 15px; font-weight: 700; color: var(--accent); }
+    .earn-cta { margin: 4px 20px 0; background: linear-gradient(135deg, rgba(29,185,84,0.1), rgba(93,202,165,0.06)); border: 1px solid rgba(29,185,84,0.2); border-radius: var(--r); padding: 18px; text-align: center; }
+    .earn-cta-title { font-size: 16px; font-weight: 700; margin-bottom: 6px; }
+    .earn-cta-sub { font-size: 13px; color: var(--text-muted); line-height: 1.5; margin-bottom: 14px; }
+
+    /* ── INVITE (Path 2) ── */
+    .earn-invite { margin: 12px 20px 0; background: var(--surface); border: 1px solid var(--border); border-radius: var(--r); padding: 18px; }
+    .earn-invite-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; margin-bottom: 14px; }
+    .earn-invite-title { font-size: 16px; font-weight: 700; margin-bottom: 4px; }
+    .earn-invite-sub { font-size: 13px; color: var(--text-muted); line-height: 1.45; }
+    .earn-invite-count { text-align: center; flex-shrink: 0; background: var(--surface2); border-radius: var(--r-sm); padding: 8px 14px; }
+    .earn-invite-count-num { font-family: var(--font-serif); font-size: 26px; color: var(--teal); line-height: 1; }
+    .earn-invite-count-label { font-size: 10px; color: var(--text-muted); letter-spacing: 0.5px; margin-top: 2px; }
+    .invite-reward {
+      display: flex; gap: 12px; align-items: center; padding: 14px;
+      background: linear-gradient(135deg, rgba(93,202,165,0.1), rgba(29,185,84,0.06));
+      border: 1px solid rgba(93,202,165,0.25); border-radius: var(--r-sm); margin-bottom: 18px;
+    }
+    .invite-reward-icon { font-size: 26px; flex-shrink: 0; }
+    .invite-reward-title { font-size: 15px; font-weight: 700; color: var(--teal); margin-bottom: 2px; }
+    .invite-reward-sub { font-size: 12px; color: var(--text-muted); line-height: 1.45; }
+    .invite-label { font-size: 11px; font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase; color: var(--text-muted); margin-bottom: 8px; }
+    .invite-msg {
+      background: var(--surface2); border: 1px solid var(--border); border-radius: var(--r-sm);
+      padding: 14px; font-size: 13px; color: var(--text); line-height: 1.55; white-space: pre-wrap;
+      max-height: 220px; overflow-y: auto;
+    }
+    .invite-hint { font-size: 11px; color: var(--text-dim); text-align: center; margin-top: 12px; line-height: 1.5; }
+  </style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel">
+const { useState, useEffect, useRef, useCallback } = React;
+
+// ── CONSTANTS ─────────────────────────────────────────────────────────────────
+
+const CATEGORY_COLORS = {
+  Supplements: "#5DCAA5",
+  Wearables:   "#1DB954",
+  Labs:        "#FFB443",
+  Services:    "#A67AE0",
+  Other:       "#6B8FF0",
+};
+const CATEGORIES = ["Supplements", "Wearables", "Labs", "Services", "Other"];
+
+// Predefined items with "why" suggestions
+const PREDEFINED_ITEMS = {
+  Supplements: [
+    { name: "NMN 500mg",            whys: ["Boosts NAD+ levels for cellular energy and DNA repair.", "Slows cellular aging by supporting mitochondrial function."] },
+    { name: "NMN 1000mg",           whys: ["Higher-dose NAD+ precursor for advanced longevity protocols.", "Supports energy production and sirtuin activation."] },
+    { name: "Magnesium Glycinate",  whys: ["Deep sleep scores improved noticeably within 2 weeks.", "Most bioavailable form — reduces tension and aids recovery."] },
+    { name: "Magnesium L-Threonate",whys: ["Crosses the blood-brain barrier for cognitive support.", "Supports memory retention and reduces brain fog."] },
+    { name: "Omega-3 2g EPA/DHA",   whys: ["Reduces systemic inflammation — my hs-CRP dropped significantly.", "Supports heart health and brain function long-term."] },
+    { name: "Vitamin D3 + K2",      whys: ["Most people are deficient — non-negotiable for immune function.", "K2 directs calcium to bones, not arteries."] },
+    { name: "Creatine 5g",          whys: ["Improves working memory and processing speed, not just muscle.", "Cheap, safe, and one of the most studied compounds."] },
+    { name: "Ashwagandha 600mg",    whys: ["Measurable cortisol reduction after 4 weeks.", "Improved HRV and stress resilience."] },
+    { name: "CoQ10 200mg",          whys: ["Supports mitochondrial energy production.", "Essential if taking a statin — statins deplete CoQ10."] },
+    { name: "Alpha Lipoic Acid",    whys: ["Potent antioxidant that regenerates other antioxidants.", "Supports glucose metabolism and mitochondrial function."] },
+    { name: "Berberine 500mg",      whys: ["AMPK activator — clinically shown to improve insulin sensitivity.", "Mimics some effects of metformin on glucose metabolism."] },
+    { name: "Quercetin",            whys: ["Senolytic — helps clear senescent ('zombie') cells.", "Synergistic with NMN for anti-aging protocols."] },
+    { name: "Lion's Mane",          whys: ["Stimulates NGF production for neurogenesis.", "Noticeable improvement in focus and long-term memory."] },
+    { name: "L-Theanine 200mg",     whys: ["Smooth calm focus — synergistic with caffeine.", "Reduces anxiety without sedation."] },
+    { name: "Collagen Peptides",    whys: ["Supports skin elasticity, joints, and connective tissue.", "Visible improvement in skin quality after 3 months."] },
+    { name: "Probiotics",           whys: ["Supports gut microbiome diversity and immune function.", "Reduced bloating significantly within 30 days."] },
+    { name: "B-Complex",            whys: ["Key cofactors for methylation and energy metabolism.", "Supports nervous system function and stress resilience."] },
+    { name: "Spermidine",           whys: ["Induces autophagy — cellular recycling and renewal.", "One of the most promising emerging longevity compounds."] },
+    { name: "Resveratrol",          whys: ["Sirtuin activator — supports longevity signaling pathways.", "Often stacked with NMN for synergistic effect."] },
+    { name: "NAC (N-Acetyl Cysteine)", whys: ["Glutathione precursor — major antioxidant support.", "Supports liver detoxification and respiratory health."] },
+    { name: "Vitamin C 1g",         whys: ["Antioxidant support and collagen synthesis cofactor.", "Immune function baseline I don't skip."] },
+    { name: "Zinc 30mg",            whys: ["Supports immune function and testosterone production.", "Most people are borderline deficient."] },
+    { name: "Custom supplement",    whys: [] },
+  ],
+  Wearables: [
+    { name: "Oura Ring Gen 4",       whys: ["Most accurate consumer sleep tracker — predicts illness early via HRV dip.", "Worn 24/7, tracks readiness, sleep stages, and temperature."] },
+    { name: "Apple Watch Series 10", whys: ["ECG, blood oxygen, and crash detection always on my wrist.", "Seamless HealthKit integration across all my health apps."] },
+    { name: "Apple Watch Ultra 2",   whys: ["Military-grade durability with best-in-class GPS accuracy.", "2-day battery life makes it ideal for endurance and travel."] },
+    { name: "WHOOP 4.0",             whys: ["Best strain and recovery coaching for serious athletes.", "Tells me when to push hard and when to hold back."] },
+    { name: "Garmin Fenix 7",        whys: ["Best GPS accuracy for outdoor training and hiking.", "Body Battery score and morning HRV status is incredibly useful."] },
+    { name: "Garmin Venu 3",         whys: ["Tracks sleep, stress, and nap detection in a slim form.", "Great balance of everyday wearable and health tracker."] },
+    { name: "Levels CGM",            whys: ["Real-time glucose data revealed which foods spike me most.", "Completely changed my eating habits through data-driven decisions."] },
+    { name: "Freestyle Libre 3",     whys: ["Affordable CGM without finger pricks.", "Identifies metabolic patterns throughout the day."] },
+    { name: "Eight Sleep Pod 4",     whys: ["Dynamic temperature regulation measurably improves deep sleep.", "HRV improved after switching — best sleep investment I've made."] },
+    { name: "Google Pixel Watch 3",  whys: ["Fitbit health tracking with Google ecosystem integration.", "Continuous heart rate, sleep, and stress monitoring."] },
+    { name: "Fitbit Charge 6",       whys: ["Affordable, accurate sleep and activity tracking.", "Google integration makes it easy to share data with other apps."] },
+    { name: "Polar H10",             whys: ["Gold standard chest-strap HRV monitor for accurate readings.", "Best data quality for recovery and training zone work."] },
+    { name: "Withings Body Comp Scale", whys: ["Tracks body composition, visceral fat, and vascular health.", "Daily weight trends and body fat % over time."] },
+    { name: "Muse Headband",         whys: ["EEG biofeedback makes meditation objectively measurable.", "Can see my calm sessions improving week over week."] },
+    { name: "Custom wearable",       whys: [] },
+  ],
+  Labs: [
+    { name: "Superpower Biannual Bloodwork",  whys: ["70+ biomarkers twice a year — caught a TSH drift early.", "Includes hormones, lipids, and inflammatory markers."] },
+    { name: "Function Health Panel",          whys: ["100+ biomarker panel with longitudinal trend tracking.", "Best value comprehensive bloodwork currently available."] },
+    { name: "InsideTracker",                  whys: ["Blood + DNA with personalized optimization recommendations.", "Tracks 43 biomarkers against optimal (not just 'normal') zones."] },
+    { name: "TruAge Epigenetic Test",         whys: ["DNA methylation biological age — most accurate available.", "Tracks how fast (or slow) I'm aging at the cellular level."] },
+    { name: "Grail Galleri Cancer Screen",    whys: ["Multi-cancer early detection — screens for 50+ cancers.", "Catches signals before symptoms ever appear."] },
+    { name: "VO2 Max Test (Lab)",             whys: ["Gold standard cardiorespiratory fitness measurement.", "Strongest single predictor of all-cause mortality."] },
+    { name: "DEXA Scan",                      whys: ["Most accurate body composition measurement available.", "Tracks visceral fat and bone density precisely."] },
+    { name: "Gut Microbiome Test",            whys: ["Maps bacteria diversity and identifies imbalances.", "Informs my probiotic stack and dietary fiber targets."] },
+    { name: "Custom lab test",                whys: [] },
+  ],
+  Services: [
+    { name: "Sauna (4x/week)",          whys: ["4+ weekly sessions linked to 40% reduced cardiovascular mortality.", "Improves heat shock proteins and growth hormone production."] },
+    { name: "Cold Plunge",              whys: ["Cold exposure increases norepinephrine 300% — huge mood boost.", "Accelerates recovery and reduces muscle soreness."] },
+    { name: "Red Light Therapy",        whys: ["Stimulates mitochondrial ATP production in skin and muscle.", "Reduces inflammation and improves skin quality."] },
+    { name: "Personal Trainer",         whys: ["Structured programming prevents injury and ensures progressive overload.", "Accountability drives the consistency that self-training rarely does."] },
+    { name: "Therapist / Mental Health",whys: ["Stress is a primary driver of aging — this is foundational.", "Addresses root causes, not just symptoms."] },
+    { name: "Custom service",           whys: [] },
+  ],
+};
+
+// ── SHEHAN'S STACK ────────────────────────────────────────────────────────────
+
+const SHEHAN_STACK = {
+  username: "shehan",
+  name: "Shehan Chandrasekera",
+  handle: "@TheCryptoCPA",
+  credential: "CPA · Head of Tax at CoinTracker",
+  verified: true,
+  bioAge: 34,
+  chronoAge: 41,
+  items: [
+    { id: 1, category: "Supplements", name: "NMN 500mg",
+      why: "Core longevity molecule — supports NAD+ production which declines ~50% by age 40. First thing in the morning, fasted.",
+      years: 2, cost: 45,
+      affiliateUrl: "https://amazon.com/s?k=NMN+500mg", // ← swap real affiliate URL here
+      tags: ["longevity", "nad", "cognitive"] },
+    { id: 2, category: "Supplements", name: "Magnesium Glycinate",
+      why: "Most bioavailable form. Deep sleep scores on Oura improved noticeably within 2 weeks. 400mg ~1hr before bed.",
+      years: 1, cost: 20,
+      affiliateUrl: "https://amazon.com/s?k=Magnesium+Glycinate", // ← swap real affiliate URL here
+      tags: ["sleep", "recovery"] },
+    { id: 3, category: "Supplements", name: "Omega-3 2g EPA/DHA",
+      why: "Systemic anti-inflammatory. My hs-CRP dropped from 1.8 to 0.6 after 6 months. Wild-caught fish oil only.",
+      years: 3, cost: 30,
+      affiliateUrl: "https://amazon.com/s?k=Omega-3+EPA+DHA+2g", // ← swap real affiliate URL here
+      tags: ["longevity", "recovery", "inflammation"] },
+    { id: 4, category: "Supplements", name: "Vitamin D3 + K2",
+      why: "K2 directs calcium to bones, not arteries. Essential cofactors — most people are unknowingly deficient.",
+      years: 2, cost: 18,
+      affiliateUrl: "https://amazon.com/s?k=Vitamin+D3+K2", // ← swap real affiliate URL here
+      tags: ["longevity", "immunity"] },
+    { id: 5, category: "Supplements", name: "Creatine 5g",
+      why: "Not just for muscle. Meaningful cognitive benefits for memory and processing speed. Mix in morning coffee.",
+      years: 1, cost: 15,
+      affiliateUrl: "https://amazon.com/s?k=Creatine+Monohydrate", // ← swap real affiliate URL here
+      tags: ["cognitive", "recovery"] },
+    { id: 6, category: "Wearables", name: "Oura Ring Gen 4",
+      why: "Most accurate consumer sleep tracker. Predicted illness 2 days early twice this year via HRV dip. Worn 24/7.",
+      years: 2, cost: 10,
+      affiliateUrl: "https://ouraring.com/referral", // ← swap real referral URL here
+      tags: ["sleep", "recovery", "tracking"] },
+    { id: 7, category: "Wearables", name: "Levels CGM",
+      why: "Continuous glucose monitoring revealed that rice spikes me far more than pasta. Data-driven eating decisions.",
+      years: 0.5, cost: 99,
+      affiliateUrl: "https://levelshealth.com/join", // ← swap real referral URL here
+      tags: ["metabolic", "longevity", "tracking"] },
+    { id: 8, category: "Labs", name: "Superpower Biannual Bloodwork",
+      why: "70+ biomarkers twice a year — hormones, lipids, inflammatory markers. Caught a TSH drift early. Worth every penny.",
+      years: 1, cost: 49,
+      affiliateUrl: "https://superpower.com/referral", // ← swap real referral URL here
+      tags: ["longevity", "preventive", "tracking"] },
+  ],
+};
+
+// ── SCORING ───────────────────────────────────────────────────────────────────
+
+const SCORE_CONFIG = {
+  Longevity: { tags: ["longevity", "nad", "immunity", "preventive", "inflammation"], ideal: 4, maxScore: 100 },
+  Sleep:     { tags: ["sleep"], ideal: 2, maxScore: 88 },
+  Recovery:  { tags: ["recovery", "metabolic", "muscle"], ideal: 3, maxScore: 95 },
+  Cognitive: { tags: ["cognitive", "tracking"], ideal: 3, maxScore: 90 },
+};
+
+function catTagFallback(cat) {
+  const m = { Supplements: ["longevity","cognitive"], Wearables: ["sleep","recovery","tracking"], Labs: ["longevity","preventive"], Services: ["longevity","preventive"], Other: ["longevity"] };
+  return m[cat] || ["longevity"];
+}
+
+function calculateScores(items) {
+  const tagged = items.map(i => ({ ...i, tags: (i.tags && i.tags.length) ? i.tags : catTagFallback(i.category) }));
+  const scores = {};
+  for (const [cat, cfg] of Object.entries(SCORE_CONFIG)) {
+    const n = tagged.filter(i => i.tags.some(t => cfg.tags.includes(t))).length;
+    scores[cat] = Math.round(Math.min(n, cfg.ideal) / cfg.ideal * cfg.maxScore);
+  }
+  const avg = Object.values(scores).reduce((a, b) => a + b, 0) / 4;
+  scores.Gaps = Math.max(0, Math.round(100 - avg));
+  return scores;
+}
+
+function letterGrade(s) {
+  if (s >= 95) return "A+"; if (s >= 88) return "A"; if (s >= 82) return "A−";
+  if (s >= 76) return "B+"; if (s >= 70) return "B"; if (s >= 64) return "B−";
+  if (s >= 58) return "C+"; if (s >= 50) return "C"; return "D";
+}
+function gradeColor(g) {
+  if (g.startsWith("A")) return "#1DB954";
+  if (g.startsWith("B")) return "#5DCAA5";
+  if (g.startsWith("C")) return "#FFB443";
+  return "#FF6B6B";
+}
+
+// ── AI INSIGHTS ───────────────────────────────────────────────────────────────
+
+function generateInsights(items) {
+  const names = items.map(i => i.name.toLowerCase()).join(" ");
+  const out = [];
+  if (/nmn|nad/.test(names))
+    out.push({ type: "strength", text: "<strong>Strong NAD+ foundation.</strong> NMN supports cellular energy and DNA repair — one of the most evidence-backed longevity interventions." });
+  if (!/vitamin d|d3/.test(names))
+    out.push({ type: "gap", text: "<strong>Missing Vitamin D3/K2.</strong> ~42% of adults are deficient. Direct impact on immune regulation, mood, and bone health." });
+  if (/magnesium/.test(names) && /oura/.test(names))
+    out.push({ type: "synergy", text: "<strong>Sleep synergy detected.</strong> Magnesium Glycinate + Oura Ring creates a measurable feedback loop for sleep optimization." });
+  if (!/ashwagandha/.test(names) && items.length >= 3)
+    out.push({ type: "gap", text: "<strong>No stress adaptogen.</strong> Ashwagandha has strong evidence for cortisol reduction and improved recovery metrics." });
+  if (/creatine/.test(names))
+    out.push({ type: "strength", text: "<strong>Creatine is underrated.</strong> Studies show 3-5% improvements in working memory and reasoning — beyond just muscle." });
+  if (!items.find(i => i.category === "Labs"))
+    out.push({ type: "gap", text: "<strong>No lab testing detected.</strong> Biannual bloodwork is the highest-leverage intervention — you can't optimize what you can't measure." });
+  if (/cgm|levels|glucose|libre/.test(names))
+    out.push({ type: "strength", text: "<strong>Metabolic awareness is elite.</strong> CGM users consistently reduce post-meal glucose spikes 20-40% through behavioral changes alone." });
+  return out.slice(0, 3);
+}
+
+// ── STORAGE ───────────────────────────────────────────────────────────────────
+
+const STORAGE_KEY = "stackpage_v1";
+function getStacks() { try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}"); } catch { return {}; } }
+function saveStack(s) { const all = getStacks(); all[s.username] = s; localStorage.setItem(STORAGE_KEY, JSON.stringify(all)); }
+function getStack(u) { if (u === "shehan") return SHEHAN_STACK; return getStacks()[u] || null; }
+function isUserStack(u) { return u !== "shehan" && !!getStacks()[u]; }
+function toUsername(h) { return h.replace(/^@/, "").toLowerCase().replace(/[^a-z0-9_]/g, ""); }
+function totalCost(items) { return items.reduce((s, i) => s + (i.cost || 0), 0); }
+
+// ── REFERRALS (Path 2: creators inviting creators) ──
+// Read ?ref=<username> from the hash, e.g. #/?ref=maya or #/build?ref=maya
+function getRefParam() {
+  const m = (window.location.hash || "").match(/[?&]ref=([a-z0-9_]+)/i);
+  return m ? m[1].toLowerCase() : null;
+}
+// Persist an incoming referral so it survives the build flow
+function captureRef() {
+  const r = getRefParam();
+  if (r) { try { localStorage.setItem("sp_ref", r); } catch(_) {} }
+}
+function consumeRef() { try { return localStorage.getItem("sp_ref"); } catch(_) { return null; } }
+function clearRef() { try { localStorage.removeItem("sp_ref"); } catch(_) {} }
+// How many existing stacks were referred by this user (the real "creators invited" metric)
+function countReferrals(username) {
+  return Object.values(getStacks()).filter(s => s.referredBy === username).length;
+}
+
+// Stable string hash → used to generate deterministic demo earnings
+function hashStr(s) { let h = 0; for (let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) >>> 0; return h; }
+
+// Per-order commission by category (USD). ── BACKEND ──: real values come from
+// each affiliate program's payout terms; here they're illustrative.
+const COMMISSION = { Wearables: 40, Labs: 30, Services: 20, Supplements: null, Other: 8 };
+
+// Generate deterministic, stable demo earnings for a stack (no backend yet).
+// ── BACKEND ──: replace with real affiliate-network click/conversion data.
+function computeEarnings(stack) {
+  let clicks = 0, orders = 0, total = 0;
+  const perItem = (stack.items || []).map(it => {
+    const r = hashStr(stack.username + "|" + it.name);
+    const c = 6 + (r % 36);                       // clicks 6–41
+    const conv = 0.08 + ((r >> 5) % 18) / 100;    // conversion 8–26%
+    const o = Math.max(1, Math.round(c * conv));
+    const payout = COMMISSION[it.category] != null ? COMMISSION[it.category] : Math.max(6, Math.round((it.cost || 20) * 0.15));
+    const earned = o * payout;
+    clicks += c; orders += o; total += earned;
+    return { name: it.name, category: it.category, clicks: c, orders: o, earned };
+  }).sort((a, b) => b.earned - a.earned);
+  // Split last 6 months deterministically, trending up toward the current month
+  const months = [];
+  for (let m = 5; m >= 0; m--) {
+    const factor = 0.35 + (5 - m) * 0.13 + ((hashStr(stack.username + m) % 20) / 100);
+    months.push(Math.round((total / 6) * factor * 1.4));
+  }
+  const thisMonth = months[months.length - 1];
+  return {
+    total, thisMonth, clicks, orders,
+    conv: clicks ? Math.round(orders / clicks * 100) : 0,
+    perItem, months,
+    pending: Math.round(thisMonth * 0.8),
+    paid: total - Math.round(thisMonth * 0.8),
+  };
+}
+
+// Claim a stack with an email to "activate earnings".
+// MVP: persists to localStorage only.
+// ── BACKEND ──: replace the localStorage write below with a real call, e.g.
+//   await fetch("/api/claim", { method: "POST", body: JSON.stringify({ username, email }) })
+//   then send a magic-link / verification email and mark claimed on confirmation.
+function claimStack(username, email) {
+  const all = getStacks();
+  if (!all[username]) return null;
+  all[username] = { ...all[username], email, claimed: true, claimedAt: Date.now() };
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(all));
+  return all[username];
+}
+
+// ── CAMERA / IMAGE UTILITIES ──────────────────────────────────────────────────
+
+// Resize an image File to a compact data URL for localStorage storage
+function resizeImage(file, maxPx = 400) {
+  return new Promise(resolve => {
+    const img = new Image();
+    const url = URL.createObjectURL(file);
+    img.onload = () => {
+      const ratio = Math.min(maxPx / img.width, maxPx / img.height, 1);
+      const canvas = document.createElement("canvas");
+      canvas.width  = Math.round(img.width  * ratio);
+      canvas.height = Math.round(img.height * ratio);
+      canvas.getContext("2d").drawImage(img, 0, 0, canvas.width, canvas.height);
+      URL.revokeObjectURL(url);
+      resolve(canvas.toDataURL("image/jpeg", 0.72));
+    };
+    img.onerror = () => { URL.revokeObjectURL(url); resolve(null); };
+    img.src = url;
+  });
+}
+
+// Try to extract readable text from an image using the Shape Detection API
+// (available in Chrome/Android; gracefully returns null elsewhere)
+async function ocrImage(dataUrl) {
+  if (!("TextDetector" in window)) return null;
+  try {
+    const detector = new window.TextDetector();
+    const resp = await fetch(dataUrl);
+    const blob = await resp.blob();
+    const bitmap = await createImageBitmap(blob);
+    const results = await detector.detect(bitmap);
+    return results.map(r => r.rawValue).join(" ");
+  } catch (_) { return null; }
+}
+
+// Fuzzy-match OCR text against predefined item names for a given category.
+// Returns items sorted by match strength (matched ones first).
+function matchByText(text, category) {
+  if (!text) return { matched: [], rest: PREDEFINED_ITEMS[category] || [] };
+  const lower = text.toLowerCase();
+  const all = PREDEFINED_ITEMS[category] || [];
+  const matched = [], rest = [];
+  for (const item of all) {
+    // Split item name into tokens longer than 3 chars and check for overlap
+    const tokens = item.name.toLowerCase().split(/\W+/).filter(t => t.length > 3);
+    const hits = tokens.filter(t => lower.includes(t)).length;
+    if (hits > 0) matched.push({ ...item, hits });
+    else rest.push(item);
+  }
+  matched.sort((a, b) => b.hits - a.hits);
+  return { matched, rest };
+}
+
+// ── ROUTER ────────────────────────────────────────────────────────────────────
+
+function parseHash(h) {
+  // Strip any ?query (e.g. ?ref=maya) before parsing the path
+  const p = (h || "").replace(/^#/, "").split("?")[0] || "/";
+  const parts = p.split("/").filter(Boolean);
+  if (!parts.length) return { route: "home" };
+  if (parts[0] === "stack" && parts[1]) return { route: "stack", username: parts[1] };
+  if (parts[0] === "earnings" && parts[1]) return { route: "earnings", username: parts[1] };
+  if (parts[0] === "build") return { route: "build" };
+  return { route: "404" };
+}
+function navigate(path) { window.location.hash = path; }
+function useRouter() {
+  const [loc, setLoc] = useState(() => parseHash(window.location.hash));
+  useEffect(() => {
+    const fn = () => setLoc(parseHash(window.location.hash));
+    window.addEventListener("hashchange", fn);
+    return () => window.removeEventListener("hashchange", fn);
+  }, []);
+  return loc;
+}
+
+// ── QR WIDGET ─────────────────────────────────────────────────────────────────
+
+function QRWidget({ url }) {
+  const ref = useRef(null);
+  const instanceRef = useRef(null);
+
+  useEffect(() => {
+    if (!ref.current) return;
+    // Clear previous instance
+    if (instanceRef.current) {
+      try { instanceRef.current.clear(); } catch (_) {}
+      ref.current.innerHTML = "";
+      instanceRef.current = null;
+    }
+    // Black on white for maximum scan compatibility
+    try {
+      instanceRef.current = new window.QRCode(ref.current, {
+        text: url,
+        width: 160,
+        height: 160,
+        colorDark: "#000000",
+        colorLight: "#ffffff",
+        correctLevel: window.QRCode && window.QRCode.CorrectLevel ? window.QRCode.CorrectLevel.H : 1,
+      });
+    } catch(e) {
+      ref.current.innerHTML = `<div style="font-size:11px;color:#999;padding:8px;text-align:center">QR unavailable</div>`;
+    }
+  }, [url]);
+
+  return <div ref={ref} />;
+}
+
+// ── TOAST ─────────────────────────────────────────────────────────────────────
+
+function useToast() {
+  const [msg, setMsg] = useState(null);
+  const show = useCallback((m) => { setMsg(m); setTimeout(() => setMsg(null), 2200); }, []);
+  return { msg, show };
+}
+
+// ── TOPBAR ────────────────────────────────────────────────────────────────────
+
+function Topbar({ rightContent }) {
+  return (
+    <div className="topbar">
+      <div className="topbar-logo" onClick={() => navigate("#/stack/shehan")}>StackPage</div>
+      {rightContent || <button className="btn btn-primary btn-sm" onClick={() => navigate("#/build")}>Build mine</button>}
+    </div>
+  );
+}
+
+// ── PROFILE ───────────────────────────────────────────────────────────────────
+
+function ProfileSection({ stack }) {
+  const initials = stack.name.split(" ").map(w => w[0]).join("").slice(0, 2);
+  return (
+    <div className="profile-section anim-0">
+      <div className="profile-top">
+        <div className="avatar">{initials}</div>
+        <div className="profile-info">
+          <div className="profile-name">{stack.name}</div>
+          <div className="profile-handle">{stack.handle}</div>
+          {stack.verified && (
+            <div className="badge-verified">
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+              Verified
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ── BIO AGE ───────────────────────────────────────────────────────────────────
+
+function BioAgeCard({ bioAge, chronoAge }) {
+  const delta = chronoAge - bioAge;
+  return (
+    <div className="bio-age-card anim-1">
+      <div className="bio-age-label">Biological Age</div>
+      <div className="bio-age-row">
+        <div className="bio-age-col">
+          <div className="bio-age-num bio">{bioAge}</div>
+          <div className="bio-age-sublabel">Bio Age</div>
+        </div>
+        <div className="bio-age-divider" />
+        <div className="bio-age-col">
+          <div className="bio-age-num chrono">{chronoAge}</div>
+          <div className="bio-age-sublabel">Actual Age</div>
+        </div>
+      </div>
+      {delta > 0 && <div className="bio-age-delta">Biologically <span>−{delta} years</span> younger than calendar age</div>}
+      {delta < 0 && <div className="bio-age-delta" style={{color:"var(--amber)"}}>Biologically <span style={{color:"var(--amber)"}}>+{Math.abs(delta)} years</span> older than calendar age</div>}
+      {delta === 0 && <div className="bio-age-delta">Bio age matches calendar age</div>}
+    </div>
+  );
+}
+
+// ── SCORECARD ─────────────────────────────────────────────────────────────────
+
+function ProtocolScorecard({ items }) {
+  const s = calculateScores(items);
+  const rows = [
+    { label: "Longevity", grade: letterGrade(s.Longevity), score: s.Longevity, color: "#1DB954", pct: s.Longevity },
+    { label: "Sleep",     grade: letterGrade(s.Sleep),     score: s.Sleep,     color: "#5DCAA5", pct: s.Sleep },
+    { label: "Recovery",  grade: letterGrade(s.Recovery),  score: s.Recovery,  color: "#6B8FF0", pct: s.Recovery },
+    { label: "Cognitive", grade: letterGrade(s.Cognitive), score: s.Cognitive, color: "#A67AE0", pct: s.Cognitive },
+    { label: "Gaps",      grade: letterGrade(100 - s.Gaps),score: s.Gaps,      color: s.Gaps < 20 ? "#1DB954" : s.Gaps < 40 ? "#FFB443" : "#FF6B6B", pct: 100 - s.Gaps, showPct: true },
+  ];
+  return (
+    <div className="scorecard anim-2">
+      <div className="scorecard-title">Protocol Scorecard</div>
+      {rows.map((r, i) => {
+        const gc = gradeColor(r.grade);
+        return (
+          <div key={r.label} className="score-row">
+            <div className="score-label">{r.label}</div>
+            <div className="score-bar-bg">
+              <div className="score-bar-fill" style={{ "--w": `${r.pct}%`, width: `${r.pct}%`, background: r.color, animationDelay: `${0.1 + i * 0.07}s` }} />
+            </div>
+            <div className="score-grade" style={{ color: gc }}>{r.grade}</div>
+            <div className="score-num">{r.showPct ? `${r.score}%` : r.score}</div>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+// ── AI INSIGHTS ───────────────────────────────────────────────────────────────
+
+function AIInsights({ items }) {
+  const insights = generateInsights(items);
+  if (!insights.length) return null;
+  const icons = { strength: "⚡", gap: "💡", synergy: "🔗" };
+  return (
+    <div className="insights-section anim-3">
+      <div className="section-title">AI Insights</div>
+      {insights.map((ins, i) => (
+        <div key={i} className={`insight-card ${ins.type}`}>
+          <div className="insight-icon">{icons[ins.type]}</div>
+          <div className="insight-text" dangerouslySetInnerHTML={{ __html: ins.text }} />
+        </div>
+      ))}
+    </div>
+  );
+}
+
+// ── STACK ITEM CARD ───────────────────────────────────────────────────────────
+
+function StackItemCard({ item, editable, onEdit, onDelete }) {
+  const color = CATEGORY_COLORS[item.category] || CATEGORY_COLORS.Other;
+  const yearsLabel = item.years < 1 ? `${Math.round(item.years * 12)}mo` : `${item.years}yr`;
+  // ← Swap in real affiliate URLs per product below
+  const affUrl = item.affiliateUrl || `https://amazon.com/s?k=${encodeURIComponent(item.name)}`;
+  return (
+    <div className="item-card" style={{ borderLeftColor: color }}>
+      <div className="item-top">
+        <div style={{ display: "flex", alignItems: "center", gap: 10, flex: 1, minWidth: 0 }}>
+          {item.photoUrl && <img src={item.photoUrl} alt="" className="item-photo" />}
+          <div className="item-name">{item.name}</div>
+        </div>
+        <div className="item-years">{yearsLabel}</div>
+      </div>
+      {item.why && <div className="item-why">{item.why}</div>}
+      <div className="item-actions">
+        <a className="btn-getit" href={affUrl} target="_blank" rel="noopener noreferrer">Get it ↗</a>
+        {item.cost > 0 && <span className="item-cost">${item.cost}/mo</span>}
+        {editable && (
+          <>
+            <button className="btn btn-ghost btn-sm" style={{ marginLeft: "auto" }} onClick={() => onEdit(item)}>Edit</button>
+            <button className="btn btn-ghost btn-sm" style={{ color: "var(--red)" }} onClick={() => onDelete(item.id)}>✕</button>
+          </>
+        )}
+      </div>
+    </div>
+  );
+}
+
+// ── STACK SECTION ─────────────────────────────────────────────────────────────
+
+function StackSection({ items, editable, onEdit, onDelete }) {
+  const grouped = CATEGORIES.reduce((acc, cat) => {
+    const ci = items.filter(i => i.category === cat);
+    if (ci.length) acc[cat] = ci;
+    return acc;
+  }, {});
+  if (!items.length) return (
+    <div className="stack-section">
+      <div className="empty-state"><div className="empty-state-icon">🧬</div><div>No stack items yet.</div></div>
+    </div>
+  );
+  return (
+    <div className="stack-section anim-5">
+      <div className="section-title" style={{ marginBottom: 16 }}>The Stack</div>
+      {Object.entries(grouped).map(([cat, ci]) => (
+        <div key={cat} className="category-group">
+          <div className="category-header">
+            <div className="category-dot" style={{ background: CATEGORY_COLORS[cat] }} />
+            <div className="category-name">{cat}</div>
+            <div className="category-count">{ci.length}</div>
+          </div>
+          {ci.map(item => <StackItemCard key={item.id} item={item} editable={editable} onEdit={onEdit} onDelete={onDelete} />)}
+        </div>
+      ))}
+    </div>
+  );
+}
+
+// ── EDIT SHEET ────────────────────────────────────────────────────────────────
+
+function EditSheet({ stack, onSave, onClose }) {
+  const [items, setItems] = useState(stack.items);
+  const [bioAge, setBioAge] = useState(stack.bioAge);
+  const [chronoAge, setChronoAge] = useState(stack.chronoAge);
+  const [editingItem, setEditingItem] = useState(null);
+  const [showAdd, setShowAdd] = useState(false);
+  const [form, setForm] = useState({ name: "", category: "Supplements", why: "", years: "", cost: "", affiliateUrl: "" });
+
+  function handleEditItem(item) {
+    setEditingItem(item);
+    setForm({ name: item.name, category: item.category, why: item.why || "", years: String(item.years), cost: String(item.cost || ""), affiliateUrl: item.affiliateUrl || "" });
+    setShowAdd(true);
+  }
+  function handleAddOrUpdate() {
+    if (!form.name.trim()) return;
+    if (editingItem) {
+      setItems(prev => prev.map(i => i.id === editingItem.id ? { ...i, ...form, years: parseFloat(form.years)||0, cost: parseFloat(form.cost)||0 } : i));
+      setEditingItem(null);
+    } else {
+      setItems(prev => [...prev, { ...form, id: Date.now(), years: parseFloat(form.years)||0, cost: parseFloat(form.cost)||0, tags: [] }]);
+    }
+    setForm({ name: "", category: "Supplements", why: "", years: "", cost: "", affiliateUrl: "" });
+    setShowAdd(false);
+  }
+  function handleSave() {
+    const u = { ...stack, items, bioAge: parseInt(bioAge)||stack.bioAge, chronoAge: parseInt(chronoAge)||stack.chronoAge };
+    saveStack(u); onSave(u); onClose();
+  }
+
+  return (
+    <div className="modal-bg" onClick={e => e.target === e.currentTarget && onClose()}>
+      <div className="modal-sheet">
+        <div className="modal-header">
+          <div className="modal-title">Edit Stack</div>
+          <button className="modal-close" onClick={onClose}>×</button>
+        </div>
+        <div className="form-section">
+          <div className="section-title" style={{ marginBottom: 12 }}>Bio Ages</div>
+          <div className="form-row">
+            <div className="form-group"><label className="form-label">Bio Age</label><input className="form-input" type="number" value={bioAge} onChange={e => setBioAge(e.target.value)} /></div>
+            <div className="form-group"><label className="form-label">Actual Age</label><input className="form-input" type="number" value={chronoAge} onChange={e => setChronoAge(e.target.value)} /></div>
+          </div>
+        </div>
+        <div className="divider" />
+        <div className="section-title" style={{ padding: "0 20px", marginBottom: 12 }}>Items</div>
+        <div style={{ padding: "0 20px" }}>
+          {items.map(item => (
+            <div key={item.id} className="build-item-card">
+              <div className="build-item-info">
+                <div className="build-item-name">{item.name}</div>
+                <div className="build-item-meta">{item.category} · {item.years}yr{item.cost ? ` · $${item.cost}/mo` : ""}</div>
+              </div>
+              <button className="btn btn-ghost btn-sm" onClick={() => handleEditItem(item)}>Edit</button>
+              <button className="build-item-remove" onClick={() => setItems(p => p.filter(i => i.id !== item.id))}>×</button>
+            </div>
+          ))}
+        </div>
+        {showAdd ? (
+          <div className="form-section" style={{ marginTop: 12 }}>
+            <div className="form-group"><label className="form-label">Name *</label><input className="form-input" placeholder="Item name" value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))} /></div>
+            <div className="form-row">
+              <div className="form-group">
+                <label className="form-label">Category</label>
+                <select className="form-select" value={form.category} onChange={e => setForm(f => ({ ...f, category: e.target.value }))}>
+                  {CATEGORIES.map(c => <option key={c}>{c}</option>)}
+                </select>
+              </div>
+              <div className="form-group"><label className="form-label">Years</label><input className="form-input" type="number" value={form.years} onChange={e => setForm(f => ({ ...f, years: e.target.value }))} /></div>
+            </div>
+            <div className="form-group"><label className="form-label">Why</label><textarea className="form-textarea" value={form.why} onChange={e => setForm(f => ({ ...f, why: e.target.value }))} /></div>
+            <div className="form-row">
+              <div className="form-group"><label className="form-label">Cost/mo ($)</label><input className="form-input" type="number" value={form.cost} onChange={e => setForm(f => ({ ...f, cost: e.target.value }))} /></div>
+              <div className="form-group"><label className="form-label">Link</label><input className="form-input" value={form.affiliateUrl} onChange={e => setForm(f => ({ ...f, affiliateUrl: e.target.value }))} /></div>
+            </div>
+            <div style={{ display: "flex", gap: 8 }}>
+              <button className="btn btn-primary" style={{ flex: 1 }} onClick={handleAddOrUpdate}>{editingItem ? "Save" : "Add"}</button>
+              <button className="btn btn-ghost" onClick={() => { setShowAdd(false); setEditingItem(null); }}>Cancel</button>
+            </div>
+          </div>
+        ) : (
+          <div style={{ padding: "12px 20px 0" }}>
+            <button className="btn btn-outline" style={{ width: "100%" }} onClick={() => setShowAdd(true)}>+ Add item</button>
+          </div>
+        )}
+        <div style={{ padding: "16px 20px 0", display: "flex", gap: 10 }}>
+          <button className="btn btn-primary" style={{ flex: 1 }} onClick={handleSave}>Save changes</button>
+          <button className="btn btn-outline" onClick={onClose}>Cancel</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ── COMPARE MODAL ─────────────────────────────────────────────────────────────
+
+function CompareModal({ myStack, onClose }) {
+  const [handle, setHandle] = useState("");
+  const [theirStack, setTheirStack] = useState(null);
+  const [error, setError] = useState("");
+  function lookup() {
+    const u = toUsername(handle);
+    if (!u) return;
+    const s = getStack(u);
+    if (!s) { setError(`No stack found for @${u}`); setTheirStack(null); }
+    else { setTheirStack(s); setError(""); }
+  }
+  const myS = calculateScores(myStack.items);
+  const theirS = theirStack ? calculateScores(theirStack.items) : null;
+  return (
+    <div className="modal-bg" onClick={e => e.target === e.currentTarget && onClose()}>
+      <div className="modal-sheet">
+        <div className="modal-header">
+          <div className="modal-title">Compare Stacks</div>
+          <button className="modal-close" onClick={onClose}>×</button>
+        </div>
+        <div style={{ display: "flex", gap: 8, marginBottom: 12 }}>
+          <input className="form-input" placeholder="@handle or username" value={handle} onChange={e => setHandle(e.target.value)} onKeyDown={e => e.key === "Enter" && lookup()} />
+          <button className="btn btn-primary" onClick={lookup}>Go</button>
+        </div>
+        {error && <div style={{ color: "var(--amber)", fontSize: 13, marginBottom: 12 }}>{error}</div>}
+        {theirStack && (
+          <div>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8, marginBottom: 12 }}>
+              <div style={{ fontSize: 11, fontWeight: 700, textTransform: "uppercase", color: "var(--text-muted)" }}>{myStack.name.split(" ")[0]}</div>
+              <div style={{ fontSize: 11, fontWeight: 700, textTransform: "uppercase", color: "var(--text-muted)" }}>{theirStack.name.split(" ")[0]}</div>
+            </div>
+            {["Longevity","Sleep","Recovery","Cognitive"].map(cat => {
+              const my = myS[cat], their = theirS[cat];
+              const mg = letterGrade(my), tg = letterGrade(their);
+              return (
+                <div key={cat} style={{ marginBottom: 16 }}>
+                  <div style={{ fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: 0.8, color: "var(--text-dim)", marginBottom: 6 }}>{cat}</div>
+                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
+                    <div><div style={{ fontSize: 28, fontWeight: 700, color: gradeColor(mg) }}>{my}</div><div style={{ fontSize: 12, color: "var(--text-muted)" }}>{mg}</div></div>
+                    <div><div style={{ fontSize: 28, fontWeight: 700, color: gradeColor(tg) }}>{their}</div><div style={{ fontSize: 12, color: "var(--text-muted)" }}>{tg}</div></div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
+        <button className="btn btn-outline" style={{ width: "100%", marginTop: 8 }} onClick={onClose}>Close</button>
+      </div>
+    </div>
+  );
+}
+
+// ── CLAIM MODAL (post-build email capture) ────────────────────────────────────
+
+function ClaimModal({ stack, onClaim, onClose, celebrate }) {
+  const [email, setEmail] = useState("");
+  const [done, setDone] = useState(false);
+  const valid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim());
+
+  function handleClaim() {
+    if (!valid) return;
+    // ── BACKEND ──: this is where a real signup request would fire.
+    const updated = claimStack(stack.username, email.trim());
+    setDone(true);
+    if (window.confetti) window.confetti({ particleCount: 90, spread: 70, origin: { y: 0.4 }, colors: ["#1DB954", "#5DCAA5", "#FFB443"] });
+    setTimeout(() => { onClaim(updated); onClose(); }, 1400);
+  }
+
+  return (
+    <div className="modal-bg" onClick={e => e.target === e.currentTarget && onClose()}>
+      <div className="modal-sheet" style={{ paddingBottom: 32 }}>
+        {done ? (
+          <div style={{ textAlign: "center", padding: "20px 0" }}>
+            <div style={{ fontSize: 44, marginBottom: 12 }}>🎉</div>
+            <div className="modal-title" style={{ marginBottom: 6 }}>You're in!</div>
+            <div style={{ fontSize: 14, color: "var(--text-muted)", lineHeight: 1.5 }}>
+              Earnings are now active on <strong style={{ color: "var(--accent)" }}>@{stack.username}</strong>.<br/>
+              We'll email you when your links start paying out.
+            </div>
+          </div>
+        ) : (
+          <>
+            <div style={{ textAlign: "center", marginBottom: 18 }}>
+              {celebrate && <div style={{ fontSize: 40, marginBottom: 8 }}>🎉</div>}
+              <div className="modal-title" style={{ marginBottom: 6 }}>
+                {celebrate ? "Your stack is live!" : "Claim your stack"}
+              </div>
+              <div style={{ fontSize: 14, color: "var(--text-muted)", lineHeight: 1.5 }}>
+                Claim <strong style={{ color: "var(--accent)" }}>@{stack.username}</strong> to keep it forever and
+                turn on earnings — get paid when people buy from your links.
+              </div>
+            </div>
+
+            <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+              <input
+                className="form-input"
+                type="email"
+                placeholder="you@email.com"
+                value={email}
+                onChange={e => setEmail(e.target.value)}
+                onKeyDown={e => e.key === "Enter" && handleClaim()}
+                autoFocus
+              />
+              <button className="btn btn-primary" style={{ width: "100%", padding: 14, fontSize: 15 }} disabled={!valid} onClick={handleClaim}>
+                Claim my stack &amp; start earning →
+              </button>
+              <button className="btn btn-ghost" style={{ width: "100%" }} onClick={onClose}>
+                {celebrate ? "Skip for now" : "Cancel"}
+              </button>
+            </div>
+
+            <div style={{ fontSize: 11, color: "var(--text-dim)", textAlign: "center", marginTop: 12, lineHeight: 1.5 }}>
+              No password needed · We'll never share your email · Unsubscribe anytime
+            </div>
+          </>
+        )}
+      </div>
+    </div>
+  );
+}
+
+// ── STACK PAGE ────────────────────────────────────────────────────────────────
+
+function StackPage({ username }) {
+  const [stack, setStack] = useState(() => getStack(username));
+  const [showEdit, setShowEdit] = useState(false);
+  const [showCompare, setShowCompare] = useState(false);
+  const [showClaim, setShowClaim] = useState(false);
+  const [justBuilt, setJustBuilt] = useState(false);
+  const { msg, show: toast } = useToast();
+  const editable = isUserStack(username);
+  const url = window.location.href;
+
+  // After completing the build flow, surface the claim prompt once.
+  useEffect(() => {
+    let flag = null;
+    try { flag = sessionStorage.getItem("sp_justBuilt"); } catch(_) {}
+    if (flag === username && stack && !stack.claimed) {
+      setJustBuilt(true);
+      setShowClaim(true);
+    }
+    try { sessionStorage.removeItem("sp_justBuilt"); } catch(_) {}
+  }, [username]);
+
+  if (!stack) return (
+    <div><Topbar />
+      <div className="not-found">
+        <div className="not-found-title">Stack not found</div>
+        <div className="not-found-sub">No stack for <strong>@{username}</strong></div>
+        <button className="btn btn-primary" onClick={() => navigate("#/build")}>Build yours →</button>
+      </div>
+    </div>
+  );
+
+  const cost = totalCost(stack.items);
+  return (
+    <div>
+      <Topbar rightContent={
+        <div className="topbar-actions">
+          {editable && stack.claimed && <button className="btn btn-ghost btn-sm" onClick={() => navigate(`#/earnings/${username}`)}>💸 Earnings</button>}
+          {editable && <button className="btn btn-ghost btn-sm" onClick={() => setShowEdit(true)}>Edit</button>}
+          <button className="btn btn-ghost btn-sm" onClick={() => setShowCompare(true)}>Compare</button>
+        </div>
+      } />
+      <div className="page">
+        <div className="scroll-pad" />
+        {editable && !stack.claimed && (
+          <div className="claim-banner anim-0" onClick={() => { setJustBuilt(false); setShowClaim(true); }}>
+            <div className="claim-banner-icon">💸</div>
+            <div className="claim-banner-text">
+              <strong>Claim your stack to start earning</strong>
+              <span>Get paid when people buy from your links</span>
+            </div>
+            <div className="claim-banner-arrow">→</div>
+          </div>
+        )}
+        <ProfileSection stack={stack} />
+        <BioAgeCard bioAge={stack.bioAge} chronoAge={stack.chronoAge} />
+        <ProtocolScorecard items={stack.items} />
+        <AIInsights items={stack.items} />
+        {cost > 0 && (
+          <div className="cost-banner anim-4">
+            <div className="cost-label">Monthly investment</div>
+            <div><span className="cost-value">${cost}</span><span className="cost-period"> /mo</span></div>
+          </div>
+        )}
+        <StackSection items={stack.items} editable={editable}
+          onEdit={() => setShowEdit(true)}
+          onDelete={id => { const u = { ...stack, items: stack.items.filter(i => i.id !== id) }; saveStack(u); setStack(u); }}
+        />
+        <div className="qr-section anim-6" style={{ marginTop: 8 }}>
+          <div className="qr-title">SCAN TO VIEW ON ANOTHER DEVICE</div>
+          <div className="qr-wrapper"><QRWidget url={url} /></div>
+          <div className="qr-subtitle">
+            stackpage.app/stack/{username}<br />
+            <span className="qr-copy-link" onClick={async () => {
+              try { await navigator.clipboard.writeText(url); toast("Link copied ✓"); } catch(_) {}
+            }}>Copy link</span>
+          </div>
+        </div>
+      </div>
+      <div className="action-bar">
+        <button className="btn btn-outline" onClick={async () => {
+          if (navigator.share) { try { await navigator.share({ title: `${stack.name}'s StackPage`, url }); return; } catch(_) {} }
+          try { await navigator.clipboard.writeText(url); toast("Link copied ✓"); } catch(_) {}
+        }}>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+          Share
+        </button>
+        <button className="btn btn-primary" onClick={() => navigate("#/build")}>Build mine →</button>
+      </div>
+      {msg && <div className="toast">{msg}</div>}
+      {showEdit && <EditSheet stack={stack} onSave={setStack} onClose={() => setShowEdit(false)} />}
+      {showCompare && <CompareModal myStack={stack} onClose={() => setShowCompare(false)} />}
+      {showClaim && <ClaimModal stack={stack} celebrate={justBuilt} onClaim={setStack} onClose={() => setShowClaim(false)} />}
+    </div>
+  );
+}
+
+// ── INVITE CREATORS MODAL (Path 2) ────────────────────────────────────────────
+
+const REFERRAL_PCT = 10;       // % of an invited creator's earnings you receive
+const REFERRAL_MONTHS = 3;     // for how many months
+
+function InviteModal({ username, onClose, onToast }) {
+  const inviteUrl = `${window.location.origin}${window.location.pathname}#/?ref=${username}`;
+  const message =
+`I just built my health stack on StackPage 💊
+
+Every supplement, wearable & lab I actually use — with my protocol scores and bio age.
+
+Build yours in 2 min (you can scan your bottles with your camera) and earn when people copy it:
+${inviteUrl}`;
+
+  async function share() {
+    if (navigator.share) {
+      try { await navigator.share({ title: "Build your StackPage", text: message }); return; } catch(_) {}
+    }
+    try { await navigator.clipboard.writeText(message); onToast("Invite message copied ✓"); } catch(_) {}
+  }
+  async function copyLink() {
+    try { await navigator.clipboard.writeText(inviteUrl); onToast("Invite link copied ✓"); } catch(_) {}
+  }
+
+  return (
+    <div className="modal-bg" onClick={e => e.target === e.currentTarget && onClose()}>
+      <div className="modal-sheet" style={{ paddingBottom: 32 }}>
+        <div className="modal-header">
+          <div className="modal-title">Invite creators</div>
+          <button className="modal-close" onClick={onClose}>×</button>
+        </div>
+
+        <div className="invite-reward">
+          <div className="invite-reward-icon">🎁</div>
+          <div>
+            <div className="invite-reward-title">Earn {REFERRAL_PCT}% of their earnings</div>
+            <div className="invite-reward-sub">For every creator you invite — for their first {REFERRAL_MONTHS} months. Stacks on top of your own commissions.</div>
+          </div>
+        </div>
+
+        <div className="invite-label">Your invite message</div>
+        <div className="invite-msg">{message}</div>
+
+        <div style={{ display: "flex", flexDirection: "column", gap: 10, marginTop: 14 }}>
+          <button className="btn btn-primary" style={{ width: "100%", padding: 14, fontSize: 15 }} onClick={share}>
+            📤 Send invite
+          </button>
+          <button className="btn btn-outline" style={{ width: "100%" }} onClick={copyLink}>
+            Copy invite link
+          </button>
+        </div>
+
+        <div className="invite-hint">Your link tags new creators to you automatically, so you get credit for everyone you bring in.</div>
+      </div>
+    </div>
+  );
+}
+
+// ── EARNINGS DASHBOARD ────────────────────────────────────────────────────────
+
+function EarningsPage({ username }) {
+  const [stack, setStack] = useState(() => getStack(username));
+  const [showClaim, setShowClaim] = useState(false);
+  const [showInvite, setShowInvite] = useState(false);
+  const { msg, show: toast } = useToast();
+  const owner = isUserStack(username);
+  const referralCount = countReferrals(username);
+  const stackUrl = `${window.location.origin}${window.location.pathname}#/stack/${username}`;
+
+  if (!stack) return (
+    <div><Topbar />
+      <div className="not-found">
+        <div className="not-found-title">No stack</div>
+        <button className="btn btn-primary" onClick={() => navigate("#/build")}>Build yours →</button>
+      </div>
+    </div>
+  );
+
+  const MONTH_LABELS = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+  const now = 5; // demo: treat June (index 5) as current
+  const e = computeEarnings(stack);
+  const maxMonth = Math.max(...e.months, 1);
+
+  async function shareStack() {
+    if (navigator.share) { try { await navigator.share({ title: `${stack.name}'s StackPage`, url: stackUrl }); return; } catch(_) {} }
+    try { await navigator.clipboard.writeText(stackUrl); toast("Stack link copied ✓"); } catch(_) {}
+  }
+
+  return (
+    <div>
+      <Topbar rightContent={
+        <div className="topbar-actions">
+          <button className="btn btn-ghost btn-sm" onClick={() => navigate(`#/stack/${username}`)}>← My stack</button>
+        </div>
+      } />
+
+      <div className="page" style={{ paddingBottom: 100 }}>
+        <div className="scroll-pad" />
+
+        {/* Locked state for unclaimed stacks */}
+        {owner && !stack.claimed && (
+          <div className="earn-locked anim-0">
+            <div className="earn-locked-icon">🔒</div>
+            <div className="earn-locked-title">Earnings are locked</div>
+            <div className="earn-locked-sub">Claim your stack with an email to activate commissions and start getting paid.</div>
+            <button className="btn btn-primary" style={{ padding: "12px 24px" }} onClick={() => setShowClaim(true)}>Claim &amp; unlock earnings →</button>
+          </div>
+        )}
+
+        {/* Hero total */}
+        <div className="earn-hero anim-0">
+          <div className="earn-hero-label">TOTAL EARNED {!stack.claimed && owner && "(PREVIEW)"}</div>
+          <div className="earn-hero-amount">${e.total.toLocaleString()}</div>
+          <div className="earn-hero-row">
+            <span className="earn-hero-pill" style={{ color: "var(--accent)" }}>+${e.thisMonth} this month</span>
+            <span className="earn-hero-live"><span className="earn-live-dot" /> LIVE</span>
+          </div>
+        </div>
+
+        {/* Stat grid */}
+        <div className="earn-stats anim-1">
+          <div className="earn-stat"><div className="earn-stat-num">{e.clicks}</div><div className="earn-stat-label">Link clicks</div></div>
+          <div className="earn-stat"><div className="earn-stat-num">{e.orders}</div><div className="earn-stat-label">Orders</div></div>
+          <div className="earn-stat"><div className="earn-stat-num">{e.conv}%</div><div className="earn-stat-label">Conversion</div></div>
+        </div>
+
+        {/* Payout status */}
+        <div className="earn-payout anim-2">
+          <div className="earn-payout-row">
+            <span className="earn-payout-label">Pending payout</span>
+            <span className="earn-payout-val" style={{ color: "var(--amber)" }}>${e.pending}</span>
+          </div>
+          <div className="earn-payout-row">
+            <span className="earn-payout-label">Paid out</span>
+            <span className="earn-payout-val">${e.paid > 0 ? e.paid : 0}</span>
+          </div>
+          <div className="earn-payout-note">Next payout {MONTH_LABELS[(now + 1) % 12]} 1 · via Stripe</div>
+        </div>
+
+        {/* 6-month chart */}
+        <div className="earn-chart-card anim-3">
+          <div className="section-title" style={{ marginBottom: 16 }}>Last 6 months</div>
+          <div className="earn-chart">
+            {e.months.map((v, idx) => {
+              const monthIdx = (now - (5 - idx) + 12) % 12;
+              const isCurrent = idx === e.months.length - 1;
+              return (
+                <div key={idx} className="earn-bar-col">
+                  <div className="earn-bar-val">${v}</div>
+                  <div className="earn-bar-track">
+                    <div className="earn-bar-fill" style={{ height: `${Math.round(v / maxMonth * 100)}%`, background: isCurrent ? "var(--accent)" : "rgba(29,185,84,0.35)" }} />
+                  </div>
+                  <div className="earn-bar-label">{MONTH_LABELS[monthIdx]}</div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Per-item breakdown */}
+        <div className="earn-items anim-4">
+          <div className="section-title" style={{ marginBottom: 12 }}>Top earners</div>
+          {e.perItem.map((it, idx) => {
+            const color = CATEGORY_COLORS[it.category] || CATEGORY_COLORS.Other;
+            return (
+              <div key={idx} className="earn-item-row">
+                <div className="earn-item-rank">{idx + 1}</div>
+                <div className="earn-item-dot" style={{ background: color }} />
+                <div className="earn-item-info">
+                  <div className="earn-item-name">{it.name}</div>
+                  <div className="earn-item-meta">{it.clicks} clicks · {it.orders} orders</div>
+                </div>
+                <div className="earn-item-earned">${it.earned}</div>
+              </div>
+            );
+          })}
+        </div>
+
+        {/* Drive-more CTA (Path 1: share your stack to your audience) */}
+        <div className="earn-cta anim-5">
+          <div className="earn-cta-title">Want to earn more?</div>
+          <div className="earn-cta-sub">Every share puts your stack in front of new people. More views → more clicks → more commission.</div>
+          <button className="btn btn-primary" style={{ width: "100%", padding: 14 }} onClick={shareStack}>📤 Share my stack</button>
+        </div>
+
+        {/* Invite creators (Path 2: recruit peers, earn referral %) */}
+        <div className="earn-invite anim-6">
+          <div className="earn-invite-top">
+            <div>
+              <div className="earn-invite-title">Invite creators, earn {REFERRAL_PCT}%</div>
+              <div className="earn-invite-sub">Get {REFERRAL_PCT}% of every creator you bring in — for {REFERRAL_MONTHS} months.</div>
+            </div>
+            <div className="earn-invite-count">
+              <div className="earn-invite-count-num">{referralCount}</div>
+              <div className="earn-invite-count-label">invited</div>
+            </div>
+          </div>
+          <button className="btn btn-outline" style={{ width: "100%", borderColor: "rgba(93,202,165,0.35)", color: "var(--teal)" }} onClick={() => setShowInvite(true)}>
+            🤝 Invite a creator
+          </button>
+        </div>
+      </div>
+
+      {msg && <div className="toast">{msg}</div>}
+      {showClaim && <ClaimModal stack={stack} celebrate={false} onClaim={setStack} onClose={() => setShowClaim(false)} />}
+      {showInvite && <InviteModal username={username} onToast={toast} onClose={() => setShowInvite(false)} />}
+    </div>
+  );
+}
+
+// ── BUILD FLOW ────────────────────────────────────────────────────────────────
+
+function BuildFlow() {
+  const [step, setStep] = useState(1);
+  const [profile, setProfile] = useState({ name: "", handle: "", credential: "" });
+  const [items, setItems] = useState([]);
+  const [ages, setAges] = useState({ bioAge: "", chronoAge: "" });
+
+  function submit() {
+    const username = toUsername(profile.handle);
+    if (!username) return;
+    const referredBy = consumeRef();  // who invited this creator (Path 2), if anyone
+    const stack = {
+      username,
+      name: profile.name,
+      handle: profile.handle.startsWith("@") ? profile.handle : "@" + profile.handle,
+      credential: profile.credential,
+      verified: false,
+      bioAge: parseInt(ages.bioAge) || 0,
+      chronoAge: parseInt(ages.chronoAge) || 0,
+      items,
+      // ── BACKEND ──: referredBy powers referral-commission payouts later
+      ...(referredBy && referredBy !== username ? { referredBy } : {}),
+    };
+    saveStack(stack);
+    clearRef();
+    // Flag so the stack page knows to surface the "claim your stack" prompt
+    try { sessionStorage.setItem("sp_justBuilt", username); } catch(_) {}
+    if (window.confetti) window.confetti({ particleCount: 130, spread: 80, origin: { y: 0.5 }, colors: ["#1DB954", "#5DCAA5", "#ffffff", "#FFB443"] });
+    navigate(`#/stack/${username}`);
+  }
+
+  const stepDots = [1, 2, 3];
+  const titleMap = { 1: "Create your stack", 2: "Build your stack", 3: "Finalize" };
+  const subMap = { 1: "Start with your profile", 2: `${items.length} item${items.length !== 1 ? "s" : ""} added`, 3: "Set your bio age data" };
+
+  return (
+    <div>
+      <Topbar />
+      <div className="build-page">
+        <div className="build-header anim-0">
+          <button className="build-back" onClick={() => step > 1 ? setStep(s => s - 1) : navigate("#/stack/shehan")}>
+            ← {step > 1 ? "Back" : "View demo"}
+          </button>
+          <div className="build-title">{titleMap[step]}</div>
+          <div className="build-subtitle">{subMap[step]}</div>
+        </div>
+        <div className="step-indicator anim-1">
+          {stepDots.map((n, i) => (
+            <React.Fragment key={n}>
+              {i > 0 && <div className={`step-line ${step > n - 1 ? "done" : ""}`} />}
+              <div className={`step-dot ${step === n ? "active" : step > n ? "done" : "pending"}`}>
+                {step > n ? "✓" : n}
+              </div>
+            </React.Fragment>
+          ))}
+        </div>
+
+        {step === 1 && (
+          <div className="form-section anim-2">
+            <div className="form-group">
+              <label className="form-label">Full name *</label>
+              <input className="form-input" placeholder="Jane Smith" value={profile.name} onChange={e => setProfile(p => ({ ...p, name: e.target.value }))} />
+            </div>
+            <div className="form-group">
+              <label className="form-label">Handle *</label>
+              <input className="form-input" placeholder="@yourhandle" value={profile.handle} onChange={e => setProfile(p => ({ ...p, handle: e.target.value }))} />
+              <div className="form-hint">Your page: stackpage.app/stack/{toUsername(profile.handle) || "yourhandle"}</div>
+            </div>
+            <button className="btn btn-primary" style={{ width: "100%", padding: 14, fontSize: 15, marginTop: 8 }}
+              disabled={!profile.name.trim() || !profile.handle.trim()} onClick={() => setStep(2)}>
+              Continue →
+            </button>
+          </div>
+        )}
+
+        {step === 2 && <Step2Items items={items} setItems={setItems} onNext={() => setStep(3)} />}
+
+        {step === 3 && (
+          <div className="form-section anim-2">
+            <div style={{ background: "var(--surface)", border: "1px solid var(--border)", borderRadius: "var(--r)", padding: 16, marginBottom: 20, fontSize: 13, color: "var(--text-muted)", lineHeight: 1.5 }}>
+              💡 Your biological age vs actual age shows the impact of your protocol. Leave blank if you haven't tested yet.
+            </div>
+            <div className="form-row">
+              <div className="form-group">
+                <label className="form-label">Biological age</label>
+                <input className="form-input" type="number" placeholder="e.g. 32" value={ages.bioAge} onChange={e => setAges(a => ({ ...a, bioAge: e.target.value }))} />
+                <div className="form-hint">From TruAge, Levine, InsideTracker</div>
+              </div>
+              <div className="form-group">
+                <label className="form-label">Calendar age</label>
+                <input className="form-input" type="number" placeholder="e.g. 38" value={ages.chronoAge} onChange={e => setAges(a => ({ ...a, chronoAge: e.target.value }))} />
+              </div>
+            </div>
+            {items.length > 0 && (
+              <div style={{ background: "var(--surface)", border: "1px solid var(--border)", borderRadius: "var(--r)", padding: 14, marginBottom: 20 }}>
+                <div style={{ fontSize: 13, fontWeight: 600, marginBottom: 8 }}>Stack preview — {items.length} items</div>
+                {items.slice(0, 4).map(i => <div key={i.id} style={{ fontSize: 12, color: "var(--text-muted)", padding: "2px 0" }}>• {i.name} ({i.category})</div>)}
+                {items.length > 4 && <div style={{ fontSize: 11, color: "var(--text-dim)", marginTop: 4 }}>+{items.length - 4} more</div>}
+              </div>
+            )}
+            <button className="btn btn-primary" style={{ width: "100%", padding: 14, fontSize: 15 }}
+              disabled={!profile.name || !profile.handle} onClick={submit}>
+              Create my StackPage 🎉
+            </button>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+// ── STEP 2: CATEGORY-BASED ITEM BUILDER ───────────────────────────────────────
+
+function Step2Items({ items, setItems, onNext }) {
+  const [openCat, setOpenCat] = useState(null);
+  const [search, setSearch] = useState("");
+  const [selected, setSelected] = useState(null);
+  const [form, setForm] = useState({ name: "", why: "", years: "", cost: "", affiliateUrl: "" });
+  // Camera / scan state
+  const [photoUrl, setPhotoUrl] = useState(null);       // resized dataURL
+  const [scanState, setScanState] = useState(null);     // null | 'scanning' | 'done' | 'failed'
+  const [scanMatches, setScanMatches] = useState([]);   // matched predefined items from OCR
+  const fileInputRef = useRef(null);
+
+  function openCategory(cat) {
+    setOpenCat(cat); setSearch(""); setSelected(null); setPhotoUrl(null); setScanState(null); setScanMatches([]);
+    setForm({ name: "", why: "", years: "", cost: "", affiliateUrl: "" });
+  }
+
+  function pickPredefined(item) {
+    const isCustom = item.name.toLowerCase().startsWith("custom");
+    setSelected(item);
+    setForm(f => ({ ...f, name: isCustom ? "" : item.name, why: "" }));
+  }
+
+  function applyWhy(text) { setForm(f => ({ ...f, why: text })); }
+
+  function addItem() {
+    const name = form.name.trim();
+    if (!name) return;
+    setItems(prev => [...prev, {
+      id: Date.now(), category: openCat, name, why: form.why,
+      years: parseFloat(form.years)||0, cost: parseFloat(form.cost)||0,
+      affiliateUrl: form.affiliateUrl, tags: [],
+      photoUrl: photoUrl || undefined,  // store captured photo with the item
+    }]);
+    setOpenCat(null); setSelected(null); setPhotoUrl(null); setScanState(null); setScanMatches([]);
+    setForm({ name: "", why: "", years: "", cost: "", affiliateUrl: "" });
+  }
+
+  async function handlePhotoChange(e) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    // Reset file input so the same file can be re-selected
+    e.target.value = "";
+    setScanState("scanning");
+    setScanMatches([]);
+    setSelected(null);
+
+    const dataUrl = await resizeImage(file);
+    setPhotoUrl(dataUrl);
+
+    // Attempt OCR via Shape Detection API
+    const text = await ocrImage(dataUrl);
+    if (text) {
+      const { matched } = matchByText(text, openCat);
+      setScanMatches(matched);
+      setScanState("done");
+      // Auto-select the top match if confidence is high enough (2+ token hits)
+      if (matched.length > 0 && (matched[0].hits || 0) >= 2) {
+        pickPredefined(matched[0]);
+      }
+    } else {
+      // TextDetector unavailable — still show photo, highlight nothing specific
+      setScanState("failed");
+    }
+  }
+
+  const catEmojis = { Supplements: "💊", Wearables: "⌚", Labs: "🔬", Services: "✨" };
+
+  // ── OVERVIEW: all 4 categories on one page ───────────────────────────────────
+  if (!openCat) {
+    return (
+      <div className="anim-2">
+        {["Supplements", "Wearables", "Labs", "Services"].map(cat => {
+          const ci = items.filter(i => i.category === cat);
+          const color = CATEGORY_COLORS[cat];
+          return (
+            <div key={cat} className="cat-section" style={{ "--cat-color": color }}>
+              <div className="cat-section-header">
+                <div className="cat-section-header-left">
+                  <span style={{ fontSize: 16 }}>{catEmojis[cat]}</span>
+                  <span className="cat-label">{cat}</span>
+                  {ci.length > 0 && <span className="cat-count">{ci.length}</span>}
+                </div>
+                <button className="btn btn-primary btn-sm" onClick={() => openCategory(cat)}>+ Add</button>
+              </div>
+              {ci.map(item => (
+                <div key={item.id} className="cat-item-row">
+                  {item.photoUrl && <img src={item.photoUrl} alt="" style={{ width: 36, height: 36, borderRadius: 6, objectFit: "cover", flexShrink: 0 }} />}
+                  <div style={{ flex: 1 }}>
+                    <div className="cat-item-name">{item.name}</div>
+                    {item.why && <div className="cat-item-sub">{item.why.slice(0, 55)}{item.why.length > 55 ? "…" : ""}</div>}
+                  </div>
+                  <button className="build-item-remove" onClick={() => setItems(p => p.filter(i => i.id !== item.id))}>×</button>
+                </div>
+              ))}
+            </div>
+          );
+        })}
+        <div style={{ padding: "16px 20px 0" }}>
+          <button className="btn btn-primary" style={{ width: "100%", padding: 14, fontSize: 15 }} onClick={onNext}>
+            {items.length === 0 ? "Skip for now →" : `Continue with ${items.length} item${items.length !== 1 ? "s" : ""} →`}
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  // ── ADD PANEL: picker + camera ───────────────────────────────────────────────
+  const matchedNames = new Set(scanMatches.map(m => m.name));
+  const predefined = PREDEFINED_ITEMS[openCat] || [];
+  const baseList = search.trim()
+    ? predefined.filter(p => p.name.toLowerCase().includes(search.toLowerCase()))
+    : predefined;
+  // When scan produced matches, show them first; rest sorted below
+  const displayList = scanMatches.length > 0 && !search.trim()
+    ? [...scanMatches, ...baseList.filter(p => !matchedNames.has(p.name))]
+    : baseList;
+
+  const isCustomSelected = selected && selected.name.toLowerCase().startsWith("custom");
+  const whySuggestions = selected ? selected.whys : [];
+  const showForm = selected !== null;
+
+  return (
+    <div className="anim-2">
+      {/* Hidden file input — capture="environment" opens rear camera on mobile */}
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept="image/*"
+        capture="environment"
+        style={{ display: "none" }}
+        onChange={handlePhotoChange}
+      />
+
+      <div className="add-panel">
+        <div className="add-panel-header">
+          <button className="build-back" style={{ margin: 0 }} onClick={() => { setOpenCat(null); setSelected(null); setPhotoUrl(null); setScanState(null); setScanMatches([]); }}>←</button>
+          <span style={{ fontSize: 16 }}>{catEmojis[openCat]}</span>
+          <div className="add-panel-title">Add {openCat}</div>
+        </div>
+
+        {/* Photo preview (shown when a photo was taken) */}
+        {photoUrl && (
+          <div className="photo-preview">
+            <img src={photoUrl} alt="Scanned label" />
+            {scanState === "scanning" && (
+              <div className="photo-overlay">
+                <div className="scan-spinner" />
+                <span>Reading label…</span>
+              </div>
+            )}
+            <button className="photo-remove" onClick={() => { setPhotoUrl(null); setScanState(null); setScanMatches([]); }}>×</button>
+          </div>
+        )}
+
+        {/* Scan result note */}
+        {scanState === "done" && scanMatches.length > 0 && !showForm && (
+          <div className="scan-result-note">
+            📸 Found <strong>{scanMatches.length} possible match{scanMatches.length !== 1 ? "es" : ""}</strong> — highlighted below. Tap to select.
+          </div>
+        )}
+        {scanState === "failed" && !showForm && (
+          <div className="scan-result-note" style={{ borderColor: "rgba(255,180,67,0.3)", background: "rgba(255,180,67,0.06)" }}>
+            📸 Photo saved — text reading isn't available on this browser. Pick from the list or type a name.
+          </div>
+        )}
+
+        {!showForm && (
+          <>
+            {/* Camera scan button */}
+            {!photoUrl && (
+              <button className="scan-btn" onClick={() => fileInputRef.current?.click()}>
+                <span className="scan-btn-icon">📷</span>
+                Scan label or box instead
+              </button>
+            )}
+
+            <input className="form-input" placeholder={`Search ${openCat.toLowerCase()}...`}
+              value={search} onChange={e => setSearch(e.target.value)} style={{ marginBottom: 10 }} />
+
+            <div className="picker-list">
+              {displayList.map(p => {
+                const isMatch = matchedNames.has(p.name);
+                return (
+                  <div
+                    key={p.name}
+                    className={`picker-item ${selected?.name === p.name ? "selected" : ""} ${isMatch ? "matched" : ""}`}
+                    onClick={() => pickPredefined(p)}
+                  >
+                    <span>{p.name}</span>
+                    <span style={{ display: "flex", gap: 6, alignItems: "center" }}>
+                      {isMatch && <span className="match-label">Photo match</span>}
+                      {selected?.name === p.name && <span className="picker-item-check">✓</span>}
+                    </span>
+                  </div>
+                );
+              })}
+            </div>
+          </>
+        )}
+
+        {showForm && (
+          <div>
+            {/* Show photo thumbnail next to item name if captured */}
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 14, gap: 10 }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                {photoUrl && <img src={photoUrl} alt="" className="item-photo" />}
+                <div style={{ fontWeight: 700, fontSize: 15 }}>{isCustomSelected ? "Custom item" : selected.name}</div>
+              </div>
+              <button className="btn btn-ghost btn-sm" onClick={() => setSelected(null)}>← Back</button>
+            </div>
+
+            {isCustomSelected && (
+              <div className="form-group">
+                <label className="form-label">Name *</label>
+                <input className="form-input" placeholder={`Enter ${openCat.toLowerCase()} name...`} value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))} autoFocus />
+              </div>
+            )}
+
+            <div className="form-group">
+              <label className="form-label">Why you use it</label>
+              {whySuggestions.length > 0 && !form.why && (
+                <div style={{ marginBottom: 8 }}>
+                  <div className="suggestions-label">Tap to use a suggestion</div>
+                  <div className="suggestion-chips">
+                    {whySuggestions.map((s, i) => (
+                      <button key={i} className={`suggestion-chip ${form.why === s ? "applied" : ""}`} onClick={() => applyWhy(s)}>{s}</button>
+                    ))}
+                  </div>
+                </div>
+              )}
+              <textarea className="form-textarea" placeholder="What benefit have you noticed?" value={form.why} onChange={e => setForm(f => ({ ...f, why: e.target.value }))} />
+            </div>
+
+            <div className="form-row">
+              <div className="form-group">
+                <label className="form-label">Years used</label>
+                <input className="form-input" type="number" placeholder="1" min="0" step="0.5" value={form.years} onChange={e => setForm(f => ({ ...f, years: e.target.value }))} />
+              </div>
+              <div className="form-group">
+                <label className="form-label">Monthly cost ($)</label>
+                <input className="form-input" type="number" placeholder="30" value={form.cost} onChange={e => setForm(f => ({ ...f, cost: e.target.value }))} />
+              </div>
+            </div>
+
+            <div className="form-group">
+              <label className="form-label">Affiliate / referral link (optional)</label>
+              <input className="form-input" placeholder="https://..." value={form.affiliateUrl} onChange={e => setForm(f => ({ ...f, affiliateUrl: e.target.value }))} />
+            </div>
+
+            <button className="btn btn-primary" style={{ width: "100%", padding: 14, fontSize: 15 }}
+              disabled={!(isCustomSelected ? form.name.trim() : selected?.name)} onClick={addItem}>
+              Add to stack ✓
+            </button>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+// ── LANDING / ONBOARDING (Option B) ───────────────────────────────────────────
+
+const LAND_SLIDES = [
+  {
+    n: 1, icon: "📷", color: "var(--teal)",
+    bg: "rgba(93,202,165,0.12)", border: "rgba(93,202,165,0.2)",
+    label: "Step 1 of 3",
+    title: <>Snap a photo.<br/>Skip the typing.</>,
+    desc: "Point your camera at any supplement bottle or wearable. We identify it and build your stack in under 60 seconds.",
+  },
+  {
+    n: 2, icon: "🔗", color: "var(--accent)",
+    bg: "rgba(29,185,84,0.12)", border: "rgba(29,185,84,0.2)",
+    label: "Step 2 of 3",
+    title: <>One link.<br/>Endless reach.</>,
+    desc: "Drop your StackPage link anywhere. Followers copy your exact protocol with one tap — and never DM \"what do you take?\" again.",
+  },
+  {
+    n: 3, icon: "💸", color: "var(--amber)",
+    bg: "rgba(255,180,67,0.12)", border: "rgba(255,180,67,0.2)",
+    label: "Step 3 of 3",
+    title: <>Get paid<br/>while you sleep.</>,
+    desc: "Every purchase from your links pays you a commission — automatically, forever, with zero extra work.",
+    earnings: true,
+  },
+];
+
+function Landing() {
+  const [i, setI] = useState(0);
+  const touchStart = useRef(null);
+  const last = LAND_SLIDES.length - 1;
+
+  function go(dir) {
+    setI(prev => Math.max(0, Math.min(last, prev + dir)));
+  }
+  function onTouchStart(e) { touchStart.current = e.touches[0].clientX; }
+  function onTouchEnd(e) {
+    if (touchStart.current == null) return;
+    const dx = e.changedTouches[0].clientX - touchStart.current;
+    if (Math.abs(dx) > 45) go(dx < 0 ? 1 : -1);
+    touchStart.current = null;
+  }
+
+  return (
+    <div className="land-page">
+      <div className="land-topbar">
+        <div className="topbar-logo" onClick={() => navigate("#/stack/shehan")}>StackPage</div>
+        <button className="land-skip" onClick={() => navigate("#/stack/shehan")}>View demo →</button>
+      </div>
+
+      <div className="land-viewport" onTouchStart={onTouchStart} onTouchEnd={onTouchEnd}>
+        <div className="land-slides" style={{ transform: `translateX(-${i * 100}%)` }}>
+          {LAND_SLIDES.map(s => (
+            <div className="land-slide" key={s.n}>
+              <div className="land-bg-num">{s.n}</div>
+              <div className="land-slide-inner">
+                <div className="land-icon-ring" style={{ background: s.bg, border: `1.5px solid ${s.border}` }}>{s.icon}</div>
+                <div className="land-step-label" style={{ color: s.color }}>{s.label}</div>
+                <div className="land-title">{s.title}</div>
+                <div className="land-desc">{s.desc}</div>
+
+                {s.earnings && (
+                  <div className="earn-card">
+                    <div className="earn-card-head">
+                      <div className="earn-card-label">Your earnings</div>
+                      <div className="earn-card-live"><span className="earn-live-dot" /> LIVE</div>
+                    </div>
+                    <div className="earn-amount">$284</div>
+                    <div className="earn-sub">this month · 47 clicks · 12 orders</div>
+                    <div className="earn-rows">
+                      <div className="earn-row"><span className="earn-row-name">Oura Ring Gen 4</span><span className="earn-row-val">+$120</span></div>
+                      <div className="earn-row"><span className="earn-row-name">Levels CGM</span><span className="earn-row-val">+$72</span></div>
+                      <div className="earn-row"><span className="earn-row-name">NMN 500mg</span><span className="earn-row-val">+$48</span></div>
+                      <div className="earn-row"><span className="earn-row-name">Creatine 5g</span><span className="earn-row-val">+$44</span></div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div className="land-nav">
+        <div className="land-dots">
+          {LAND_SLIDES.map((_, idx) => (
+            <div key={idx} className={`land-dot ${idx === i ? "active" : ""}`} onClick={() => setI(idx)} />
+          ))}
+        </div>
+        <div className="land-btns">
+          {i > 0 && <button className="land-btn-back" onClick={() => go(-1)}>← Back</button>}
+          <button
+            className="land-btn-next"
+            onClick={() => i === last ? navigate("#/build") : go(1)}
+          >
+            {i === last ? "Build my stack — free →" : "Next →"}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ── APP ───────────────────────────────────────────────────────────────────────
+
+function App() {
+  const loc = useRouter();
+  useEffect(() => { captureRef(); }, []);  // stash incoming ?ref= for the build flow
+  if (loc.route === "home") return <Landing />;
+  if (loc.route === "stack") return <StackPage key={loc.username} username={loc.username} />;
+  if (loc.route === "earnings") return <EarningsPage key={loc.username} username={loc.username} />;
+  if (loc.route === "build") return <BuildFlow />;
+  return (
+    <div><Topbar />
+      <div className="not-found">
+        <div className="not-found-title">Page not found</div>
+        <button className="btn btn-primary" onClick={() => navigate("#/stack/shehan")}>Go home</button>
+      </div>
+    </div>
+  );
+}
+
+const root = ReactDOM.createRoot(document.getElementById("root"));
+root.render(<App />);
+</script>
+</body>
+</html>
