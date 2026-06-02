@@ -1365,10 +1365,10 @@ function ClaimModal({ stack, onClaim, onClose, celebrate }) {
         {done ? (
           <div style={{ textAlign: "center", padding: "20px 0" }}>
             <div style={{ fontSize: 44, marginBottom: 12 }}>🎉</div>
-            <div className="modal-title" style={{ marginBottom: 6 }}>You're in!</div>
+            <div className="modal-title" style={{ marginBottom: 6 }}>You're on the list! 🎉</div>
             <div style={{ fontSize: 14, color: "var(--text-muted)", lineHeight: 1.5 }}>
-              Earnings are now active on <strong style={{ color: "var(--accent)" }}>@{stack.username}</strong>.<br/>
-              We'll email you when your links start paying out.
+              We saved <strong style={{ color: "var(--accent)" }}>@{stack.username}</strong> for you.<br/>
+              We'll email you the moment affiliate payouts go live.
             </div>
           </div>
         ) : (
@@ -1376,11 +1376,12 @@ function ClaimModal({ stack, onClaim, onClose, celebrate }) {
             <div style={{ textAlign: "center", marginBottom: 18 }}>
               {celebrate && <div style={{ fontSize: 40, marginBottom: 8 }}>🎉</div>}
               <div className="modal-title" style={{ marginBottom: 6 }}>
-                {celebrate ? "Your stack is live!" : "Claim your stack"}
+                {celebrate ? "Your stack is live!" : "Join the earnings waitlist"}
               </div>
               <div style={{ fontSize: 14, color: "var(--text-muted)", lineHeight: 1.5 }}>
-                Claim <strong style={{ color: "var(--accent)" }}>@{stack.username}</strong> to keep it forever and
-                turn on earnings — get paid when people buy from your links.
+                Want to get paid when people buy from your stack? Affiliate payouts are coming soon —
+                drop your email to claim <strong style={{ color: "var(--accent)" }}>@{stack.username}</strong> and
+                be first in line to earn.
               </div>
             </div>
 
@@ -1395,10 +1396,10 @@ function ClaimModal({ stack, onClaim, onClose, celebrate }) {
                 autoFocus
               />
               <button className="btn btn-primary" style={{ width: "100%", padding: 14, fontSize: 15 }} disabled={!valid} onClick={handleClaim}>
-                Claim my stack &amp; start earning →
+                Join the earnings waitlist →
               </button>
               <button className="btn btn-ghost" style={{ width: "100%" }} onClick={onClose}>
-                {celebrate ? "Skip for now" : "Cancel"}
+                {celebrate ? "Maybe later" : "Cancel"}
               </button>
             </div>
 
@@ -1461,8 +1462,8 @@ function StackPage({ username }) {
           <div className="claim-banner anim-0" onClick={() => { setJustBuilt(false); setShowClaim(true); }}>
             <div className="claim-banner-icon">💸</div>
             <div className="claim-banner-text">
-              <strong>Claim your stack to start earning</strong>
-              <span>Get paid when people buy from your links</span>
+              <strong>Join the earnings waitlist</strong>
+              <span>Be first to earn when affiliate payouts launch</span>
             </div>
             <div className="claim-banner-arrow">→</div>
           </div>
@@ -1614,19 +1615,22 @@ function EarningsPage({ username }) {
         {owner && !stack.claimed && (
           <div className="earn-locked anim-0">
             <div className="earn-locked-icon">🔒</div>
-            <div className="earn-locked-title">Earnings are locked</div>
-            <div className="earn-locked-sub">Claim your stack with an email to activate commissions and start getting paid.</div>
-            <button className="btn btn-primary" style={{ padding: "12px 24px" }} onClick={() => setShowClaim(true)}>Claim &amp; unlock earnings →</button>
+            <div className="earn-locked-title">Earnings are coming soon</div>
+            <div className="earn-locked-sub">Affiliate payouts aren't live yet. Join the waitlist and we'll email you the moment you can start getting paid.</div>
+            <button className="btn btn-primary" style={{ padding: "12px 24px" }} onClick={() => setShowClaim(true)}>Join the earnings waitlist →</button>
           </div>
         )}
 
         {/* Hero total */}
         <div className="earn-hero anim-0">
-          <div className="earn-hero-label">TOTAL EARNED {!stack.claimed && owner && "(PREVIEW)"}</div>
+          <div className="earn-hero-label">PROJECTED EARNINGS · PREVIEW</div>
           <div className="earn-hero-amount">${e.total.toLocaleString()}</div>
           <div className="earn-hero-row">
-            <span className="earn-hero-pill" style={{ color: "var(--accent)" }}>+${e.thisMonth} this month</span>
-            <span className="earn-hero-live"><span className="earn-live-dot" /> LIVE</span>
+            <span className="earn-hero-pill" style={{ color: "var(--accent)" }}>~${e.thisMonth}/mo potential</span>
+            <span className="earn-hero-live"><span className="earn-live-dot" /> PREVIEW</span>
+          </div>
+          <div style={{ fontSize: 11, color: "var(--text-dim)", marginTop: 10, lineHeight: 1.4 }}>
+            Estimated from your stack &amp; typical conversion. Real payouts begin when affiliate earnings launch.
           </div>
         </div>
 
