@@ -110,6 +110,9 @@
     .profile-info { flex: 1; min-width: 0; }
     .profile-name { font-size: 20px; font-weight: 700; letter-spacing: -0.3px; line-height: 1.2; }
     .profile-handle { font-size: 13px; color: var(--text-muted); margin-top: 2px; }
+    .profile-socials { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
+    .social-link { display: inline-flex; align-items: center; gap: 5px; font-size: 12px; font-weight: 500; color: var(--text-muted); text-decoration: none; background: var(--surface2); border: 1px solid var(--border); padding: 4px 9px; border-radius: 99px; transition: all 0.15s ease; }
+    .social-link:hover { color: var(--accent); border-color: var(--accent); }
     .badge-verified {
       display: inline-flex; align-items: center; gap: 4px;
       font-size: 11px; font-weight: 600; padding: 4px 8px; border-radius: 99px;
@@ -584,6 +587,13 @@
       max-height: 220px; overflow-y: auto;
     }
     .invite-hint { font-size: 11px; color: var(--text-dim); text-align: center; margin-top: 12px; line-height: 1.5; }
+    .cat-feedback { margin: 4px 20px 0; padding: 14px 16px; display: flex; align-items: center; gap: 12px; cursor: pointer; background: var(--surface); border: 1px dashed var(--border); border-radius: var(--r); transition: border-color 0.15s ease; }
+    .cat-feedback:hover { border-color: var(--accent); }
+    .cat-feedback-icon { font-size: 20px; flex-shrink: 0; }
+    .cat-feedback-title { font-size: 14px; font-weight: 700; }
+    .cat-feedback-sub { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+    .feedback-chip { font-size: 12px; font-weight: 500; padding: 7px 11px; border-radius: 99px; background: var(--surface2); border: 1px solid var(--border); color: var(--text-muted); cursor: pointer; font-family: var(--font-sans); transition: all 0.15s ease; }
+    .feedback-chip:hover { border-color: var(--accent); color: var(--accent); }
 
     /* ── HOME / LANDING PAGE ── */
     .home-page { background: var(--bg); min-height: 100vh; padding-bottom: 40px; }
@@ -1050,6 +1060,22 @@ function ProfileSection({ stack }) {
             <div className="badge-verified">
               <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
               Verified
+            </div>
+          )}
+          {(stack.twitter || stack.instagram) && (
+            <div className="profile-socials">
+              {stack.twitter && (
+                <a className="social-link" href={`https://twitter.com/${stack.twitter}`} target="_blank" rel="noopener noreferrer" aria-label="Twitter / X">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+                  <span>@{stack.twitter}</span>
+                </a>
+              )}
+              {stack.instagram && (
+                <a className="social-link" href={`https://instagram.com/${stack.instagram}`} target="_blank" rel="noopener noreferrer" aria-label="Instagram">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg>
+                  <span>@{stack.instagram}</span>
+                </a>
+              )}
             </div>
           )}
         </div>
@@ -1729,7 +1755,7 @@ function EarningsPage({ username }) {
 
 function BuildFlow() {
   const [step, setStep] = useState(1);
-  const [profile, setProfile] = useState({ name: "", handle: "", credential: "" });
+  const [profile, setProfile] = useState({ name: "", handle: "", twitter: "", instagram: "", email: "" });
   const [items, setItems] = useState([]);
   const [ages, setAges] = useState({ bioAge: "", chronoAge: "" });
 
@@ -1741,7 +1767,9 @@ function BuildFlow() {
       username,
       name: profile.name,
       handle: profile.handle.startsWith("@") ? profile.handle : "@" + profile.handle,
-      credential: profile.credential,
+      twitter: profile.twitter.trim().replace(/^@/, ""),
+      instagram: profile.instagram.trim().replace(/^@/, ""),
+      email: profile.email.trim(),
       verified: false,
       bioAge: parseInt(ages.bioAge) || 0,
       chronoAge: parseInt(ages.chronoAge) || 0,
@@ -1786,13 +1814,28 @@ function BuildFlow() {
         {step === 1 && (
           <div className="form-section anim-2">
             <div className="form-group">
-              <label className="form-label">Full name *</label>
+              <label className="form-label">Name *</label>
               <input className="form-input" placeholder="Jane Smith" value={profile.name} onChange={e => setProfile(p => ({ ...p, name: e.target.value }))} />
             </div>
             <div className="form-group">
               <label className="form-label">Handle *</label>
               <input className="form-input" placeholder="@yourhandle" value={profile.handle} onChange={e => setProfile(p => ({ ...p, handle: e.target.value }))} />
               <div className="form-hint">Your page: stackpage.app/stack/{toUsername(profile.handle) || "yourhandle"}</div>
+            </div>
+            <div className="form-row">
+              <div className="form-group">
+                <label className="form-label">Twitter / X <span style={{color:"var(--text-dim)",fontWeight:400}}>· optional</span></label>
+                <input className="form-input" placeholder="@handle" value={profile.twitter} onChange={e => setProfile(p => ({ ...p, twitter: e.target.value }))} />
+              </div>
+              <div className="form-group">
+                <label className="form-label">Instagram <span style={{color:"var(--text-dim)",fontWeight:400}}>· optional</span></label>
+                <input className="form-input" placeholder="@handle" value={profile.instagram} onChange={e => setProfile(p => ({ ...p, instagram: e.target.value }))} />
+              </div>
+            </div>
+            <div className="form-group">
+              <label className="form-label">Email <span style={{color:"var(--text-dim)",fontWeight:400}}>· optional</span></label>
+              <input className="form-input" type="email" placeholder="you@email.com" value={profile.email} onChange={e => setProfile(p => ({ ...p, email: e.target.value }))} />
+              <div className="form-hint">We'll only use this to reach you about your stack.</div>
             </div>
             <button className="btn btn-primary" style={{ width: "100%", padding: 14, fontSize: 15, marginTop: 8 }}
               disabled={!profile.name.trim() || !profile.handle.trim()} onClick={() => setStep(2)}>
@@ -1837,6 +1880,63 @@ function BuildFlow() {
   );
 }
 
+// ── FEEDBACK MODAL (request new habit categories) ─────────────────────────────
+
+// MVP: store requests in localStorage. ── BACKEND ──: POST to a feedback endpoint.
+function saveFeedback(text) {
+  try {
+    const all = JSON.parse(localStorage.getItem("stackpage_feedback") || "[]");
+    all.push({ text, at: Date.now() });
+    localStorage.setItem("stackpage_feedback", JSON.stringify(all));
+  } catch (_) {}
+}
+
+function FeedbackModal({ onClose }) {
+  const [text, setText] = useState("");
+  const [done, setDone] = useState(false);
+  const chips = ["Exercise / workouts", "Diet & nutrition", "Sleep routine", "Cold plunge / sauna", "Meditation"];
+
+  function submit() {
+    if (!text.trim()) return;
+    saveFeedback(text.trim());
+    setDone(true);
+    setTimeout(onClose, 1400);
+  }
+
+  return (
+    <div className="modal-bg" onClick={e => e.target === e.currentTarget && onClose()}>
+      <div className="modal-sheet" style={{ paddingBottom: 32 }}>
+        {done ? (
+          <div style={{ textAlign: "center", padding: "20px 0" }}>
+            <div style={{ fontSize: 40, marginBottom: 10 }}>🙏</div>
+            <div className="modal-title" style={{ marginBottom: 6 }}>Thanks — noted!</div>
+            <div style={{ fontSize: 14, color: "var(--text-muted)" }}>We're prioritizing new habit types by demand. Yours is counted.</div>
+          </div>
+        ) : (
+          <>
+            <div className="modal-header">
+              <div className="modal-title">What should we add?</div>
+              <button className="modal-close" onClick={onClose}>×</button>
+            </div>
+            <div style={{ fontSize: 13, color: "var(--text-muted)", lineHeight: 1.5, marginBottom: 14 }}>
+              Today StackPage tracks supplements, wearables, labs &amp; services. Want to share other habits too? Tell us what you'd track.
+            </div>
+            <div style={{ display: "flex", flexWrap: "wrap", gap: 7, marginBottom: 14 }}>
+              {chips.map(c => (
+                <button key={c} className="feedback-chip" onClick={() => setText(t => t ? t + ", " + c : c)}>{c}</button>
+              ))}
+            </div>
+            <textarea className="form-textarea" placeholder="e.g. I'd love to add my workout split and weekly mileage…" value={text} onChange={e => setText(e.target.value)} />
+            <button className="btn btn-primary" style={{ width: "100%", padding: 14, fontSize: 15, marginTop: 12 }} disabled={!text.trim()} onClick={submit}>
+              Send request
+            </button>
+          </>
+        )}
+      </div>
+    </div>
+  );
+}
+
 // ── STEP 2: CATEGORY-BASED ITEM BUILDER ───────────────────────────────────────
 
 function Step2Items({ items, setItems, onNext }) {
@@ -1848,6 +1948,7 @@ function Step2Items({ items, setItems, onNext }) {
   const [photoUrl, setPhotoUrl] = useState(null);       // resized dataURL
   const [scanState, setScanState] = useState(null);     // null | 'scanning' | 'done' | 'failed'
   const [scanMatches, setScanMatches] = useState([]);   // matched predefined items from OCR
+  const [showFeedback, setShowFeedback] = useState(false);
   const fileInputRef = useRef(null);
 
   function openCategory(cat) {
@@ -1936,11 +2037,22 @@ function Step2Items({ items, setItems, onNext }) {
             </div>
           );
         })}
+        {/* Request other habit categories (exercise, diet, etc.) */}
+        <div className="cat-feedback" onClick={() => setShowFeedback(true)}>
+          <span className="cat-feedback-icon">💡</span>
+          <div>
+            <div className="cat-feedback-title">Track other habits?</div>
+            <div className="cat-feedback-sub">Exercise, diet, sleep routine, cold plunge… tell us what to add →</div>
+          </div>
+        </div>
+
         <div style={{ padding: "16px 20px 0" }}>
           <button className="btn btn-primary" style={{ width: "100%", padding: 14, fontSize: 15 }} onClick={onNext}>
             {items.length === 0 ? "Skip for now →" : `Continue with ${items.length} item${items.length !== 1 ? "s" : ""} →`}
           </button>
         </div>
+
+        {showFeedback && <FeedbackModal onClose={() => setShowFeedback(false)} />}
       </div>
     );
   }
