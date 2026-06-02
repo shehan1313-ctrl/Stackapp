@@ -584,6 +584,54 @@
       max-height: 220px; overflow-y: auto;
     }
     .invite-hint { font-size: 11px; color: var(--text-dim); text-align: center; margin-top: 12px; line-height: 1.5; }
+
+    /* ── HOME / LANDING PAGE ── */
+    .home-page { background: var(--bg); min-height: 100vh; padding-bottom: 40px; }
+    .home-hero {
+      padding: 40px 24px 28px; text-align: center; position: relative; overflow: hidden;
+      background: radial-gradient(ellipse at top, rgba(29,185,84,0.09) 0%, transparent 60%);
+    }
+    .home-eyebrow { font-size: 11px; font-weight: 700; letter-spacing: 1.5px; color: var(--accent); margin-bottom: 18px; }
+    .home-headline { font-family: var(--font-serif); font-size: 40px; line-height: 1.12; letter-spacing: -1px; font-weight: 400; margin-bottom: 16px; }
+    .home-headline em { font-style: italic; color: var(--accent); }
+    .home-sub { font-size: 15px; color: var(--text-muted); line-height: 1.6; max-width: 340px; margin: 0 auto 26px; }
+    .home-hero-cta { display: flex; flex-direction: column; gap: 10px; max-width: 320px; margin: 0 auto; }
+    .home-hero-cta .btn { width: 100%; justify-content: center; }
+    .home-trust { font-size: 12px; color: var(--text-dim); margin-top: 14px; }
+
+    .home-usecase { margin: 8px 20px 28px; padding: 22px 20px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--r); text-align: center; }
+    .home-usecase-quote { font-family: var(--font-serif); font-size: 18px; font-style: italic; line-height: 1.45; color: var(--text); margin-bottom: 14px; }
+    .home-usecase-who { font-size: 12px; color: var(--text-muted); letter-spacing: 0.2px; }
+
+    .home-section { padding: 0 20px; margin-bottom: 34px; }
+    .home-section-label { font-size: 11px; font-weight: 700; letter-spacing: 1.5px; color: var(--text-muted); margin-bottom: 16px; text-align: center; }
+    .home-steps { display: flex; flex-direction: column; gap: 12px; }
+    .home-step { display: flex; align-items: center; gap: 14px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--r); padding: 16px; }
+    .home-step-icon { width: 48px; height: 48px; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 22px; flex-shrink: 0; }
+    .home-step-num { font-size: 10px; font-weight: 700; letter-spacing: 1px; margin-bottom: 3px; }
+    .home-step-title { font-size: 16px; font-weight: 700; margin-bottom: 2px; }
+    .home-step-desc { font-size: 13px; color: var(--text-muted); line-height: 1.45; }
+    .home-tour-link { display: block; margin: 16px auto 0; background: none; border: none; color: var(--accent); font-family: var(--font-sans); font-size: 14px; font-weight: 600; cursor: pointer; }
+    .home-tour-link:hover { text-decoration: underline; }
+
+    .home-value { display: flex; gap: 14px; align-items: flex-start; padding: 14px 0; border-bottom: 1px solid var(--border); }
+    .home-value:last-child { border-bottom: none; }
+    .home-value-icon { font-size: 24px; flex-shrink: 0; line-height: 1.2; }
+    .home-value-title { font-size: 15px; font-weight: 700; margin-bottom: 3px; }
+    .home-value-desc { font-size: 13px; color: var(--text-muted); line-height: 1.5; }
+
+    .home-demo { margin: 0 20px 34px; padding: 16px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--r); cursor: pointer; transition: border-color 0.15s; }
+    .home-demo:hover { border-color: var(--accent); }
+    .home-demo-top { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+    .home-demo-name { font-size: 14px; font-weight: 700; }
+    .home-demo-handle { font-size: 12px; color: var(--text-muted); }
+    .home-demo-arrow { font-size: 18px; color: var(--accent); }
+    .home-demo-chips { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 12px; }
+    .home-demo-chip { font-size: 11px; font-weight: 700; padding: 4px 9px; border-radius: 99px; background: rgba(29,185,84,0.1); color: var(--accent); }
+    .home-demo-cta { font-size: 13px; font-weight: 600; color: var(--accent); }
+
+    .home-footer { margin: 0 20px; padding: 28px 22px; text-align: center; background: linear-gradient(135deg, rgba(29,185,84,0.1), rgba(93,202,165,0.05)); border: 1px solid rgba(29,185,84,0.2); border-radius: var(--r); }
+    .home-footer-title { font-family: var(--font-serif); font-size: 24px; letter-spacing: -0.5px; margin-bottom: 18px; }
   </style>
 </head>
 <body>
@@ -922,6 +970,7 @@ function parseHash(h) {
   if (parts[0] === "stack" && parts[1]) return { route: "stack", username: parts[1] };
   if (parts[0] === "earnings" && parts[1]) return { route: "earnings", username: parts[1] };
   if (parts[0] === "build") return { route: "build" };
+  if (parts[0] === "tour") return { route: "tour" };
   return { route: "404" };
 }
 function navigate(path) { window.location.hash = path; }
@@ -2073,6 +2122,111 @@ const LAND_SLIDES = [
   },
 ];
 
+// ── HOME / LANDING PAGE (the front door) ──────────────────────────────────────
+
+const HOME_STEPS = [
+  { icon: "📷", color: "var(--teal)",   bg: "rgba(93,202,165,0.12)", title: "Add your stack", desc: "Scan a label with your camera or pick from our list." },
+  { icon: "🔗", color: "var(--accent)", bg: "rgba(29,185,84,0.12)",  title: "Share one link",  desc: "Followers copy your exact protocol with one tap." },
+  { icon: "💸", color: "var(--amber)",  bg: "rgba(255,180,67,0.12)", title: "Earn on every buy", desc: "Get a commission when people buy from your links." },
+];
+
+const HOME_VALUES = [
+  { icon: "🧬", title: "Built-in credibility", desc: "Protocol scores, bio age, and verified badges make your recommendations trustworthy — not just a list of links." },
+  { icon: "📲", title: "Made to be shared", desc: "One link, a scannable QR code, and native sharing. Your whole protocol travels in a single tap." },
+  { icon: "💰", title: "Turns habits into income", desc: "Affiliate links are built into every item, plus referral rewards when you invite other creators." },
+];
+
+function HomePage() {
+  return (
+    <div className="home-page">
+      <div className="topbar">
+        <div className="topbar-logo" onClick={() => navigate("#/")}>StackPage</div>
+        <button className="btn btn-primary btn-sm" onClick={() => navigate("#/build")}>Build mine</button>
+      </div>
+
+      {/* HERO */}
+      <div className="home-hero anim-0">
+        <div className="home-eyebrow">THE LINK-IN-BIO FOR YOUR HEALTH STACK</div>
+        <h1 className="home-headline">Share your protocol.<br/><em>Get paid</em> for it.</h1>
+        <p className="home-sub">
+          StackPage turns the supplements, wearables, and labs you already use into one beautiful,
+          shareable page — with credibility scores, your bio age, and affiliate links built in.
+        </p>
+        <div className="home-hero-cta">
+          <button className="btn btn-primary" style={{ padding: "14px 22px", fontSize: 15 }} onClick={() => navigate("#/build")}>Build my stack — free →</button>
+          <button className="btn btn-outline" style={{ padding: "14px 22px", fontSize: 15 }} onClick={() => navigate("#/stack/shehan")}>See a live example</button>
+        </div>
+        <div className="home-trust">No account to start · Setup in 2 min · Free forever</div>
+      </div>
+
+      {/* WHO IT'S FOR / USE CASE */}
+      <div className="home-usecase anim-1">
+        <div className="home-usecase-quote">
+          “Everyone kept asking what I take. Now I just send my link —<br/>and earn when they buy it.”
+        </div>
+        <div className="home-usecase-who">Built for biohackers, longevity nerds, trainers, and health creators.</div>
+      </div>
+
+      {/* HOW IT WORKS */}
+      <div className="home-section anim-2">
+        <div className="home-section-label">HOW IT WORKS</div>
+        <div className="home-steps">
+          {HOME_STEPS.map((s, i) => (
+            <div className="home-step" key={i}>
+              <div className="home-step-icon" style={{ background: s.bg }}>{s.icon}</div>
+              <div className="home-step-text">
+                <div className="home-step-num" style={{ color: s.color }}>STEP {i + 1}</div>
+                <div className="home-step-title">{s.title}</div>
+                <div className="home-step-desc">{s.desc}</div>
+              </div>
+            </div>
+          ))}
+        </div>
+        <button className="home-tour-link" onClick={() => navigate("#/tour")}>See how it works ▸</button>
+      </div>
+
+      {/* VALUE PROPS */}
+      <div className="home-section anim-3">
+        <div className="home-section-label">WHY STACKPAGE</div>
+        {HOME_VALUES.map((v, i) => (
+          <div className="home-value" key={i}>
+            <div className="home-value-icon">{v.icon}</div>
+            <div>
+              <div className="home-value-title">{v.title}</div>
+              <div className="home-value-desc">{v.desc}</div>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* DEMO PEEK */}
+      <div className="home-demo anim-4" onClick={() => navigate("#/stack/shehan")}>
+        <div className="home-demo-top">
+          <div className="avatar" style={{ width: 44, height: 44, fontSize: 16 }}>SC</div>
+          <div style={{ flex: 1 }}>
+            <div className="home-demo-name">Shehan Chandrasekera</div>
+            <div className="home-demo-handle">@TheCryptoCPA · Bio age 34</div>
+          </div>
+          <div className="home-demo-arrow">→</div>
+        </div>
+        <div className="home-demo-chips">
+          <span className="home-demo-chip">Longevity A+</span>
+          <span className="home-demo-chip">Sleep A</span>
+          <span className="home-demo-chip">8 items</span>
+        </div>
+        <div className="home-demo-cta">See a real StackPage →</div>
+      </div>
+
+      {/* FOOTER CTA */}
+      <div className="home-footer anim-5">
+        <div className="home-footer-title">Your stack is worth sharing.</div>
+        <button className="btn btn-primary" style={{ width: "100%", padding: 16, fontSize: 16 }} onClick={() => navigate("#/build")}>Build my stack — free →</button>
+        <div className="home-trust" style={{ marginTop: 12 }}>Takes 2 minutes · No account needed</div>
+      </div>
+    </div>
+  );
+}
+
 function Landing() {
   const [i, setI] = useState(0);
   const touchStart = useRef(null);
@@ -2092,8 +2246,8 @@ function Landing() {
   return (
     <div className="land-page">
       <div className="land-topbar">
-        <div className="topbar-logo" onClick={() => navigate("#/stack/shehan")}>StackPage</div>
-        <button className="land-skip" onClick={() => navigate("#/stack/shehan")}>View demo →</button>
+        <div className="topbar-logo" onClick={() => navigate("#/")}>StackPage</div>
+        <button className="land-skip" onClick={() => navigate("#/build")}>Skip →</button>
       </div>
 
       <div className="land-viewport" onTouchStart={onTouchStart} onTouchEnd={onTouchEnd}>
@@ -2154,7 +2308,8 @@ function Landing() {
 function App() {
   const loc = useRouter();
   useEffect(() => { captureRef(); }, []);  // stash incoming ?ref= for the build flow
-  if (loc.route === "home") return <Landing />;
+  if (loc.route === "home") return <HomePage />;
+  if (loc.route === "tour") return <Landing />;
   if (loc.route === "stack") return <StackPage key={loc.username} username={loc.username} />;
   if (loc.route === "earnings") return <EarningsPage key={loc.username} username={loc.username} />;
   if (loc.route === "build") return <BuildFlow />;
