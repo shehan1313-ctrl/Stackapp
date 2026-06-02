@@ -608,6 +608,11 @@
     .build-bioage { margin-top: 16px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-sm); padding: 14px 16px; }
     .build-bioage summary { font-size: 13px; font-weight: 600; cursor: pointer; list-style: none; color: var(--accent); }
     .build-bioage summary::-webkit-details-marker { display: none; }
+    .build-highlight { margin-top: 16px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-sm); padding: 16px; }
+    .hl-tabs { display: flex; gap: 6px; }
+    .hl-tab { flex: 1; text-align: center; font-size: 12px; font-weight: 600; padding: 9px 4px; border-radius: var(--r-xs); background: var(--surface2); border: 1px solid var(--border); color: var(--text-muted); cursor: pointer; font-family: var(--font-sans); transition: all 0.15s ease; }
+    .hl-tab.on { background: var(--accent); color: #FFFDF8; border-color: var(--accent); }
+    .highlight-quote { font-family: var(--font-serif); font-style: italic; font-size: 22px; line-height: 1.35; color: var(--text); text-align: center; margin-top: 6px; }
 
     /* ── HOME / LANDING PAGE ── */
     .home-page { background: var(--bg); min-height: 100vh; padding-bottom: 40px; }
@@ -861,6 +866,15 @@ function saveStack(s) { const all = getStacks(); all[s.username] = s; localStora
 function getStack(u) { if (u === "shehan") return SHEHAN_STACK; return getStacks()[u] || null; }
 function isUserStack(u) { return u !== "shehan" && !!getStacks()[u]; }
 function toUsername(h) { return h.replace(/^@/, "").toLowerCase().replace(/[^a-z0-9_]/g, ""); }
+// Derive a unique URL slug from a name (handle field removed). Appends a number on collision.
+function uniqueUsername(name) {
+  const base = toUsername(name) || "stack";
+  const all = getStacks();
+  if (base !== "shehan" && !all[base]) return base;
+  let i = 2;
+  while (all[base + i] || base + i === "shehan") i++;
+  return base + i;
+}
 function totalCost(items) { return items.reduce((s, i) => s + (i.cost || 0), 0); }
 
 // ── REFERRALS (Path 2: creators inviting creators) ──
@@ -1119,6 +1133,27 @@ function BioAgeCard({ bioAge, chronoAge }) {
       {delta > 0 && <div className="bio-age-delta">Biologically <span>−{delta} years</span> younger than calendar age</div>}
       {delta < 0 && <div className="bio-age-delta" style={{color:"var(--amber)"}}>Biologically <span style={{color:"var(--amber)"}}>+{Math.abs(delta)} years</span> older than calendar age</div>}
       {delta === 0 && <div className="bio-age-delta">Bio age matches calendar age</div>}
+    </div>
+  );
+}
+
+// ── HERO HIGHLIGHT (pickable: proud metric / win / tip) ───────────────────────
+
+function HighlightCard({ highlight }) {
+  if (highlight.type === "metric") {
+    return (
+      <div className="bio-age-card anim-1" style={{ textAlign: "center" }}>
+        <div className="bio-age-label">Proudest Metric</div>
+        <div className="bio-age-num bio" style={{ marginTop: 4 }}>{highlight.value}</div>
+        <div className="bio-age-sublabel" style={{ marginTop: 6 }}>{highlight.label}</div>
+      </div>
+    );
+  }
+  const heading = highlight.type === "tip" ? "My #1 Tip" : "Health Win";
+  return (
+    <div className="bio-age-card anim-1">
+      <div className="bio-age-label">{heading}</div>
+      <div className="highlight-quote">“{highlight.text}”</div>
     </div>
   );
 }
@@ -1509,7 +1544,9 @@ function StackPage({ username }) {
           </div>
         )}
         <ProfileSection stack={stack} />
-        {stack.bioAge > 0 && stack.chronoAge > 0 && <BioAgeCard bioAge={stack.bioAge} chronoAge={stack.chronoAge} />}
+        {stack.highlight
+          ? <HighlightCard highlight={stack.highlight} />
+          : (stack.bioAge > 0 && stack.chronoAge > 0 && <BioAgeCard bioAge={stack.bioAge} chronoAge={stack.chronoAge} />)}
         {cost > 0 && (
           <div className="cost-banner anim-4">
             <div className="cost-label">Monthly investment</div>
@@ -1767,25 +1804,34 @@ function EarningsPage({ username }) {
 
 function BuildFlow() {
   const [step, setStep] = useState(1);
-  const [profile, setProfile] = useState({ name: "", handle: "", twitter: "", instagram: "", email: "" });
+  const [profile, setProfile] = useState({ name: "", twitter: "", instagram: "", email: "" });
   const [items, setItems] = useState([]);
-  const [ages, setAges] = useState({ bioAge: "", chronoAge: "" });
+  // Pickable hero highlight: type 'metric' | 'win' | 'tip'
+  const [highlight, setHighlight] = useState({ type: "metric", value: "", label: "", text: "" });
+
+  function buildHighlight() {
+    if (highlight.type === "metric" && highlight.value.trim() && highlight.label.trim())
+      return { type: "metric", value: highlight.value.trim(), label: highlight.label.trim() };
+    if ((highlight.type === "win" || highlight.type === "tip") && highlight.text.trim())
+      return { type: highlight.type, text: highlight.text.trim() };
+    return null;
+  }
 
   function submit() {
-    const username = toUsername(profile.handle);
-    if (!username) return;
+    if (!profile.name.trim()) return;
+    const username = uniqueUsername(profile.name);
     const referredBy = consumeRef();  // who invited this creator (Path 2), if anyone
+    const hl = buildHighlight();
     const stack = {
       username,
-      name: profile.name,
-      handle: profile.handle.startsWith("@") ? profile.handle : "@" + profile.handle,
+      name: profile.name.trim(),
+      handle: "@" + username,
       twitter: profile.twitter.trim().replace(/^@/, ""),
       instagram: profile.instagram.trim().replace(/^@/, ""),
       email: profile.email.trim(),
       verified: false,
-      bioAge: parseInt(ages.bioAge) || 0,
-      chronoAge: parseInt(ages.chronoAge) || 0,
       items,
+      ...(hl ? { highlight: hl } : {}),
       // ── BACKEND ──: referredBy powers referral-commission payouts later
       ...(referredBy && referredBy !== username ? { referredBy } : {}),
     };
@@ -1828,11 +1874,7 @@ function BuildFlow() {
             <div className="form-group">
               <label className="form-label">Name *</label>
               <input className="form-input" placeholder="Jane Smith" value={profile.name} onChange={e => setProfile(p => ({ ...p, name: e.target.value }))} />
-            </div>
-            <div className="form-group">
-              <label className="form-label">Handle *</label>
-              <input className="form-input" placeholder="@yourhandle" value={profile.handle} onChange={e => setProfile(p => ({ ...p, handle: e.target.value }))} />
-              <div className="form-hint">Your page: stackpage.app/stack/{toUsername(profile.handle) || "yourhandle"}</div>
+              <div className="form-hint">Your page: stackpage.app/stack/{toUsername(profile.name) || "yourname"}</div>
             </div>
             <div className="form-row">
               <div className="form-group">
@@ -1850,7 +1892,7 @@ function BuildFlow() {
               <div className="form-hint">We'll only use this to reach you about your stack.</div>
             </div>
             <button className="btn btn-primary" style={{ width: "100%", padding: 14, fontSize: 15, marginTop: 8 }}
-              disabled={!profile.name.trim() || !profile.handle.trim()} onClick={() => setStep(2)}>
+              disabled={!profile.name.trim()} onClick={() => setStep(2)}>
               Continue →
             </button>
           </div>
@@ -1868,15 +1910,18 @@ function BuildFlow() {
                 </div>
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <div className="build-preview-name">{profile.name || "Your name"}</div>
-                  <div className="build-preview-handle">@{toUsername(profile.handle) || "yourhandle"}</div>
+                  <div className="build-preview-handle">@{toUsername(profile.name) || "yourname"}</div>
                 </div>
-                {parseInt(ages.bioAge) > 0 && parseInt(ages.chronoAge) > 0 && (
+                {highlight.type === "metric" && highlight.value.trim() && (
                   <div style={{ textAlign: "center" }}>
-                    <div style={{ fontFamily: "var(--font-serif)", fontSize: 28, color: "var(--accent)", lineHeight: 1 }}>{parseInt(ages.bioAge)}</div>
-                    <div style={{ fontSize: 9, color: "var(--text-muted)", letterSpacing: 0.5 }}>BIO AGE</div>
+                    <div style={{ fontFamily: "var(--font-serif)", fontSize: 24, color: "var(--accent)", lineHeight: 1 }}>{highlight.value}</div>
+                    <div style={{ fontSize: 9, color: "var(--text-muted)", letterSpacing: 0.5, marginTop: 2 }}>{(highlight.label || "").toUpperCase()}</div>
                   </div>
                 )}
               </div>
+              {(highlight.type === "win" || highlight.type === "tip") && highlight.text.trim() && (
+                <div style={{ fontFamily: "var(--font-serif)", fontStyle: "italic", fontSize: 14, color: "var(--text)", marginTop: 10, lineHeight: 1.4 }}>“{highlight.text}”</div>
+              )}
               <div className="build-preview-divider" />
               {CATEGORIES.filter(c => items.some(i => i.category === c)).map(cat => (
                 <div key={cat} className="build-preview-catrow">
@@ -1891,26 +1936,49 @@ function BuildFlow() {
               )}
             </div>
 
-            {/* Optional bio age */}
-            <details className="build-bioage">
-              <summary>Add your biological age <span style={{color:"var(--text-dim)",fontWeight:400}}>· optional</span></summary>
-              <div style={{ fontSize: 12, color: "var(--text-muted)", lineHeight: 1.5, margin: "10px 0" }}>
-                Tested your bio age (TruAge, Levine, InsideTracker)? Add it for the headline "younger than your age" card. Skip if not.
+            {/* Pickable hero highlight */}
+            <div className="build-highlight">
+              <div className="form-label" style={{ marginBottom: 8 }}>Add a highlight <span style={{color:"var(--text-dim)",fontWeight:400}}>· optional, but makes your page pop</span></div>
+              <div className="hl-tabs">
+                {[["metric","📊 Proud metric"],["win","🏆 Health win"],["tip","💡 #1 tip"]].map(([t,lab]) => (
+                  <button key={t} className={`hl-tab ${highlight.type===t?"on":""}`} onClick={() => setHighlight(h => ({ ...h, type: t }))}>{lab}</button>
+                ))}
               </div>
-              <div className="form-row">
-                <div className="form-group" style={{ marginBottom: 0 }}>
-                  <label className="form-label">Biological age</label>
-                  <input className="form-input" type="number" placeholder="e.g. 32" value={ages.bioAge} onChange={e => setAges(a => ({ ...a, bioAge: e.target.value }))} />
+
+              {highlight.type === "metric" && (
+                <>
+                  <div style={{ display: "flex", flexWrap: "wrap", gap: 6, margin: "12px 0" }}>
+                    {["Resting HR","VO2 max","Deep sleep","HRV","Biological age","Body fat %"].map(p => (
+                      <button key={p} className="feedback-chip" onClick={() => setHighlight(h => ({ ...h, label: p }))}>{p}</button>
+                    ))}
+                  </div>
+                  <div className="form-row">
+                    <div className="form-group" style={{ marginBottom: 0, flex: "0 0 38%" }}>
+                      <label className="form-label">Value</label>
+                      <input className="form-input" placeholder="48 bpm" value={highlight.value} onChange={e => setHighlight(h => ({ ...h, value: e.target.value }))} />
+                    </div>
+                    <div className="form-group" style={{ marginBottom: 0 }}>
+                      <label className="form-label">Label</label>
+                      <input className="form-input" placeholder="Resting heart rate" value={highlight.label} onChange={e => setHighlight(h => ({ ...h, label: e.target.value }))} />
+                    </div>
+                  </div>
+                </>
+              )}
+
+              {highlight.type === "win" && (
+                <div style={{ marginTop: 12 }}>
+                  <textarea className="form-textarea" placeholder="e.g. Reversed my pre-diabetes in 6 months." value={highlight.text} onChange={e => setHighlight(h => ({ ...h, text: e.target.value }))} maxLength={120} />
                 </div>
-                <div className="form-group" style={{ marginBottom: 0 }}>
-                  <label className="form-label">Calendar age</label>
-                  <input className="form-input" type="number" placeholder="e.g. 38" value={ages.chronoAge} onChange={e => setAges(a => ({ ...a, chronoAge: e.target.value }))} />
+              )}
+              {highlight.type === "tip" && (
+                <div style={{ marginTop: 12 }}>
+                  <textarea className="form-textarea" placeholder="e.g. If you do one thing: get morning sunlight." value={highlight.text} onChange={e => setHighlight(h => ({ ...h, text: e.target.value }))} maxLength={120} />
                 </div>
-              </div>
-            </details>
+              )}
+            </div>
 
             <button className="btn btn-primary" style={{ width: "100%", padding: 14, fontSize: 15, marginTop: 18 }}
-              disabled={!profile.name || !profile.handle} onClick={submit}>
+              disabled={!profile.name.trim()} onClick={submit}>
               Create my StackPage 🎉
             </button>
           </div>
