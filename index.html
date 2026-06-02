@@ -594,6 +594,20 @@
     .cat-feedback-sub { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
     .feedback-chip { font-size: 12px; font-weight: 500; padding: 7px 11px; border-radius: 99px; background: var(--surface2); border: 1px solid var(--border); color: var(--text-muted); cursor: pointer; font-family: var(--font-sans); transition: all 0.15s ease; }
     .feedback-chip:hover { border-color: var(--accent); color: var(--accent); }
+    .build-preview { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r); padding: 18px; box-shadow: var(--sh, 0 1px 2px rgba(70,55,30,.06)); }
+    .build-preview-top { display: flex; align-items: center; gap: 12px; }
+    .build-preview-name { font-size: 16px; font-weight: 700; letter-spacing: -0.3px; }
+    .build-preview-handle { font-size: 12px; color: var(--text-muted); }
+    .build-preview-divider { height: 1px; background: var(--border); margin: 14px 0; }
+    .build-preview-catrow { display: flex; align-items: center; gap: 9px; padding: 5px 0; }
+    .build-preview-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+    .build-preview-cat { font-size: 13px; font-weight: 500; }
+    .build-preview-catn { margin-left: auto; font-size: 12px; color: var(--text-dim); font-weight: 600; }
+    .build-preview-cost { display: flex; justify-content: space-between; align-items: center; margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--border); font-size: 13px; color: var(--text-muted); }
+    .build-preview-cost strong { font-size: 15px; color: var(--text); }
+    .build-bioage { margin-top: 16px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-sm); padding: 14px 16px; }
+    .build-bioage summary { font-size: 13px; font-weight: 600; cursor: pointer; list-style: none; color: var(--accent); }
+    .build-bioage summary::-webkit-details-marker { display: none; }
 
     /* ── HOME / LANDING PAGE ── */
     .home-page { background: var(--bg); min-height: 100vh; padding-bottom: 40px; }
@@ -1479,7 +1493,7 @@ function StackPage({ username }) {
         <div className="topbar-actions">
           {editable && stack.claimed && <button className="btn btn-ghost btn-sm" onClick={() => navigate(`#/earnings/${username}`)}>💸 Earnings</button>}
           {editable && <button className="btn btn-ghost btn-sm" onClick={() => setShowEdit(true)}>Edit</button>}
-          <button className="btn btn-ghost btn-sm" onClick={() => setShowCompare(true)}>Compare</button>
+          {/* Compare hidden for now — it compares protocol scores, which are paused. Re-enable when scoring is credible. */}
         </div>
       } />
       <div className="page">
@@ -1495,9 +1509,7 @@ function StackPage({ username }) {
           </div>
         )}
         <ProfileSection stack={stack} />
-        <BioAgeCard bioAge={stack.bioAge} chronoAge={stack.chronoAge} />
-        <ProtocolScorecard items={stack.items} />
-        <AIInsights items={stack.items} />
+        {stack.bioAge > 0 && stack.chronoAge > 0 && <BioAgeCard bioAge={stack.bioAge} chronoAge={stack.chronoAge} />}
         {cost > 0 && (
           <div className="cost-banner anim-4">
             <div className="cost-label">Monthly investment</div>
@@ -1786,8 +1798,8 @@ function BuildFlow() {
   }
 
   const stepDots = [1, 2, 3];
-  const titleMap = { 1: "Create your stack", 2: "Build your stack", 3: "Finalize" };
-  const subMap = { 1: "Start with your profile", 2: `${items.length} item${items.length !== 1 ? "s" : ""} added`, 3: "Set your bio age data" };
+  const titleMap = { 1: "Create your stack", 2: "Build your stack", 3: "Preview your page" };
+  const subMap = { 1: "Start with your profile", 2: `${items.length} item${items.length !== 1 ? "s" : ""} added`, 3: "Here's how it'll look — looking good?" };
 
   return (
     <div>
@@ -1848,28 +1860,56 @@ function BuildFlow() {
 
         {step === 3 && (
           <div className="form-section anim-2">
-            <div style={{ background: "var(--surface)", border: "1px solid var(--border)", borderRadius: "var(--r)", padding: 16, marginBottom: 20, fontSize: 13, color: "var(--text-muted)", lineHeight: 1.5 }}>
-              💡 Your biological age vs actual age shows the impact of your protocol. Leave blank if you haven't tested yet.
+            {/* Live preview of the page they're about to create */}
+            <div className="build-preview">
+              <div className="build-preview-top">
+                <div className="avatar" style={{ width: 48, height: 48, fontSize: 18 }}>
+                  {(profile.name || "Y").split(" ").map(w => w[0]).join("").slice(0,2).toUpperCase()}
+                </div>
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <div className="build-preview-name">{profile.name || "Your name"}</div>
+                  <div className="build-preview-handle">@{toUsername(profile.handle) || "yourhandle"}</div>
+                </div>
+                {parseInt(ages.bioAge) > 0 && parseInt(ages.chronoAge) > 0 && (
+                  <div style={{ textAlign: "center" }}>
+                    <div style={{ fontFamily: "var(--font-serif)", fontSize: 28, color: "var(--accent)", lineHeight: 1 }}>{parseInt(ages.bioAge)}</div>
+                    <div style={{ fontSize: 9, color: "var(--text-muted)", letterSpacing: 0.5 }}>BIO AGE</div>
+                  </div>
+                )}
+              </div>
+              <div className="build-preview-divider" />
+              {CATEGORIES.filter(c => items.some(i => i.category === c)).map(cat => (
+                <div key={cat} className="build-preview-catrow">
+                  <span className="build-preview-dot" style={{ background: CATEGORY_COLORS[cat] }} />
+                  <span className="build-preview-cat">{cat}</span>
+                  <span className="build-preview-catn">{items.filter(i => i.category === cat).length}</span>
+                </div>
+              ))}
+              {items.length === 0 && <div style={{ fontSize: 12, color: "var(--text-dim)", textAlign: "center", padding: "4px 0" }}>No items yet — you can add them after.</div>}
+              {totalCost(items) > 0 && (
+                <div className="build-preview-cost"><span>Monthly investment</span><strong>${totalCost(items)}/mo</strong></div>
+              )}
             </div>
-            <div className="form-row">
-              <div className="form-group">
-                <label className="form-label">Biological age</label>
-                <input className="form-input" type="number" placeholder="e.g. 32" value={ages.bioAge} onChange={e => setAges(a => ({ ...a, bioAge: e.target.value }))} />
-                <div className="form-hint">From TruAge, Levine, InsideTracker</div>
+
+            {/* Optional bio age */}
+            <details className="build-bioage">
+              <summary>Add your biological age <span style={{color:"var(--text-dim)",fontWeight:400}}>· optional</span></summary>
+              <div style={{ fontSize: 12, color: "var(--text-muted)", lineHeight: 1.5, margin: "10px 0" }}>
+                Tested your bio age (TruAge, Levine, InsideTracker)? Add it for the headline "younger than your age" card. Skip if not.
               </div>
-              <div className="form-group">
-                <label className="form-label">Calendar age</label>
-                <input className="form-input" type="number" placeholder="e.g. 38" value={ages.chronoAge} onChange={e => setAges(a => ({ ...a, chronoAge: e.target.value }))} />
+              <div className="form-row">
+                <div className="form-group" style={{ marginBottom: 0 }}>
+                  <label className="form-label">Biological age</label>
+                  <input className="form-input" type="number" placeholder="e.g. 32" value={ages.bioAge} onChange={e => setAges(a => ({ ...a, bioAge: e.target.value }))} />
+                </div>
+                <div className="form-group" style={{ marginBottom: 0 }}>
+                  <label className="form-label">Calendar age</label>
+                  <input className="form-input" type="number" placeholder="e.g. 38" value={ages.chronoAge} onChange={e => setAges(a => ({ ...a, chronoAge: e.target.value }))} />
+                </div>
               </div>
-            </div>
-            {items.length > 0 && (
-              <div style={{ background: "var(--surface)", border: "1px solid var(--border)", borderRadius: "var(--r)", padding: 14, marginBottom: 20 }}>
-                <div style={{ fontSize: 13, fontWeight: 600, marginBottom: 8 }}>Stack preview — {items.length} items</div>
-                {items.slice(0, 4).map(i => <div key={i.id} style={{ fontSize: 12, color: "var(--text-muted)", padding: "2px 0" }}>• {i.name} ({i.category})</div>)}
-                {items.length > 4 && <div style={{ fontSize: 11, color: "var(--text-dim)", marginTop: 4 }}>+{items.length - 4} more</div>}
-              </div>
-            )}
-            <button className="btn btn-primary" style={{ width: "100%", padding: 14, fontSize: 15 }}
+            </details>
+
+            <button className="btn btn-primary" style={{ width: "100%", padding: 14, fontSize: 15, marginTop: 18 }}
               disabled={!profile.name || !profile.handle} onClick={submit}>
               Create my StackPage 🎉
             </button>
