@@ -613,6 +613,12 @@
     .hl-tab { flex: 1; text-align: center; font-size: 12px; font-weight: 600; padding: 9px 4px; border-radius: var(--r-xs); background: var(--surface2); border: 1px solid var(--border); color: var(--text-muted); cursor: pointer; font-family: var(--font-sans); transition: all 0.15s ease; }
     .hl-tab.on { background: var(--accent); color: #FFFDF8; border-color: var(--accent); }
     .highlight-quote { font-family: var(--font-serif); font-style: italic; font-size: 22px; line-height: 1.35; color: var(--text); text-align: center; margin-top: 6px; }
+    .avatar-upload { display: flex; flex-direction: column; align-items: center; gap: 8px; margin-bottom: 20px; cursor: pointer; }
+    .avatar-upload-circle { position: relative; width: 84px; height: 84px; border-radius: 50%; background: var(--surface2); background-size: cover; background-position: center; border: 2px dashed var(--border); display: flex; align-items: center; justify-content: center; transition: border-color 0.15s ease; }
+    .avatar-upload:hover .avatar-upload-circle { border-color: var(--accent); }
+    .avatar-upload-plus { font-family: var(--font-serif); font-size: 26px; color: var(--text-dim); font-style: italic; }
+    .avatar-upload-cam { position: absolute; bottom: -2px; right: -2px; width: 28px; height: 28px; border-radius: 50%; background: var(--accent); display: flex; align-items: center; justify-content: center; font-size: 13px; border: 2px solid var(--bg); }
+    .avatar-upload-label { font-size: 12px; font-weight: 600; color: var(--accent); }
 
     /* ── HOME / LANDING PAGE ── */
     .home-page { background: var(--bg); min-height: 100vh; padding-bottom: 40px; }
@@ -1080,7 +1086,9 @@ function ProfileSection({ stack }) {
   return (
     <div className="profile-section anim-0">
       <div className="profile-top">
-        <div className="avatar">{initials}</div>
+        <div className="avatar" style={stack.avatarUrl ? { backgroundImage: `url(${stack.avatarUrl})`, backgroundSize: "cover", backgroundPosition: "center" } : undefined}>
+          {!stack.avatarUrl && initials}
+        </div>
         <div className="profile-info">
           <div className="profile-name">{stack.name}</div>
           <div className="profile-handle">{stack.handle}</div>
@@ -1804,10 +1812,19 @@ function EarningsPage({ username }) {
 
 function BuildFlow() {
   const [step, setStep] = useState(1);
-  const [profile, setProfile] = useState({ name: "", twitter: "", instagram: "", email: "" });
+  const [profile, setProfile] = useState({ name: "", twitter: "", instagram: "", email: "", avatarUrl: "" });
   const [items, setItems] = useState([]);
   // Pickable hero highlight: type 'metric' | 'win' | 'tip'
   const [highlight, setHighlight] = useState({ type: "metric", value: "", label: "", text: "" });
+  const avatarInputRef = useRef(null);
+
+  async function handleAvatar(e) {
+    const file = e.target.files?.[0];
+    e.target.value = "";
+    if (!file) return;
+    const dataUrl = await resizeImage(file, 256);  // compact, square-ish for the avatar circle
+    if (dataUrl) setProfile(p => ({ ...p, avatarUrl: dataUrl }));
+  }
 
   function buildHighlight() {
     if (highlight.type === "metric" && highlight.value.trim() && highlight.label.trim())
@@ -1829,6 +1846,7 @@ function BuildFlow() {
       twitter: profile.twitter.trim().replace(/^@/, ""),
       instagram: profile.instagram.trim().replace(/^@/, ""),
       email: profile.email.trim(),
+      avatarUrl: profile.avatarUrl || "",
       verified: false,
       items,
       ...(hl ? { highlight: hl } : {}),
@@ -1871,6 +1889,16 @@ function BuildFlow() {
 
         {step === 1 && (
           <div className="form-section anim-2">
+            <input ref={avatarInputRef} type="file" accept="image/*" style={{ display: "none" }} onChange={handleAvatar} />
+            <div className="avatar-upload" onClick={() => avatarInputRef.current?.click()}>
+              <div className="avatar-upload-circle" style={profile.avatarUrl ? { backgroundImage: `url(${profile.avatarUrl})` } : undefined}>
+                {!profile.avatarUrl && (
+                  <span className="avatar-upload-plus">{profile.name ? profile.name.split(" ").map(w=>w[0]).join("").slice(0,2).toUpperCase() : "+"}</span>
+                )}
+                <div className="avatar-upload-cam">📷</div>
+              </div>
+              <div className="avatar-upload-label">{profile.avatarUrl ? "Change photo" : "Add a profile photo · optional"}</div>
+            </div>
             <div className="form-group">
               <label className="form-label">Name *</label>
               <input className="form-input" placeholder="Jane Smith" value={profile.name} onChange={e => setProfile(p => ({ ...p, name: e.target.value }))} />
@@ -1905,8 +1933,8 @@ function BuildFlow() {
             {/* Live preview of the page they're about to create */}
             <div className="build-preview">
               <div className="build-preview-top">
-                <div className="avatar" style={{ width: 48, height: 48, fontSize: 18 }}>
-                  {(profile.name || "Y").split(" ").map(w => w[0]).join("").slice(0,2).toUpperCase()}
+                <div className="avatar" style={{ width: 48, height: 48, fontSize: 18, ...(profile.avatarUrl ? { backgroundImage: `url(${profile.avatarUrl})`, backgroundSize: "cover", backgroundPosition: "center" } : {}) }}>
+                  {!profile.avatarUrl && (profile.name || "Y").split(" ").map(w => w[0]).join("").slice(0,2).toUpperCase()}
                 </div>
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <div className="build-preview-name">{profile.name || "Your name"}</div>
