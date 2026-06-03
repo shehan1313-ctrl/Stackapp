@@ -878,15 +878,19 @@
       .home-hero { padding-top: 56px; }
       .home-values { display: grid; grid-template-columns: 1fr 1fr; gap: 4px 36px; }
       .home-value { border-bottom: 1px solid var(--border); }
-      /* Reel becomes a desktop-native dashboard preview: left rail + wide item grid */
-      .home-reel { max-width: 1000px; height: 430px; margin: 0 auto; }
-      .reel-dash { display: grid; grid-template-columns: 248px 1fr; gap: 8px 26px; padding: 10px 22px; align-items: start; }
-      .reel-dash-rail { display: flex; flex-direction: column; }
+      /* Reel becomes a desktop-native dashboard preview: static (no scroll), fits content */
+      .home-reel { max-width: 1000px; height: auto; margin: 0 auto; }
+      .home-reel::before, .home-reel::after { display: none; }
+      .home-reel-track { animation: none !important; }
+      .reel-dash { display: grid; grid-template-columns: 300px 1fr; gap: 10px 28px; padding: 22px 24px; align-items: start; }
+      .reel-dash-rail { display: flex; flex-direction: column; gap: 10px; }
       .reel-dash-main { min-width: 0; }
-      .reel-head { padding: 8px 0 8px; }
-      .reel-cat { padding: 12px 0 8px; }
-      .reel-cat:first-child { padding-top: 4px; }
-      .reel-grid { grid-template-columns: repeat(3, 1fr); padding: 0; gap: 10px; }
+      .reel-head { padding: 4px 2px 6px; }
+      .reel-hl { margin: 0; }
+      .bj-card.bj-compact { margin: 0; }
+      .reel-cat { padding: 10px 0 8px; }
+      .reel-cat:first-child { padding-top: 0; }
+      .reel-grid { grid-template-columns: repeat(2, 1fr); padding: 0; gap: 10px; }
       .home-def, .home-usecase, .home-footer { max-width: 760px; margin-left: auto; margin-right: auto; }
 
       /* BUILD — focused centered form on the wide canvas */
