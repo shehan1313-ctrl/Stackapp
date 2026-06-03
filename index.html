@@ -33,6 +33,7 @@
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/html-to-image@1.11.11/dist/html-to-image.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <!-- Vercel Web Analytics: pageviews + referrers. Turn on in Vercel dashboard → Analytics tab. Harmless if not enabled. -->
   <script>window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };</script>
@@ -304,6 +305,34 @@
     .cost-compare b { color: var(--accent); font-weight: 700; }
     .cost-compare a { color: var(--text-muted); text-decoration: underline; text-underline-offset: 2px; }
 
+    /* ── Shareable B2 card (rendered off-screen, exported to PNG, 540×540) ── */
+    .sc-stage { position: fixed; left: -10000px; top: 0; pointer-events: none; }
+    .sc { width: 540px; height: 540px; background: #171310; color: #fff; padding: 34px; display: flex; flex-direction: column; font-family: var(--font-sans); box-sizing: border-box; }
+    .sc-top { display: flex; align-items: center; justify-content: space-between; }
+    .sc-brand { display: flex; align-items: center; gap: 9px; font-weight: 800; font-size: 21px; letter-spacing: -0.4px; }
+    .sc-brand b { color: var(--accent2); font-weight: 800; }
+    .sc-brand svg { width: 26px; height: 26px; }
+    .sc-tag { font-size: 15px; color: #b8b0a4; }
+    .sc-wrap { flex: 1; display: flex; flex-direction: column; justify-content: center; }
+    .sc-cap { display: flex; justify-content: space-between; font-size: 14px; color: #cfc7bb; margin-bottom: 12px; }
+    .sc-cap b { color: var(--accent2); }
+    .sc-bar { height: 150px; border-radius: 18px; background: linear-gradient(160deg, #2a2420, #141019); border: 1px solid rgba(255,255,255,0.1); position: relative; display: flex; align-items: center; padding: 0 22px; }
+    .sc-sliver { position: absolute; left: 0; top: 0; bottom: 0; width: 11px; background: linear-gradient(180deg, #E89A4B, #D9531F); box-shadow: 0 0 18px rgba(232,154,75,0.9); border-radius: 18px 0 0 18px; }
+    .sc-me { position: absolute; left: 22px; top: -18px; display: flex; align-items: center; gap: 9px; background: #231d18; border: 1px solid rgba(232,154,75,0.45); border-radius: 99px; padding: 6px 15px 6px 6px; }
+    .sc-me .sc-av { width: 36px; height: 36px; }
+    .sc-me-t { font-size: 15px; } .sc-me-t b { color: var(--accent2); }
+    .sc-bryan { margin-left: auto; display: flex; align-items: center; gap: 14px; }
+    .sc-bryan .sc-amt { font-family: var(--font-serif); font-size: 46px; line-height: 1; }
+    .sc-bryan .sc-who { font-size: 13px; color: #b8b0a4; text-transform: uppercase; letter-spacing: 0.5px; margin-top: 4px; }
+    .sc-av { border-radius: 50%; background-size: cover; background-position: center; flex-shrink: 0; border: 2px solid rgba(255,255,255,0.6); }
+    .sc-bryan .sc-av { width: 70px; height: 70px; }
+    .sc-foot { font-size: 17px; color: #ece7df; text-align: center; line-height: 1.4; margin-top: 8px; }
+    .sc-foot b { color: var(--accent2); }
+    .sc-url { display: flex; justify-content: space-between; align-items: center; margin-top: 18px; padding-top: 16px; border-top: 1px solid rgba(255,255,255,0.14); font-size: 14px; color: #b8b0a4; }
+    .sc-url b { color: #fff; }
+
+    .bj-share-btn { display: block; width: auto; margin: -4px 20px 16px; padding: 12px; border: 1px solid var(--border); background: var(--surface); color: var(--text); font-family: var(--font-sans); font-weight: 600; font-size: 13px; border-radius: var(--r-sm); cursor: pointer; transition: all 0.15s ease; }
+    .bj-share-btn:hover { border-color: var(--accent); color: var(--accent); }
     /* Bryan Johnson comparison card (nested-scale share card, dark) */
     .bj-card { margin: 0 20px 16px; background: #171310; border-radius: var(--r-sm); padding: 18px; color: #fff; box-shadow: 0 12px 30px rgba(0,0,0,0.28); }
     .bj-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
@@ -1377,7 +1406,7 @@ function BryanCompareCard({ cost, handle, name, url, compact }) {
       <div className="bj-top">
         <div className="bj-brand">
           <svg viewBox="0 0 40 40" fill="none"><rect x="6" y="24" width="28" height="6" rx="3" fill="#CE5A2E"/><rect x="9" y="15" width="22" height="6" rx="3" fill="#E89A4B"/><rect x="12" y="6" width="16" height="6" rx="3" fill="#E8B57A"/></svg>
-          health<b>stack</b>
+          <span>health<b>stack</b></span>
         </div>
         {handle && <div className="bj-tag">{handle}</div>}
       </div>
@@ -1398,6 +1427,56 @@ function BryanCompareCard({ cost, handle, name, url, compact }) {
       </div>
     </div>
   );
+}
+
+// Off-screen 540×540 card (B2: my sliver inside Bryan's box) — captured to a PNG for sharing.
+function ShareCardB2({ stack, cost, cardRef }) {
+  const avatar = stack.avatarUrl || DEFAULT_AVATAR;
+  const username = stack.username || toUsername(stack.name || "");
+  return (
+    <div className="sc-stage" aria-hidden="true">
+      <div className="sc" ref={cardRef}>
+        <div className="sc-top">
+          <div className="sc-brand">
+            <svg viewBox="0 0 40 40" fill="none"><rect x="6" y="24" width="28" height="6" rx="3" fill="#CE5A2E"/><rect x="9" y="15" width="22" height="6" rx="3" fill="#E89A4B"/><rect x="12" y="6" width="16" height="6" rx="3" fill="#E8B57A"/></svg>
+            <span>health<b>stack</b></span>
+          </div>
+          <div className="sc-tag">{stack.handle || ("@" + username)}</div>
+        </div>
+        <div className="sc-wrap">
+          <div className="sc-cap"><span>The whole box = Bryan's monthly budget</span><b>{bjPercent(cost)}%</b></div>
+          <div className="sc-bar">
+            <div className="sc-sliver" />
+            <div className="sc-me"><div className="sc-av" style={{ backgroundImage: `url(${avatar})` }} /><span className="sc-me-t"><b>${cost.toLocaleString()}</b> · me</span></div>
+            <div className="sc-bryan">
+              <div style={{ textAlign: "right" }}><div className="sc-amt">$167K<span style={{ fontSize: 18 }}>/mo</span></div><div className="sc-who">Bryan Johnson</div></div>
+              <div className="sc-av" style={{ backgroundImage: "url(/bryan-avatar.jpg)" }} />
+            </div>
+          </div>
+        </div>
+        <div className="sc-foot">⏳ Bryan blows my <b>annual</b> health budget in <b>{bjTimeToMatch(cost)}</b>.</div>
+        <div className="sc-url"><span>${cost.toLocaleString()}/mo vs ~$167K/mo</span><b>healthstack.app/stack/{username}</b></div>
+      </div>
+    </div>
+  );
+}
+
+// Capture the card node → PNG → native share (mobile) or download (desktop).
+async function shareStackCard(node, stack, cost, onToast) {
+  if (!node || !window.htmlToImage) { onToast && onToast("Sharing not available"); return; }
+  try {
+    const dataUrl = await window.htmlToImage.toPng(node, { pixelRatio: 2, cacheBust: true, width: 540, height: 540 });
+    const blob = await (await fetch(dataUrl)).blob();
+    const file = new File([blob], "healthstack-card.png", { type: "image/png" });
+    const text = `My entire health stack is ${bjPercent(cost)}% of Bryan Johnson's budget 🧬 Build yours free:`;
+    track("share_card", { username: stack.username });
+    if (navigator.canShare && navigator.canShare({ files: [file] })) {
+      await navigator.share({ files: [file], text });
+    } else {
+      const a = document.createElement("a"); a.href = dataUrl; a.download = "healthstack-card.png"; a.click();
+      onToast && onToast("Card image downloaded ✓");
+    }
+  } catch (e) { console.debug("shareStackCard", e); onToast && onToast("Couldn't generate the card"); }
 }
 
 // ── REFERRALS (Path 2: creators inviting creators) ──
@@ -2221,6 +2300,7 @@ function Healthstack({ username }) {
   const [showCompare, setShowCompare] = useState(false);
   const [showClaim, setShowClaim] = useState(false);
   const [justBuilt, setJustBuilt] = useState(false);
+  const shareCardRef = useRef(null);
   const { msg, show: toast } = useToast();
   const user = useAuth();
   // Editable if built on this device, or signed in as the stack's owner (cross-device).
@@ -2291,6 +2371,11 @@ function Healthstack({ username }) {
               ? <HighlightCard highlight={stack.highlight} />
               : (stack.bioAge > 0 && stack.chronoAge > 0 && <BioAgeCard bioAge={stack.bioAge} chronoAge={stack.chronoAge} />)}
             <BryanCompareCard cost={cost} handle={stack.handle} name={stack.name} url={`healthstack.app/stack/${username}`} />
+            {cost > 0 && (
+              <button className="bj-share-btn anim-4" onClick={() => shareStackCard(shareCardRef.current, stack, cost, toast)}>
+                📸 Share this card
+              </button>
+            )}
             <div className="qr-section anim-6">
               <div className="qr-title">SCAN TO VIEW ON ANOTHER DEVICE</div>
               <div className="qr-wrapper"><QRWidget url={url} /></div>
@@ -2326,6 +2411,7 @@ function Healthstack({ username }) {
       {showEdit && <EditSheet stack={stack} onSave={setStack} onClose={() => setShowEdit(false)} />}
       {showCompare && <CompareModal myStack={stack} onClose={() => setShowCompare(false)} />}
       {showClaim && <ClaimModal stack={stack} celebrate={justBuilt} onClaim={setStack} onClose={() => setShowClaim(false)} />}
+      {cost > 0 && <ShareCardB2 stack={stack} cost={cost} cardRef={shareCardRef} />}
     </div>
   );
 }
