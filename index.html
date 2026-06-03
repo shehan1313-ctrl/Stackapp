@@ -26,6 +26,7 @@
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <!-- Vercel Web Analytics: pageviews + referrers. Turn on in Vercel dashboard → Analytics tab. Harmless if not enabled. -->
   <script>window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };</script>
   <script defer src="/_vercel/insights/script.js"></script>
@@ -967,11 +968,41 @@ function generateInsights(items) {
   return out.slice(0, 3);
 }
 
-// ── STORAGE ───────────────────────────────────────────────────────────────────
+// ── SUPABASE (backend) ────────────────────────────────────────────────────────
+// Publishable key is safe to ship — protected by row-level security.
+const SUPABASE_URL = "https://dkfakvqckkifsmqjkdag.supabase.co";
+const SUPABASE_KEY = "sb_publishable_l9zVNN_xl6Ybk9ZGMVt70Q_XolRKq3D";
+let sb = null;
+try { if (window.supabase) sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY); } catch (_) {}
+
+// All remote calls are best-effort: failures never break the local (localStorage) experience.
+async function remoteSaveStack(stack) {
+  if (!sb || !stack || stack.username === "shehan") return;
+  try { await sb.from("stacks").upsert({ username: stack.username, name: stack.name, data: stack, updated_at: new Date().toISOString() }); }
+  catch (e) { console.debug("remoteSaveStack", e); }
+}
+async function fetchStackRemote(username) {
+  if (!sb) return null;
+  try { const { data } = await sb.from("stacks").select("data").eq("username", username).maybeSingle(); return data ? data.data : null; }
+  catch (e) { console.debug("fetchStackRemote", e); return null; }
+}
+async function remoteWaitlist(email, username) {
+  if (!sb) return;
+  try { await sb.from("waitlist").insert({ email, username }); } catch (e) { console.debug("remoteWaitlist", e); }
+}
+async function remoteFeedback(text) {
+  if (!sb) return;
+  try { await sb.from("feedback").insert({ text }); } catch (e) { console.debug("remoteFeedback", e); }
+}
+
+// ── STORAGE (localStorage = offline cache + ownership; Supabase = source of truth) ──
 
 const STORAGE_KEY = "stackpage_v1";
 function getStacks() { try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}"); } catch { return {}; } }
-function saveStack(s) { const all = getStacks(); all[s.username] = s; localStorage.setItem(STORAGE_KEY, JSON.stringify(all)); }
+function saveStack(s) {
+  const all = getStacks(); all[s.username] = s; localStorage.setItem(STORAGE_KEY, JSON.stringify(all));
+  remoteSaveStack(s);  // mirror to backend (non-blocking)
+}
 function getStack(u) { if (u === "shehan") return SHEHAN_STACK; return getStacks()[u] || null; }
 function isUserStack(u) { return u !== "shehan" && !!getStacks()[u]; }
 function toUsername(h) { return h.replace(/^@/, "").toLowerCase().replace(/[^a-z0-9_]/g, ""); }
@@ -1051,6 +1082,8 @@ function claimStack(username, email) {
   if (!all[username]) return null;
   all[username] = { ...all[username], email, claimed: true, claimedAt: Date.now() };
   localStorage.setItem(STORAGE_KEY, JSON.stringify(all));
+  remoteWaitlist(email, username);      // record the signup so it reaches you in Supabase
+  remoteSaveStack(all[username]);       // persist the claimed flag
   return all[username];
 }
 
@@ -1617,13 +1650,22 @@ function tweetIntent(stack, url) {
 
 function StackPage({ username }) {
   const [stack, setStack] = useState(() => getStack(username));
+  const [loading, setLoading] = useState(() => !getStack(username));  // fetch remote if not local
   const [showEdit, setShowEdit] = useState(false);
   const [showCompare, setShowCompare] = useState(false);
   const [showClaim, setShowClaim] = useState(false);
   const [justBuilt, setJustBuilt] = useState(false);
   const { msg, show: toast } = useToast();
-  const editable = isUserStack(username);
+  const editable = isUserStack(username);  // ownership stays local — viewers can't edit
   const url = window.location.href;
+
+  // Cross-device: if the stack isn't on this device, fetch it from the backend.
+  useEffect(() => {
+    if (getStack(username)) return;
+    let alive = true;
+    fetchStackRemote(username).then(s => { if (alive) { setStack(s); setLoading(false); } });
+    return () => { alive = false; };
+  }, [username]);
 
   // After completing the build flow, surface the claim prompt once.
   useEffect(() => {
@@ -1635,6 +1677,12 @@ function StackPage({ username }) {
     }
     try { sessionStorage.removeItem("sp_justBuilt"); } catch(_) {}
   }, [username]);
+
+  if (loading) return (
+    <div><Topbar />
+      <div className="not-found"><div className="not-found-sub">Loading @{username}…</div></div>
+    </div>
+  );
 
   if (!stack) return (
     <div><Topbar />
@@ -2144,13 +2192,13 @@ function BuildFlow() {
 
 // ── FEEDBACK MODAL (request new habit categories) ─────────────────────────────
 
-// MVP: store requests in localStorage. ── BACKEND ──: POST to a feedback endpoint.
 function saveFeedback(text) {
   try {
     const all = JSON.parse(localStorage.getItem("stackpage_feedback") || "[]");
     all.push({ text, at: Date.now() });
     localStorage.setItem("stackpage_feedback", JSON.stringify(all));
   } catch (_) {}
+  remoteFeedback(text);  // also send to Supabase so requests reach you
 }
 
 function FeedbackModal({ onClose }) {
