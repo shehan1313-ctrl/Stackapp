@@ -565,7 +565,11 @@
       min-height: 60vh; text-align: center; padding: 40px 20px; gap: 16px;
     }
     .not-found-title { font-family: var(--font-serif); font-size: 28px; }
-    .not-found-sub { font-size: 14px; color: var(--text-muted); }
+    .not-found-sub { font-size: 14px; color: var(--text-muted); max-width: 360px; line-height: 1.55; }
+    .not-found-emoji { font-size: 40px; }
+    .loading-state { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 60vh; gap: 14px; }
+    .topbar-examples { color: var(--text-muted); }
+    @media (max-width: 430px) { .topbar-examples { display: none; } }
     .scroll-pad { height: 8px; }
     .search-input-wrap { padding: 0 20px 12px; }
     .add-panel { padding: 0 20px; }
@@ -917,6 +921,38 @@
     .reel-hl-eyebrow { font-size: 9px; font-weight: 700; letter-spacing: 0.8px; text-transform: uppercase; color: var(--text-dim); margin-bottom: 2px; }
     .reel-hl-label { font-size: 13px; color: var(--text); font-weight: 700; line-height: 1.3; }
     .reel-hl-quote { font-family: var(--font-serif); font-style: italic; font-size: 13px; color: var(--text); line-height: 1.35; }
+
+    /* Examples + static pages */
+    .static-page { background: var(--bg); min-height: 100vh; }
+    .examples-wrap, .static-wrap { max-width: 760px; margin: 0 auto; padding: 28px 20px 48px; }
+    .examples-head { margin-bottom: 24px; }
+    .examples-title { font-family: var(--font-serif); font-size: 34px; letter-spacing: -0.5px; line-height: 1.1; margin-bottom: 10px; }
+    .examples-sub { font-size: 15px; color: var(--text-muted); line-height: 1.55; max-width: 540px; }
+    .examples-grid { display: grid; grid-template-columns: 1fr; gap: 14px; }
+    .example-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r); padding: 18px; cursor: pointer; box-shadow: 0 8px 22px var(--shadow); transition: transform 0.12s ease, box-shadow 0.12s ease; }
+    .example-card:hover { transform: translateY(-2px); box-shadow: 0 14px 30px var(--shadow); }
+    .example-card-head { display: flex; align-items: center; gap: 12px; }
+    .example-card-name { font-size: 16px; font-weight: 700; letter-spacing: -0.2px; }
+    .example-card-cred { font-size: 12.5px; color: var(--text-muted); margin-top: 1px; }
+    .example-card-meta { font-size: 12.5px; color: var(--text-muted); margin-top: 12px; display: flex; gap: 5px; flex-wrap: wrap; }
+    .example-card-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px; }
+    .example-tag { display: inline-flex; align-items: center; gap: 6px; font-size: 11.5px; color: var(--text-muted); background: var(--surface2); border-radius: 99px; padding: 4px 10px; }
+    .example-card-cta { margin-top: 14px; font-size: 13px; font-weight: 600; color: var(--accent); }
+    .static-title { font-family: var(--font-serif); font-size: 34px; letter-spacing: -0.5px; margin-bottom: 6px; }
+    .static-updated { font-size: 12.5px; color: var(--text-dim); margin-bottom: 22px; }
+    .static-h2 { font-size: 17px; font-weight: 700; margin: 24px 0 8px; }
+    .static-p { font-size: 15px; color: var(--text-muted); line-height: 1.65; margin-bottom: 12px; }
+    @media (min-width: 1000px) {
+      .examples-wrap { max-width: 920px; }
+      .examples-grid { grid-template-columns: 1fr 1fr; gap: 18px; }
+    }
+
+    /* Home social-proof strip */
+    .home-proof { display: flex; justify-content: center; gap: 0; flex-wrap: wrap; margin: 4px 20px 30px; padding: 18px 14px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--r); }
+    .home-proof-stat { flex: 1; min-width: 110px; text-align: center; padding: 6px 10px; }
+    .home-proof-num { font-family: var(--font-serif); font-size: 26px; color: var(--accent); line-height: 1; }
+    .home-proof-lbl { font-size: 11.5px; color: var(--text-muted); margin-top: 5px; letter-spacing: 0.2px; }
+    .home-proof-divider { width: 1px; background: var(--border); align-self: stretch; }
 
     /* Site footer */
     .site-footer { margin-top: 40px; padding: 36px 20px 22px; border-top: 1px solid var(--border); background: var(--surface2); }
@@ -1402,9 +1438,60 @@ const DEMO_STACK = {
   ],
 };
 
+// A few more curated example personas so the site feels populated.
+const EXAMPLE_STACKS = [
+  DEMO_STACK,
+  {
+    username: "priya", name: "Priya Anand", handle: "@priyaglows", credential: "Skin & sleep optimizer · NYC",
+    avatarUrl: "/priya-avatar.jpg", verified: true, bioAge: 29, chronoAge: 34,
+    highlight: { type: "metric", value: "52", label: "Resting HR" },
+    items: [
+      { id: 1, category: "Supplements", name: "Collagen Peptides", dose: "10g", freq: "Once daily", years: 2, cost: 28, costPeriod: "mo", why: "Visible skin elasticity + nail strength after 3 months.", affiliateUrl: "", tags: ["skin"] },
+      { id: 2, category: "Supplements", name: "Omega-3", dose: "2g EPA/DHA", freq: "Once daily", years: 3, cost: 30, costPeriod: "mo", why: "Skin hydration and an anti-inflammatory baseline.", affiliateUrl: "", tags: ["skin","inflammation"] },
+      { id: 3, category: "Supplements", name: "Magnesium Glycinate", dose: "400mg", freq: "Nightly", years: 2, cost: 20, costPeriod: "mo", why: "Falling asleep faster, deeper sleep on Oura.", affiliateUrl: "", tags: ["sleep"] },
+      { id: 4, category: "Supplements", name: "Vitamin D3 + K2", dose: "4000 IU", freq: "Once daily", years: 2, cost: 16, costPeriod: "mo", why: "Was deficient — energy and mood lifted noticeably.", affiliateUrl: "", tags: ["immunity"] },
+      { id: 5, category: "Supplements", name: "Probiotics", freq: "Once daily", years: 1, cost: 34, costPeriod: "mo", why: "Gut + skin axis — less bloating, clearer skin.", affiliateUrl: "", tags: ["gut","skin"] },
+      { id: 6, category: "Wearables", name: "Oura Ring Gen 4", years: 2, cost: 30, costPeriod: "mo", why: "Tracks sleep stages, temperature, and cycle.", affiliateUrl: "", tags: ["sleep"] },
+      { id: 7, category: "Sleep", name: "Eight Sleep Pod 4", years: 1, cost: 89, costPeriod: "mo", why: "Cool sleep transformed my deep-sleep numbers.", affiliateUrl: "", tags: ["sleep"] },
+      { id: 8, category: "Mind", name: "Daily meditation (Calm)", freq: "10 min", years: 2, cost: 8, costPeriod: "mo", why: "Lower resting HR and far less reactive.", affiliateUrl: "", tags: ["stress"] },
+    ],
+  },
+  {
+    username: "tom", name: "Tom Brenner", handle: "@tom.ageless", credential: "Reversing my age at 64",
+    avatarUrl: "/tom-avatar.jpg", verified: true, bioAge: 52, chronoAge: 64,
+    highlight: { type: "metric", value: "52", label: "Biological age" },
+    items: [
+      { id: 1, category: "Supplements", name: "NMN", dose: "1g", freq: "Once daily", years: 4, cost: 60, costPeriod: "mo", why: "NAD+ support — the cornerstone of my longevity protocol.", affiliateUrl: "", tags: ["longevity"] },
+      { id: 2, category: "Supplements", name: "Resveratrol", dose: "500mg", freq: "Once daily", years: 4, cost: 24, costPeriod: "mo", why: "Stacked with NMN for sirtuin activation.", affiliateUrl: "", tags: ["longevity"] },
+      { id: 3, category: "Supplements", name: "CoQ10", dose: "200mg", freq: "Once daily", years: 5, cost: 22, costPeriod: "mo", why: "Heart + mitochondrial support, essential on a statin.", affiliateUrl: "", tags: ["heart"] },
+      { id: 4, category: "Supplements", name: "Omega-3", dose: "3g EPA/DHA", freq: "Once daily", years: 6, cost: 32, costPeriod: "mo", why: "Cardiovascular and cognitive insurance.", affiliateUrl: "", tags: ["heart"] },
+      { id: 5, category: "Supplements", name: "Vitamin D3 + K2", dose: "5000 IU", freq: "Once daily", years: 5, cost: 18, costPeriod: "mo", why: "Bone density + immune resilience.", affiliateUrl: "", tags: ["bones"] },
+      { id: 6, category: "Supplements", name: "Berberine", dose: "500mg", freq: "2× daily", years: 2, cost: 26, costPeriod: "mo", why: "Keeps fasting glucose in a tight range.", affiliateUrl: "", tags: ["metabolic"] },
+      { id: 7, category: "Wearables", name: "Oura Ring Gen 4", years: 3, cost: 30, costPeriod: "mo", why: "HRV and sleep are my daily readiness gauge.", affiliateUrl: "", tags: ["recovery"] },
+      { id: 8, category: "Labs", name: "Function Health", freq: "2×/year", years: 2, cost: 42, costPeriod: "mo", why: "100+ biomarkers trended — how I know it's working.", affiliateUrl: "", tags: ["preventive"] },
+      { id: 9, category: "Labs", name: "Superpower Biannual Bloodwork", freq: "2×/year", years: 2, cost: 49, costPeriod: "mo", why: "Hormones, lipids, inflammation — twice a year.", affiliateUrl: "", tags: ["preventive"] },
+      { id: 10, category: "Fitness", name: "Strength + Zone 2", freq: "5×/week", years: 8, cost: 0, costPeriod: "mo", why: "Muscle is the organ of longevity. Non-negotiable.", affiliateUrl: "", tags: ["strength"] },
+    ],
+  },
+  {
+    username: "lena", name: "Lena Fischer", handle: "@lenaminimal", credential: "Maximal results, minimal stack",
+    avatarUrl: "/lena-avatar.jpg", verified: true, bioAge: 36, chronoAge: 41,
+    highlight: { type: "tip", text: "You don't need a huge stack. Nail sleep, protein, and Zone 2 first." },
+    items: [
+      { id: 1, category: "Supplements", name: "Creatine", dose: "5g", freq: "Once daily", years: 5, cost: 12, costPeriod: "mo", why: "Strength + cognition. The one supplement I'd never drop.", affiliateUrl: "", tags: ["strength"] },
+      { id: 2, category: "Supplements", name: "Vitamin D3 + K2", dose: "4000 IU", freq: "Once daily", years: 3, cost: 14, costPeriod: "mo", why: "Cheap insurance I was deficient without.", affiliateUrl: "", tags: ["immunity"] },
+      { id: 3, category: "Supplements", name: "Magnesium Glycinate", dose: "300mg", freq: "Nightly", years: 2, cost: 16, costPeriod: "mo", why: "Better sleep, fewer cramps after training.", affiliateUrl: "", tags: ["sleep"] },
+      { id: 4, category: "Wearables", name: "Apple Watch Series 10", years: 2, cost: 0, costPeriod: "mo", why: "Already had it — tracks Zone 2 and sleep well enough.", affiliateUrl: "", tags: ["tracking"] },
+      { id: 5, category: "Fitness", name: "Walking + 2 lifts/week", freq: "Daily walk", years: 4, cost: 0, costPeriod: "mo", why: "Consistency beats intensity. 9k steps + two lifts.", affiliateUrl: "", tags: ["movement"] },
+      { id: 6, category: "Nutrition", name: "1g protein / lb", freq: "Daily", years: 3, cost: 0, costPeriod: "mo", why: "The highest-leverage diet change I ever made.", affiliateUrl: "", tags: ["protein"] },
+    ],
+  },
+];
+
 function getStack(u) {
   if (u === "shehan") return SHEHAN_STACK;
-  if (u === DEMO_STACK.username) return DEMO_STACK;
+  const ex = EXAMPLE_STACKS.find(s => s.username === u);
+  if (ex) return ex;
   return getStacks()[u] || null;
 }
 function isUserStack(u) { return u !== "shehan" && !!getStacks()[u]; }
@@ -1538,8 +1625,11 @@ async function shareCardTo(platform, node, stack, cost, onToast) {
   if (!node || !window.htmlToImage) { onToast && onToast("Sharing not available"); return; }
   const pageUrl = `${window.location.origin}${window.location.pathname}#/stack/${stack.username}`;
   const text = `My entire health stack is ${bjPercent(cost)}% of Bryan Johnson's budget 🧬 Same longevity game, a tiny fraction of the cost.`;
+  // html-to-image logs caught DOMExceptions while trying to read cross-origin font CSS — harmless, just noisy. Mute during capture.
+  const _err = console.error;
+  console.error = (...a) => { if (/cssRules|inlining remote css|remote stylesheet|reading CSS rules/i.test(String(a[0] || ""))) return; _err.apply(console, a); };
   try {
-    const dataUrl = await window.htmlToImage.toPng(node, { pixelRatio: 2, cacheBust: true, width: 540, height: 540, skipFonts: true, fontEmbedCSS: "" });
+    const dataUrl = await window.htmlToImage.toPng(node, { pixelRatio: 2, cacheBust: true, width: 540, height: 540, skipFonts: true, fontEmbedCSS: "" }).finally(() => { console.error = _err; });
     const blob = await (await fetch(dataUrl)).blob();
     const file = new File([blob], "healthstack-card.png", { type: "image/png" });
     track("share_card", { username: stack.username, platform });
@@ -1700,6 +1790,10 @@ function parseHash(h) {
   if (parts[0] === "earnings" && parts[1]) return { route: "earnings", username: parts[1] };
   if (parts[0] === "build") return { route: "build" };
   if (parts[0] === "tour") return { route: "tour" };
+  if (parts[0] === "examples") return { route: "examples" };
+  if (parts[0] === "about") return { route: "about" };
+  if (parts[0] === "privacy") return { route: "privacy" };
+  if (parts[0] === "terms") return { route: "terms" };
   return { route: "404" };
 }
 function navigate(path) { window.location.hash = path; }
@@ -1782,6 +1876,7 @@ function Topbar({ rightContent }) {
     <div className="topbar">
       <Logo onClick={() => navigate("#/")} />
       <div className="topbar-actions">
+        <button className="btn btn-ghost btn-sm topbar-examples" onClick={() => navigate("#/examples")}>Examples</button>
         <AuthButton />
         {rightContent || <BuildCTA />}
       </div>
@@ -2413,16 +2508,23 @@ function Healthstack({ username }) {
 
   if (loading) return (
     <div><Topbar />
-      <div className="not-found"><div className="not-found-sub">Loading @{username}…</div></div>
+      <div className="loading-state">
+        <div className="scan-spinner" />
+        <div className="not-found-sub">Loading @{username}…</div>
+      </div>
     </div>
   );
 
   if (!stack) return (
     <div><Topbar />
       <div className="not-found">
+        <div className="not-found-emoji">🔍</div>
         <div className="not-found-title">Stack not found</div>
-        <div className="not-found-sub">No stack for <strong>@{username}</strong></div>
-        <button className="btn btn-primary" onClick={() => navigate("#/build")}>Build yours →</button>
+        <div className="not-found-sub">We couldn't find a stack for <strong>@{username}</strong>. It may have been removed, or the link is wrong.</div>
+        <div style={{ display: "flex", gap: 10, flexWrap: "wrap", justifyContent: "center" }}>
+          <button className="btn btn-primary" onClick={() => navigate("#/build")}>Build your stack →</button>
+          <button className="btn btn-outline" onClick={() => navigate("#/examples")}>Browse examples</button>
+        </div>
       </div>
     </div>
   );
@@ -3513,6 +3615,7 @@ function HomePage() {
       <div className="topbar">
         <Logo onClick={() => navigate("#/")} />
         <div className="topbar-actions">
+          <button className="btn btn-ghost btn-sm topbar-examples" onClick={() => navigate("#/examples")}>Examples</button>
           <AuthButton />
           <BuildCTA />
         </div>
@@ -3529,6 +3632,15 @@ function HomePage() {
           <BuildCTA className="btn btn-primary" style={{ padding: "14px 22px", fontSize: 15 }} buildLabel="Build my stack — free →" updateLabel="Update my stack →" />
         </div>
         <div className="home-trust">Free to share · No account to start · Setup in 2 min</div>
+      </div>
+
+      {/* SOCIAL PROOF */}
+      <div className="home-proof anim-1">
+        <div className="home-proof-stat"><div className="home-proof-num">2 min</div><div className="home-proof-lbl">to build your stack</div></div>
+        <div className="home-proof-divider" />
+        <div className="home-proof-stat"><div className="home-proof-num">100%</div><div className="home-proof-lbl">free to share</div></div>
+        <div className="home-proof-divider" />
+        <div className="home-proof-stat"><div className="home-proof-num">9</div><div className="home-proof-lbl">stack categories</div></div>
       </div>
 
       {/* WHAT IS A HEALTH STACK — definition */}
@@ -3581,48 +3693,7 @@ function HomePage() {
         <div className="home-trust" style={{ marginTop: 12 }}>Takes 2 minutes · No account needed</div>
       </div>
 
-      {/* SITE FOOTER */}
-      <footer className="site-footer">
-        <div className="sf-top">
-          <div className="sf-brand">
-            <div className="brand" style={{ cursor: "default" }}>
-              <svg className="brand-mark" viewBox="0 0 40 40" fill="none" aria-hidden="true">
-                <rect x="6" y="24" width="28" height="6" rx="3" fill="#CE5A2E"/>
-                <rect x="9" y="15" width="22" height="6" rx="3" fill="#E89A4B"/>
-                <rect x="12" y="6" width="16" height="6" rx="3" fill="#E8B57A"/>
-              </svg>
-              <span className="brand-word">health<b>stack</b></span>
-            </div>
-            <p className="sf-tagline">The fun way to share what you take, wear & test to optimize your health.</p>
-            <a className="sf-social" href="https://x.com" target="_blank" rel="noopener noreferrer" aria-label="X">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
-            </a>
-          </div>
-          <div className="sf-cols">
-            <div className="sf-col">
-              <div className="sf-col-title">Product</div>
-              <button className="sf-link" onClick={() => navigate("#/build")}>Build your stack</button>
-              <button className="sf-link" onClick={() => navigate(`#/stack/${exampleUser}`)}>See an example</button>
-              <button className="sf-link" onClick={() => setShowInvite(true)}>Invite a friend</button>
-            </div>
-            <div className="sf-col">
-              <div className="sf-col-title">Company</div>
-              <a className="sf-link" href="mailto:hello@healthstack.app">Contact</a>
-              <a className="sf-link" href="mailto:hello@healthstack.app">About</a>
-              <a className="sf-link" href="mailto:press@healthstack.app">Press</a>
-            </div>
-            <div className="sf-col">
-              <div className="sf-col-title">Legal</div>
-              <a className="sf-link" href="mailto:hello@healthstack.app">Privacy</a>
-              <a className="sf-link" href="mailto:hello@healthstack.app">Terms</a>
-            </div>
-          </div>
-        </div>
-        <div className="sf-bottom">
-          <span>© {new Date().getFullYear()} healthstack</span>
-          <span className="sf-disclaimer">Not medical advice. Always consult a professional.</span>
-        </div>
-      </footer>
+      <SiteFooter onInvite={() => setShowInvite(true)} />
 
       {msg && <div className="toast">{msg}</div>}
       {showInvite && <InviteModal username={myUsername} onToast={toast} onClose={() => setShowInvite(false)} />}
@@ -3706,6 +3777,175 @@ function Landing() {
   );
 }
 
+// ── STATIC PAGE CONTENT ────────────────────────────────────────────────────────
+const STATIC_CONTENT = {
+  about: {
+    title: "About healthstack",
+    body: [
+      { p: "healthstack is the fun, honest way to share exactly what you take, wear, and test to optimize your health — and to learn from the people you admire." },
+      { h: "Why we built it" },
+      { p: "Everyone's quietly running their own health experiment — supplements, wearables, labs, habits. That knowledge is scattered across DMs, screenshots, and group chats. healthstack turns your protocol into one clean, shareable page so friends can actually see what works, why, and what it costs." },
+      { h: "How it works" },
+      { p: "Build your stack in about two minutes — add items, the dosage and frequency, and a short \"why\" for each. Share it with one link or a QR code. Ask friends to share theirs back. No account required to start." },
+      { h: "Our promise" },
+      { p: "We keep it honest: real items, real reasons, transparent costs. healthstack is for sharing and learning — it is not medical advice. Always talk to a qualified professional before changing your protocol." },
+      { p: "Questions or press? Email hello@healthstack.app." },
+    ],
+  },
+  privacy: {
+    title: "Privacy Policy",
+    updated: "June 2026",
+    body: [
+      { p: "This Privacy Policy explains what information healthstack (\"we\", \"us\") collects and how we use it. By using the site you agree to this policy." },
+      { h: "What we collect" },
+      { p: "Stack content you create (item names, dosages, notes, costs, photos you upload) and, if you sign in, your email address. We also collect basic, privacy-friendly usage analytics (pages viewed, anonymous device identifiers) to improve the product." },
+      { h: "How we use it" },
+      { p: "To save and display your stack, let you edit it across devices, power sharing links, and understand aggregate usage. We do not sell your personal information." },
+      { h: "What's public" },
+      { p: "Anything on your stack page is public by design — that's the point of a shareable link. Don't add information you don't want shared. You can edit or remove items at any time." },
+      { h: "Storage & third parties" },
+      { p: "Data is stored with our hosting and database providers (e.g. Supabase, Vercel). Sign-in emails are sent via an email provider. Analytics are processed by our analytics provider. These vendors process data on our behalf." },
+      { h: "Affiliate links" },
+      { p: "Some \"Get it\" links may be affiliate links, meaning we (or the stack owner) could earn a commission if you purchase. This never changes the price you pay." },
+      { h: "Your choices" },
+      { p: "You can request deletion of your stack and account data at any time by emailing hello@healthstack.app." },
+    ],
+  },
+  terms: {
+    title: "Terms of Service",
+    updated: "June 2026",
+    body: [
+      { p: "Welcome to healthstack. By using the site you agree to these Terms." },
+      { h: "Not medical advice" },
+      { p: "healthstack is for informational and entertainment purposes only and is not medical, health, or professional advice. Content is shared by individuals about their own routines and is not a recommendation. Always consult a qualified healthcare professional before starting, stopping, or changing any supplement, device, test, or health practice." },
+      { h: "Your content" },
+      { p: "You are responsible for what you post and confirm you have the right to share it. Keep it accurate and lawful. You retain ownership of your content and grant us a license to display it as part of the service." },
+      { h: "Affiliate disclosure" },
+      { p: "Links on stack pages may be affiliate links that earn a commission on qualifying purchases at no extra cost to you. Earnings features are not yet live and are offered subject to future terms." },
+      { h: "Acceptable use" },
+      { p: "Don't misuse the service: no illegal, harmful, deceptive, or infringing content, and no attempts to disrupt or abuse the platform. We may remove content or suspend access that violates these Terms." },
+      { h: "Disclaimer & liability" },
+      { p: "The service is provided \"as is\" without warranties of any kind. To the maximum extent permitted by law, we are not liable for any damages arising from your use of the site or reliance on its content." },
+      { h: "Contact" },
+      { p: "Questions about these Terms? Email hello@healthstack.app." },
+    ],
+  },
+};
+
+// ── SITE FOOTER (reused across pages) ──────────────────────────────────────────
+function SiteFooter({ onInvite }) {
+  return (
+    <footer className="site-footer">
+      <div className="sf-top">
+        <div className="sf-brand">
+          <div className="brand" style={{ cursor: "pointer" }} onClick={() => navigate("#/")}>
+            <svg className="brand-mark" viewBox="0 0 40 40" fill="none" aria-hidden="true">
+              <rect x="6" y="24" width="28" height="6" rx="3" fill="#CE5A2E"/>
+              <rect x="9" y="15" width="22" height="6" rx="3" fill="#E89A4B"/>
+              <rect x="12" y="6" width="16" height="6" rx="3" fill="#E8B57A"/>
+            </svg>
+            <span className="brand-word">health<b>stack</b></span>
+          </div>
+          <p className="sf-tagline">The fun way to share what you take, wear & test to optimize your health.</p>
+          <a className="sf-social" href="https://x.com" target="_blank" rel="noopener noreferrer" aria-label="X">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+          </a>
+        </div>
+        <div className="sf-cols">
+          <div className="sf-col">
+            <div className="sf-col-title">Product</div>
+            <button className="sf-link" onClick={() => navigate("#/build")}>Build your stack</button>
+            <button className="sf-link" onClick={() => navigate("#/examples")}>See examples</button>
+            <button className="sf-link" onClick={() => onInvite ? onInvite() : navigate("#/")}>Invite a friend</button>
+          </div>
+          <div className="sf-col">
+            <div className="sf-col-title">Company</div>
+            <button className="sf-link" onClick={() => navigate("#/about")}>About</button>
+            <a className="sf-link" href="mailto:hello@healthstack.app">Contact</a>
+          </div>
+          <div className="sf-col">
+            <div className="sf-col-title">Legal</div>
+            <button className="sf-link" onClick={() => navigate("#/privacy")}>Privacy</button>
+            <button className="sf-link" onClick={() => navigate("#/terms")}>Terms</button>
+          </div>
+        </div>
+      </div>
+      <div className="sf-bottom">
+        <span>© {new Date().getFullYear()} healthstack</span>
+        <span className="sf-disclaimer">Not medical advice · We may earn commissions from links. Always consult a professional.</span>
+      </div>
+    </footer>
+  );
+}
+
+// ── EXAMPLES PAGE ──────────────────────────────────────────────────────────────
+function ExamplesPage() {
+  return (
+    <div className="static-page">
+      <Topbar />
+      <div className="examples-wrap">
+        <div className="examples-head">
+          <div className="home-section-label" style={{ textAlign: "left", marginBottom: 8 }}>REAL HEALTHSTACKS</div>
+          <h1 className="examples-title">See how others optimize.</h1>
+          <p className="examples-sub">Browse real example stacks — every supplement, wearable, and lab, with the why behind each. Then build your own in 2 minutes.</p>
+        </div>
+        <div className="examples-grid">
+          {EXAMPLE_STACKS.map(s => {
+            const initials = s.name.split(" ").map(w => w[0]).join("").slice(0, 2).toUpperCase();
+            const cost = totalCost(s.items);
+            return (
+              <div className="example-card" key={s.username} onClick={() => navigate(`#/stack/${s.username}`)}>
+                <div className="example-card-head">
+                  <div className="avatar" style={{ width: 52, height: 52, fontSize: 18, backgroundImage: `url(${s.avatarUrl || DEFAULT_AVATAR})`, backgroundSize: "cover", backgroundPosition: "center" }} />
+                  <div>
+                    <div className="example-card-name">{s.name}</div>
+                    <div className="example-card-cred">{s.credential || s.handle}</div>
+                  </div>
+                </div>
+                <div className="example-card-meta">
+                  <span>{s.items.length} items</span>
+                  {cost > 0 && <span>· ~${cost}/mo</span>}
+                  {s.highlight && s.highlight.type === "metric" && <span>· {s.highlight.value} {s.highlight.label}</span>}
+                </div>
+                <div className="example-card-tags">
+                  {[...new Set(s.items.map(i => i.category))].slice(0, 5).map(c => (
+                    <span className="example-tag" key={c}><span className="reel-dot" style={{ background: CATEGORY_COLORS[c] || CATEGORY_COLORS.Other }} />{c}</span>
+                  ))}
+                </div>
+                <div className="example-card-cta">View stack →</div>
+              </div>
+            );
+          })}
+        </div>
+        <div style={{ textAlign: "center", marginTop: 32 }}>
+          <BuildCTA className="btn btn-primary" style={{ padding: "14px 24px", fontSize: 15 }} buildLabel="Build my stack — free →" updateLabel="Update my stack →" />
+        </div>
+      </div>
+      <SiteFooter />
+    </div>
+  );
+}
+
+// ── STATIC PAGES (About / Privacy / Terms) ─────────────────────────────────────
+function StaticPage({ page }) {
+  const c = STATIC_CONTENT[page] || { title: "Page", body: [] };
+  return (
+    <div className="static-page">
+      <Topbar />
+      <div className="static-wrap">
+        <h1 className="static-title">{c.title}</h1>
+        {c.updated && <div className="static-updated">Last updated {c.updated}</div>}
+        {c.body.map((block, i) => (
+          block.h
+            ? <h2 className="static-h2" key={i}>{block.h}</h2>
+            : <p className="static-p" key={i}>{block.p}</p>
+        ))}
+      </div>
+      <SiteFooter />
+    </div>
+  );
+}
+
 // ── APP ───────────────────────────────────────────────────────────────────────
 
 function App() {
@@ -3725,6 +3965,10 @@ function App() {
   if (loc.route === "stack") return <Healthstack key={loc.username} username={loc.username} />;
   if (loc.route === "earnings") return <EarningsPage key={loc.username} username={loc.username} />;
   if (loc.route === "build") return <BuildFlow />;
+  if (loc.route === "examples") return <ExamplesPage />;
+  if (loc.route === "about") return <StaticPage page="about" />;
+  if (loc.route === "privacy") return <StaticPage page="privacy" />;
+  if (loc.route === "terms") return <StaticPage page="terms" />;
   return (
     <div><Topbar />
       <div className="not-found">
