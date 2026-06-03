@@ -943,6 +943,9 @@
 <script type="text/babel">
 const { useState, useEffect, useRef, useCallback } = React;
 
+// Default illustrated avatar shown when a stack has no uploaded photo.
+const DEFAULT_AVATAR = "data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A//www.w3.org/2000/svg%27%20viewBox%3D%270%200%20100%20100%27%3E%3Cdefs%3E%3ClinearGradient%20id%3D%27g%27%20x1%3D%270%27%20y1%3D%270%27%20x2%3D%271%27%20y2%3D%271%27%3E%3Cstop%20offset%3D%270%27%20stop-color%3D%27%23EFE7DA%27/%3E%3Cstop%20offset%3D%271%27%20stop-color%3D%27%23DCD0BD%27/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect%20width%3D%27100%27%20height%3D%27100%27%20fill%3D%27url%28%23g%29%27/%3E%3Ccircle%20cx%3D%2750%27%20cy%3D%2740%27%20r%3D%2715%27%20fill%3D%27%23BBA486%27/%3E%3Cpath%20d%3D%27M22%2084c0-16%2012-26%2028-26s28%2010%2028%2026z%27%20fill%3D%27%23BBA486%27/%3E%3C/svg%3E";
+
 // Brand logo — "ascending stack" mark + wordmark
 function Logo({ onClick }) {
   return (
@@ -1695,9 +1698,8 @@ function ProfileSection({ stack }) {
   return (
     <div className="profile-section anim-0">
       <div className="profile-top">
-        <div className="avatar" style={stack.avatarUrl ? { backgroundImage: `url(${stack.avatarUrl})`, backgroundSize: "cover", backgroundPosition: "center" } : undefined}>
-          {!stack.avatarUrl && initials}
-        </div>
+        <div className="avatar" style={{ backgroundImage: `url(${stack.avatarUrl || DEFAULT_AVATAR})`, backgroundSize: "cover", backgroundPosition: "center" }} />
+
         <div className="profile-info">
           <div className="profile-name">{stack.name}</div>
           <div className="profile-handle">{stack.handle}</div>
@@ -2709,8 +2711,8 @@ function BuildFlow() {
             {/* Live preview of the page they're about to create */}
             <div className="build-preview">
               <div className="build-preview-top">
-                <div className="avatar" style={{ width: 48, height: 48, fontSize: 18, ...(profile.avatarUrl ? { backgroundImage: `url(${profile.avatarUrl})`, backgroundSize: "cover", backgroundPosition: "center" } : {}) }}>
-                  {!profile.avatarUrl && (profile.name || "Y").split(" ").map(w => w[0]).join("").slice(0,2).toUpperCase()}
+                <div className="avatar" style={{ width: 48, height: 48, fontSize: 18, backgroundImage: `url(${profile.avatarUrl || DEFAULT_AVATAR})`, backgroundSize: "cover", backgroundPosition: "center" }}>
+                  {false && (profile.name || "Y").split(" ").map(w => w[0]).join("").slice(0,2).toUpperCase()}
                 </div>
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <div className="build-preview-name">{profile.name || "Your name"}</div>
@@ -3277,9 +3279,8 @@ function ReelBlock({ stack }) {
     <div className="reel-dash">
       <div className="reel-dash-rail">
         <div className="reel-head">
-          <div className="avatar" style={{ width: 38, height: 38, fontSize: 14, ...(stack && stack.avatarUrl ? { backgroundImage: `url(${stack.avatarUrl})`, backgroundSize: "cover", backgroundPosition: "center" } : {}) }}>
-            {!(stack && stack.avatarUrl) && initials}
-          </div>
+          <div className="avatar" style={{ width: 38, height: 38, fontSize: 14, backgroundImage: `url(${(stack && stack.avatarUrl) || DEFAULT_AVATAR})`, backgroundSize: "cover", backgroundPosition: "center" }} />
+
           <div>
             <div style={{ fontSize: 13, fontWeight: 700 }}>{name}</div>
             <div style={{ fontSize: 11, color: "var(--text-muted)" }}>{handle}</div>
