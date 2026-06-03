@@ -873,7 +873,15 @@
       .home-hero { padding-top: 56px; }
       .home-values { display: grid; grid-template-columns: 1fr 1fr; gap: 4px 36px; }
       .home-value { border-bottom: 1px solid var(--border); }
-      .home-reel { max-width: 760px; margin: 0 auto; }
+      /* Reel becomes a desktop-native dashboard preview: left rail + wide item grid */
+      .home-reel { max-width: 1000px; height: 430px; margin: 0 auto; }
+      .reel-dash { display: grid; grid-template-columns: 248px 1fr; gap: 8px 26px; padding: 10px 22px; align-items: start; }
+      .reel-dash-rail { display: flex; flex-direction: column; }
+      .reel-dash-main { min-width: 0; }
+      .reel-head { padding: 8px 0 8px; }
+      .reel-cat { padding: 12px 0 8px; }
+      .reel-cat:first-child { padding-top: 4px; }
+      .reel-grid { grid-template-columns: repeat(3, 1fr); padding: 0; gap: 10px; }
       .home-def, .home-usecase, .home-footer { max-width: 760px; margin-left: auto; margin-right: auto; }
 
       /* BUILD — focused centered form on the wide canvas */
@@ -3114,40 +3122,46 @@ function ReelBlock({ stack }) {
     : REEL_STACK;
   const name = stack ? stack.name : "Shehan Chandrasekera";
   const handle = stack ? stack.handle : "@TheCryptoCPA";
-  const reelCost = stack && stack.items && stack.items.length ? totalCost(stack.items) : 286;
+  // Use the stack's real monthly total; fall back to a representative figure so the
+  // demo reel's Bryan card always renders (real stacks with costs show their true %).
+  const reelCost = (stack && stack.items && stack.items.length ? totalCost(stack.items) : 0) || 286;
   const initials = (name || "").split(" ").map(w => w[0]).join("").slice(0, 2).toUpperCase();
   return (
-    <div>
-      <div className="reel-head">
-        <div className="avatar" style={{ width: 38, height: 38, fontSize: 14, ...(stack && stack.avatarUrl ? { backgroundImage: `url(${stack.avatarUrl})`, backgroundSize: "cover", backgroundPosition: "center" } : {}) }}>
-          {!(stack && stack.avatarUrl) && initials}
-        </div>
-        <div>
-          <div style={{ fontSize: 13, fontWeight: 700 }}>{name}</div>
-          <div style={{ fontSize: 11, color: "var(--text-muted)" }}>{handle}</div>
-        </div>
-      </div>
-      <BryanCompareCard cost={reelCost} handle={handle} compact />
-      {groups.map((g, gi) => (
-        <div key={gi}>
-          <div className="reel-cat"><span className="reel-dot" style={{ background: CATEGORY_COLORS[g.cat] }} />{g.cat}</div>
-          <div className="reel-grid">
-            {g.items.map((nm, i) => {
-              const color = CATEGORY_COLORS[g.cat];
-              return (
-                <div key={i} className="reel-tile">
-                  <div className="reel-chip" style={{ background: `linear-gradient(150deg, #fff, ${hexA(color, 0.12)})`, color }}>
-                    {usesInitials(g.cat)
-                      ? <span style={{ fontFamily: "var(--font-serif)", fontStyle: "italic" }}>{itemInitials(nm)}</span>
-                      : <span>{CATEGORY_EMOJI[g.cat] || "✦"}</span>}
-                  </div>
-                  <div className="reel-name">{nm}</div>
-                </div>
-              );
-            })}
+    <div className="reel-dash">
+      <div className="reel-dash-rail">
+        <div className="reel-head">
+          <div className="avatar" style={{ width: 38, height: 38, fontSize: 14, ...(stack && stack.avatarUrl ? { backgroundImage: `url(${stack.avatarUrl})`, backgroundSize: "cover", backgroundPosition: "center" } : {}) }}>
+            {!(stack && stack.avatarUrl) && initials}
+          </div>
+          <div>
+            <div style={{ fontSize: 13, fontWeight: 700 }}>{name}</div>
+            <div style={{ fontSize: 11, color: "var(--text-muted)" }}>{handle}</div>
           </div>
         </div>
-      ))}
+        <BryanCompareCard cost={reelCost} handle={handle} compact />
+      </div>
+      <div className="reel-dash-main">
+        {groups.map((g, gi) => (
+          <div key={gi}>
+            <div className="reel-cat"><span className="reel-dot" style={{ background: CATEGORY_COLORS[g.cat] }} />{g.cat}</div>
+            <div className="reel-grid">
+              {g.items.map((nm, i) => {
+                const color = CATEGORY_COLORS[g.cat];
+                return (
+                  <div key={i} className="reel-tile">
+                    <div className="reel-chip" style={{ background: `linear-gradient(150deg, #fff, ${hexA(color, 0.12)})`, color }}>
+                      {usesInitials(g.cat)
+                        ? <span style={{ fontFamily: "var(--font-serif)", fontStyle: "italic" }}>{itemInitials(nm)}</span>
+                        : <span>{CATEGORY_EMOJI[g.cat] || "✦"}</span>}
+                    </div>
+                    <div className="reel-name">{nm}</div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }
