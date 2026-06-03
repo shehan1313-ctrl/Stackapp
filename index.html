@@ -851,6 +851,20 @@
     .reel-hl-label { font-size: 13px; color: var(--text); font-weight: 700; line-height: 1.3; }
     .reel-hl-quote { font-family: var(--font-serif); font-style: italic; font-size: 13px; color: var(--text); line-height: 1.35; }
 
+    /* Site footer */
+    .site-footer { margin-top: 40px; padding: 36px 20px 22px; border-top: 1px solid var(--border); background: var(--surface2); }
+    .sf-top { display: flex; flex-direction: column; gap: 28px; }
+    .sf-brand { max-width: 300px; }
+    .sf-brand .brand-word { font-size: 17px; }
+    .sf-tagline { font-size: 13px; color: var(--text-muted); line-height: 1.55; margin: 12px 0 14px; }
+    .sf-social { display: inline-flex; align-items: center; justify-content: center; width: 34px; height: 34px; border-radius: 50%; background: var(--surface); border: 1px solid var(--border); color: var(--text); transition: all 0.15s ease; }
+    .sf-social:hover { color: var(--accent); border-color: var(--accent); }
+    .sf-cols { display: flex; flex-wrap: wrap; gap: 28px 48px; }
+    .sf-col { display: flex; flex-direction: column; gap: 9px; }
+    .sf-col-title { font-size: 11px; font-weight: 700; letter-spacing: 0.6px; text-transform: uppercase; color: var(--text-dim); margin-bottom: 3px; }
+    .sf-link { background: none; border: none; padding: 0; text-align: left; font-family: var(--font-sans); font-size: 13.5px; color: var(--text-muted); cursor: pointer; text-decoration: none; transition: color 0.12s ease; }
+    .sf-link:hover { color: var(--accent); }
+    .sf-bottom { display: flex; flex-wrap: wrap; gap: 6px 16px; justify-content: space-between; align-items: center; margin-top: 30px; padding-top: 18px; border-top: 1px solid var(--border); font-size: 11.5px; color: var(--text-dim); }
     .home-footer { margin: 0 20px; padding: 28px 22px; text-align: center; background: linear-gradient(135deg, rgba(47,122,85,0.1), rgba(90,155,116,0.05)); border: 1px solid rgba(47,122,85,0.2); border-radius: var(--r); }
     .home-footer-title { font-family: var(--font-serif); font-size: 24px; letter-spacing: -0.5px; margin-bottom: 18px; }
     .invite-showcase { max-width: 330px; margin: 0 auto 18px; min-height: 96px; }
@@ -895,6 +909,11 @@
       .reel-dash-main > div:first-child .reel-cat { padding-top: 2px; }
       .reel-grid { grid-template-columns: repeat(2, 1fr); padding: 0; gap: 10px; }
       .home-def, .home-usecase, .home-footer { max-width: 760px; margin-left: auto; margin-right: auto; }
+      /* Full-bleed footer with centered content */
+      .site-footer { margin-left: calc(50% - 50vw); margin-right: calc(50% - 50vw); width: 100vw; padding: 48px 24px 26px; }
+      .site-footer .sf-top, .site-footer .sf-bottom { max-width: 1040px; margin-left: auto; margin-right: auto; }
+      .site-footer .sf-top { flex-direction: row; justify-content: space-between; gap: 60px; }
+      .site-footer .sf-cols { gap: 28px 64px; }
 
       /* BUILD — focused centered form on the wide canvas */
       .build-page { max-width: 620px; margin: 0 auto; }
@@ -3384,6 +3403,49 @@ function HomePage() {
         <BuildCTA className="btn btn-primary" style={{ width: "100%", padding: 16, fontSize: 16 }} buildLabel="Build my stack — free →" updateLabel="Update my stack →" />
         <div className="home-trust" style={{ marginTop: 12 }}>Takes 2 minutes · No account needed</div>
       </div>
+
+      {/* SITE FOOTER */}
+      <footer className="site-footer">
+        <div className="sf-top">
+          <div className="sf-brand">
+            <div className="brand" style={{ cursor: "default" }}>
+              <svg className="brand-mark" viewBox="0 0 40 40" fill="none" aria-hidden="true">
+                <rect x="6" y="24" width="28" height="6" rx="3" fill="#CE5A2E"/>
+                <rect x="9" y="15" width="22" height="6" rx="3" fill="#E89A4B"/>
+                <rect x="12" y="6" width="16" height="6" rx="3" fill="#E8B57A"/>
+              </svg>
+              <span className="brand-word">health<b>stack</b></span>
+            </div>
+            <p className="sf-tagline">The fun way to share what you take, wear & test to optimize your health.</p>
+            <a className="sf-social" href="https://x.com" target="_blank" rel="noopener noreferrer" aria-label="X">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+            </a>
+          </div>
+          <div className="sf-cols">
+            <div className="sf-col">
+              <div className="sf-col-title">Product</div>
+              <button className="sf-link" onClick={() => navigate("#/build")}>Build your stack</button>
+              <button className="sf-link" onClick={() => navigate(`#/stack/${exampleUser}`)}>See an example</button>
+              <button className="sf-link" onClick={() => setShowInvite(true)}>Invite a friend</button>
+            </div>
+            <div className="sf-col">
+              <div className="sf-col-title">Company</div>
+              <a className="sf-link" href="mailto:hello@healthstack.app">Contact</a>
+              <a className="sf-link" href="mailto:hello@healthstack.app">About</a>
+              <a className="sf-link" href="mailto:press@healthstack.app">Press</a>
+            </div>
+            <div className="sf-col">
+              <div className="sf-col-title">Legal</div>
+              <a className="sf-link" href="mailto:hello@healthstack.app">Privacy</a>
+              <a className="sf-link" href="mailto:hello@healthstack.app">Terms</a>
+            </div>
+          </div>
+        </div>
+        <div className="sf-bottom">
+          <span>© {new Date().getFullYear()} healthstack</span>
+          <span className="sf-disclaimer">Not medical advice. Always consult a professional.</span>
+        </div>
+      </footer>
 
       {msg && <div className="toast">{msg}</div>}
       {showInvite && <InviteModal username={myUsername} onToast={toast} onClose={() => setShowInvite(false)} />}
