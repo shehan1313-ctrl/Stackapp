@@ -74,6 +74,8 @@
       min-height: 100vh;
     }
     #root { max-width: 480px; margin: 0 auto; min-height: 100vh; position: relative; background: var(--bg); }
+    /* Home ends in a full-width footer — don't force extra white height below it on tall screens */
+    #root:has(.home-page) { min-height: 0; background: transparent; }
 
     @keyframes fadeUp {
       from { opacity: 0; transform: translateY(20px); }
@@ -765,7 +767,7 @@
     .avatar-upload-label { font-size: 12px; font-weight: 600; color: var(--accent); }
 
     /* ── HOME / LANDING PAGE ── */
-    .home-page { background: var(--bg); min-height: 100vh; padding-bottom: 40px; }
+    .home-page { background: var(--bg); }
     .home-hero {
       padding: 40px 24px 28px; text-align: center; position: relative; overflow: hidden;
       background: radial-gradient(ellipse at top, rgba(47,122,85,0.09) 0%, transparent 60%);
