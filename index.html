@@ -302,6 +302,28 @@
     .cost-compare b { color: var(--accent); font-weight: 700; }
     .cost-compare a { color: var(--text-muted); text-decoration: underline; text-underline-offset: 2px; }
 
+    /* Bryan Johnson comparison card (nested-scale share card, dark) */
+    .bj-card { margin: 0 20px 16px; background: #171310; border-radius: var(--r-sm); padding: 18px; color: #fff; box-shadow: 0 12px 30px rgba(0,0,0,0.28); }
+    .bj-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+    .bj-brand { display: flex; align-items: center; gap: 6px; font-weight: 800; font-size: 13px; }
+    .bj-brand b { color: var(--accent2); }
+    .bj-brand svg { width: 16px; height: 16px; }
+    .bj-tag { font-size: 10px; color: #b8b0a4; }
+    .bj-body { display: flex; align-items: center; gap: 16px; }
+    .bj-nest { width: 84px; height: 84px; border-radius: 12px; background: linear-gradient(135deg, #3a322c, #241f1b); position: relative; flex-shrink: 0; display: flex; align-items: flex-end; }
+    .bj-nest-dot { width: 5px; height: 5px; margin: 0 0 7px 7px; border-radius: 2px; background: linear-gradient(135deg, #E89A4B, #D9531F); box-shadow: 0 0 8px rgba(232,154,75,0.85); }
+    .bj-nest-lbl { position: absolute; top: 7px; right: 9px; font-size: 9px; color: #9a9389; }
+    .bj-big { font-family: var(--font-serif); font-size: 30px; line-height: 1; background: linear-gradient(135deg, #E89A4B, #D9531F); -webkit-background-clip: text; background-clip: text; color: transparent; }
+    .bj-sub { font-size: 12.5px; color: #d9d2c8; line-height: 1.45; margin-top: 6px; }
+    .bj-sub b { color: #fff; }
+    .bj-foot { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-top: 14px; padding-top: 12px; border-top: 1px solid rgba(255,255,255,0.12); font-size: 11px; color: #b8b0a4; }
+    .bj-u { color: #fff; font-weight: 700; white-space: nowrap; }
+    /* compact variant for the home reel */
+    .bj-card.bj-compact { margin: 0 0 12px; padding: 14px; }
+    .bj-card.bj-compact .bj-nest { width: 64px; height: 64px; }
+    .bj-card.bj-compact .bj-big { font-size: 24px; }
+    .bj-card.bj-compact .bj-sub { font-size: 11.5px; }
+
     /* QR */
     .qr-section {
       margin: 0 20px 16px; background: var(--surface); border: 1px solid var(--border);
@@ -1246,6 +1268,39 @@ function uniqueUsername(name) {
 function totalCost(items) { return Math.round(items.reduce((s, i) => s + (i.cost || 0) * (i.costPeriod === "yr" ? 1 / 12 : 1), 0)); }
 function costLabel(item) { return item.cost > 0 ? `$${item.cost}/${item.costPeriod === "yr" ? "yr" : "mo"}` : ""; }
 
+// Bryan Johnson's Blueprint protocol runs ~$2M/yr ≈ $167K/mo — the viral benchmark.
+const BJ_MONTHLY = 166667;
+function bjPercent(cost) {
+  const pct = (cost / BJ_MONTHLY) * 100;
+  return pct < 1 ? pct.toFixed(2) : pct.toFixed(1);
+}
+// "0.17% of Bryan Johnson's budget" share-style card (nested-scale).
+function BryanCompareCard({ cost, handle, url, compact }) {
+  if (!cost || cost <= 0) return null;
+  return (
+    <div className={`bj-card anim-4${compact ? " bj-compact" : ""}`}>
+      <div className="bj-top">
+        <div className="bj-brand">
+          <svg viewBox="0 0 40 40" fill="none"><rect x="6" y="24" width="28" height="6" rx="3" fill="#CE5A2E"/><rect x="9" y="15" width="22" height="6" rx="3" fill="#E89A4B"/><rect x="12" y="6" width="16" height="6" rx="3" fill="#E8B57A"/></svg>
+          health<b>stack</b>
+        </div>
+        {handle && <div className="bj-tag">{handle}</div>}
+      </div>
+      <div className="bj-body">
+        <div className="bj-nest"><span className="bj-nest-lbl">Bryan</span><div className="bj-nest-dot" /></div>
+        <div className="bj-r">
+          <div className="bj-big">{bjPercent(cost)}%</div>
+          <div className="bj-sub">of <b>Bryan Johnson's</b> monthly longevity budget — that's my whole stack 🧬</div>
+        </div>
+      </div>
+      <div className="bj-foot">
+        <span>${cost.toLocaleString()}/mo vs ~$167K/mo</span>
+        {url && <span className="bj-u">{url}</span>}
+      </div>
+    </div>
+  );
+}
+
 // ── REFERRALS (Path 2: creators inviting creators) ──
 // Read ?ref=<username> from the hash, e.g. #/?ref=maya or #/build?ref=maya
 function getRefParam() {
@@ -2079,21 +2134,7 @@ function Healthstack({ username }) {
             {stack.highlight
               ? <HighlightCard highlight={stack.highlight} />
               : (stack.bioAge > 0 && stack.chronoAge > 0 && <BioAgeCard bioAge={stack.bioAge} chronoAge={stack.chronoAge} />)}
-            {cost > 0 && (
-              <div className="cost-banner anim-4">
-                <div className="cost-row">
-                  <div className="cost-label">Investment<br /><span style={{ fontSize: 10.5, color: "var(--text-dim)" }}>annual items amortized</span></div>
-                  <div className="cost-figures">
-                    <div><span className="cost-value">~${cost}</span><span className="cost-period"> /mo</span></div>
-                    <div className="cost-annual">≈ ${(cost * 12).toLocaleString()}/yr</div>
-                  </div>
-                </div>
-                <div className="cost-compare">
-                  <span className="cost-compare-emoji">🧬</span>
-                  <span>Bryan Johnson spends <b>{Math.round(166667 / cost).toLocaleString()}× more</b> than you — ~$167K/mo on <a href="https://blueprint.bryanjohnson.com" target="_blank" rel="noopener noreferrer">Blueprint</a>.</span>
-                </div>
-              </div>
-            )}
+            <BryanCompareCard cost={cost} handle={stack.handle} url={`healthstack.app/stack/${username}`} />
             <div className="qr-section anim-6">
               <div className="qr-title">SCAN TO VIEW ON ANOTHER DEVICE</div>
               <div className="qr-wrapper"><QRWidget url={url} /></div>
@@ -3073,6 +3114,7 @@ function ReelBlock({ stack }) {
     : REEL_STACK;
   const name = stack ? stack.name : "Shehan Chandrasekera";
   const handle = stack ? stack.handle : "@TheCryptoCPA";
+  const reelCost = stack && stack.items && stack.items.length ? totalCost(stack.items) : 286;
   const initials = (name || "").split(" ").map(w => w[0]).join("").slice(0, 2).toUpperCase();
   return (
     <div>
@@ -3085,6 +3127,7 @@ function ReelBlock({ stack }) {
           <div style={{ fontSize: 11, color: "var(--text-muted)" }}>{handle}</div>
         </div>
       </div>
+      <BryanCompareCard cost={reelCost} handle={handle} compact />
       {groups.map((g, gi) => (
         <div key={gi}>
           <div className="reel-cat"><span className="reel-dot" style={{ background: CATEGORY_COLORS[g.cat] }} />{g.cat}</div>
