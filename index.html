@@ -607,6 +607,9 @@
     .invite-hint { font-size: 11px; color: var(--text-dim); text-align: center; margin-top: 12px; line-height: 1.5; }
     .cat-feedback { margin: 4px 20px 0; padding: 14px 16px; display: flex; align-items: center; gap: 12px; cursor: pointer; background: var(--surface); border: 1px dashed var(--border); border-radius: var(--r); transition: border-color 0.15s ease; }
     .cat-feedback:hover { border-color: var(--accent); }
+    .cat-more-toggle { display: flex; align-items: center; justify-content: center; gap: 8px; width: calc(100% - 40px); margin: 0 20px 12px; padding: 13px; background: transparent; border: 1px dashed var(--border); border-radius: var(--r-sm); color: var(--accent); font-family: var(--font-sans); font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.15s ease; }
+    .cat-more-toggle:hover { border-color: var(--accent); background: rgba(47,122,85,0.04); }
+    .cat-more-toggle span { color: var(--text-dim); font-weight: 400; font-size: 12px; }
     .cat-feedback-icon { font-size: 20px; flex-shrink: 0; }
     .cat-feedback-title { font-size: 14px; font-weight: 700; }
     .cat-feedback-sub { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
@@ -652,6 +655,9 @@
     .home-hero-cta .btn { width: 100%; justify-content: center; }
     .home-trust { font-size: 12px; color: var(--text-dim); margin-top: 14px; }
 
+    .home-def { margin: 0 20px 28px; padding: 22px 24px; text-align: center; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+    .home-def-label { font-size: 11px; font-weight: 700; letter-spacing: 1.5px; color: var(--accent); margin-bottom: 10px; }
+    .home-def-text { font-family: var(--font-serif); font-size: 22px; line-height: 1.4; color: var(--text); letter-spacing: -0.2px; }
     .home-usecase { margin: 8px 20px 28px; padding: 22px 20px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--r); text-align: center; }
     .home-usecase-quote { font-family: var(--font-serif); font-size: 18px; font-style: italic; line-height: 1.45; color: var(--text); margin-bottom: 14px; }
     .home-usecase-who { font-size: 12px; color: var(--text-muted); letter-spacing: 0.2px; }
@@ -735,10 +741,18 @@ const CATEGORY_COLORS = {
   Supplements: "#5A9B74",
   Wearables:   "#2F7A55",
   Labs:        "#C2895A",
-  Services:    "#9E7BA6",
-  Other:       "#6E86B6",
+  Nutrition:   "#D4A24C",
+  Fitness:     "#6E86B6",
+  Sleep:       "#9E7BA6",
+  Mind:        "#5FA8A0",
+  Services:    "#5FA8A0",  // legacy — folded into Mind
+  Other:       "#9AA8A0",
 };
-const CATEGORIES = ["Supplements", "Wearables", "Labs", "Services", "Other"];
+// Display order (also used by the stack page + edit). Legacy "Services" still renders if present.
+const CATEGORIES = ["Supplements", "Wearables", "Labs", "Nutrition", "Fitness", "Sleep", "Mind", "Services", "Other"];
+// Build flow: top 3 shown expanded, the rest behind a "+ More" toggle.
+const BUILD_CATEGORIES_PRIMARY = ["Supplements", "Wearables", "Labs"];
+const BUILD_CATEGORIES_MORE = ["Nutrition", "Fitness", "Sleep", "Mind"];
 
 // Predefined items with "why" suggestions
 const PREDEFINED_ITEMS = {
@@ -795,13 +809,47 @@ const PREDEFINED_ITEMS = {
     { name: "Gut Microbiome Test",            whys: ["Maps bacteria diversity and identifies imbalances.", "Informs my probiotic stack and dietary fiber targets."] },
     { name: "Custom lab test",                whys: [] },
   ],
-  Services: [
-    { name: "Sauna (4x/week)",          whys: ["4+ weekly sessions linked to 40% reduced cardiovascular mortality.", "Improves heat shock proteins and growth hormone production."] },
-    { name: "Cold Plunge",              whys: ["Cold exposure increases norepinephrine 300% — huge mood boost.", "Accelerates recovery and reduces muscle soreness."] },
-    { name: "Red Light Therapy",        whys: ["Stimulates mitochondrial ATP production in skin and muscle.", "Reduces inflammation and improves skin quality."] },
-    { name: "Personal Trainer",         whys: ["Structured programming prevents injury and ensures progressive overload.", "Accountability drives the consistency that self-training rarely does."] },
-    { name: "Therapist / Mental Health",whys: ["Stress is a primary driver of aging — this is foundational.", "Addresses root causes, not just symptoms."] },
-    { name: "Custom service",           whys: [] },
+  Nutrition: [
+    { name: "Intermittent fasting 16:8", whys: ["16-hour daily fast — sharper focus and steadier energy in the mornings.", "Simplest lever for managing weight without counting calories."] },
+    { name: "High-protein diet",         whys: ["~1g per lb of bodyweight to preserve muscle as I age.", "Keeps me full and supports training recovery."] },
+    { name: "Mediterranean diet",        whys: ["Most evidence-backed eating pattern for longevity & heart health.", "Olive oil, fish, vegetables, legumes — easy to sustain."] },
+    { name: "Ketogenic diet",            whys: ["Stable energy with no afternoon crashes.", "Lowered my fasting glucose and triglycerides."] },
+    { name: "Whole foods / low processed", whys: ["If it has a label with 10+ ingredients, I skip it.", "Biggest single change to how I feel day to day."] },
+    { name: "Low added sugar",           whys: ["Cutting added sugar flattened my glucose spikes (confirmed on CGM).", "Better sleep and fewer cravings."] },
+    { name: "Vegetarian / plant-forward",whys: ["Mostly plants — high fiber, great for the microbiome.", "Lower inflammation markers on bloodwork."] },
+    { name: "Carnivore",                 whys: ["Elimination approach that calmed my gut issues.", "Simple, satiating, zero decision fatigue."] },
+    { name: "Custom diet",               whys: [] },
+  ],
+  Fitness: [
+    { name: "Weight training",   whys: ["Strength is the #1 predictor of healthy aging — 3-4x per week.", "Muscle is the organ of longevity."] },
+    { name: "Zone 2 cardio",     whys: ["Builds my aerobic base and mitochondrial density.", "180 min/week, conversational pace — the longevity sweet spot."] },
+    { name: "Running",           whys: ["Cheapest, most reliable way to keep my VO2 max high.", "Clears my head better than anything else."] },
+    { name: "Yoga",              whys: ["Mobility + stress relief in one — protects against injury.", "Noticeable improvement in sleep on yoga days."] },
+    { name: "CrossFit",          whys: ["Community keeps me consistent better than solo training.", "Mix of strength and conditioning in 60 min."] },
+    { name: "Cycling",           whys: ["Low-impact cardio that's easy on the joints.", "Great for long Zone 2 sessions."] },
+    { name: "Walking (10k steps)", whys: ["The most underrated health habit — daily non-negotiable.", "Post-meal walks blunt my glucose spikes."] },
+    { name: "HIIT",              whys: ["Time-efficient VO2 max booster — 2x/week.", "Big metabolic return for 20 minutes."] },
+    { name: "Custom workout",    whys: [] },
+  ],
+  Sleep: [
+    { name: "8-hour sleep target",     whys: ["Protected 8h in bed — the foundation everything else builds on.", "Single biggest driver of my next-day energy and mood."] },
+    { name: "Consistent wake time",    whys: ["Same wake time daily, even weekends — locks my circadian rhythm.", "Fall asleep faster and wake up clearer."] },
+    { name: "Morning sunlight",        whys: ["10 min of sunlight within 30 min of waking sets my clock.", "Best free intervention for sleep and mood."] },
+    { name: "Cool room (65°F)",        whys: ["Cooler room = more deep sleep (confirmed on Oura).", "Body temp needs to drop to fall asleep."] },
+    { name: "No screens before bed",   whys: ["Screens off 60 min before bed — fall asleep noticeably faster.", "Less blue light, calmer mind."] },
+    { name: "Mouth taping",            whys: ["Nasal breathing through the night — less snoring, drier mouth gone.", "Higher deep-sleep scores since starting."] },
+    { name: "Magnesium before bed",    whys: ["Calms the nervous system ~1h before sleep.", "Deeper, more restorative sleep."] },
+    { name: "Custom sleep habit",      whys: [] },
+  ],
+  Mind: [
+    { name: "Daily meditation",   whys: ["10 min a day — measurably lower resting heart rate and stress.", "The reset that makes everything else easier."] },
+    { name: "Breathwork",         whys: ["Box breathing to down-regulate before sleep or after stress.", "Fastest way to shift out of fight-or-flight."] },
+    { name: "Cold plunge",        whys: ["Cold exposure spikes norepinephrine ~300% — huge mood and focus boost.", "Accelerates recovery and builds resilience."] },
+    { name: "Sauna",              whys: ["4+ sessions/week linked to ~40% lower cardiovascular mortality.", "Heat shock proteins + the best stress relief I've found."] },
+    { name: "Journaling",         whys: ["Brain-dump every morning — clearer head, less rumination.", "Tracks patterns in mood and energy over time."] },
+    { name: "Therapy",            whys: ["Mental health is health — foundational, not optional.", "Addresses root causes, not just symptoms."] },
+    { name: "Red light therapy",  whys: ["Stimulates mitochondrial ATP in skin and muscle.", "Reduces inflammation and improves skin quality."] },
+    { name: "Custom practice",    whys: [] },
   ],
 };
 
@@ -2163,6 +2211,7 @@ function Step2Items({ items, setItems, onNext }) {
   const [scanState, setScanState] = useState(null);     // null | 'scanning' | 'done' | 'failed'
   const [scanMatches, setScanMatches] = useState([]);   // matched predefined items from OCR
   const [showFeedback, setShowFeedback] = useState(false);
+  const [showMore, setShowMore] = useState(false);
   const fileInputRef = useRef(null);
 
   function openCategory(cat) {
@@ -2219,44 +2268,57 @@ function Step2Items({ items, setItems, onNext }) {
     }
   }
 
-  const catEmojis = { Supplements: "💊", Wearables: "⌚", Labs: "🔬", Services: "✨" };
+  const catEmojis = { Supplements: "💊", Wearables: "⌚", Labs: "🔬", Nutrition: "🥗", Fitness: "🏃", Sleep: "😴", Mind: "🧘", Services: "✨" };
 
-  // ── OVERVIEW: all 4 categories on one page ───────────────────────────────────
+  const renderCatSection = (cat) => {
+    const ci = items.filter(i => i.category === cat);
+    const color = CATEGORY_COLORS[cat];
+    return (
+      <div key={cat} className="cat-section" style={{ "--cat-color": color }}>
+        <div className="cat-section-header">
+          <div className="cat-section-header-left">
+            <span style={{ fontSize: 16 }}>{catEmojis[cat]}</span>
+            <span className="cat-label">{cat}</span>
+            {ci.length > 0 && <span className="cat-count">{ci.length}</span>}
+          </div>
+          <button className="btn btn-primary btn-sm" onClick={() => openCategory(cat)}>+ Add</button>
+        </div>
+        {ci.map(item => (
+          <div key={item.id} className="cat-item-row">
+            {item.photoUrl && <img src={item.photoUrl} alt="" style={{ width: 36, height: 36, borderRadius: 6, objectFit: "cover", flexShrink: 0 }} />}
+            <div style={{ flex: 1 }}>
+              <div className="cat-item-name">{item.name}</div>
+              {item.why && <div className="cat-item-sub">{item.why.slice(0, 55)}{item.why.length > 55 ? "…" : ""}</div>}
+            </div>
+            <button className="build-item-remove" onClick={() => setItems(p => p.filter(i => i.id !== item.id))}>×</button>
+          </div>
+        ))}
+      </div>
+    );
+  };
+
+  // ── OVERVIEW: top 3 categories expanded, the rest behind "+ More" ────────────
   if (!openCat) {
+    // Auto-expand "more" if the user already has items in any of those categories
+    const moreHasItems = BUILD_CATEGORIES_MORE.some(c => items.some(i => i.category === c));
+    const moreOpen = showMore || moreHasItems;
     return (
       <div className="anim-2">
-        {["Supplements", "Wearables", "Labs", "Services"].map(cat => {
-          const ci = items.filter(i => i.category === cat);
-          const color = CATEGORY_COLORS[cat];
-          return (
-            <div key={cat} className="cat-section" style={{ "--cat-color": color }}>
-              <div className="cat-section-header">
-                <div className="cat-section-header-left">
-                  <span style={{ fontSize: 16 }}>{catEmojis[cat]}</span>
-                  <span className="cat-label">{cat}</span>
-                  {ci.length > 0 && <span className="cat-count">{ci.length}</span>}
-                </div>
-                <button className="btn btn-primary btn-sm" onClick={() => openCategory(cat)}>+ Add</button>
-              </div>
-              {ci.map(item => (
-                <div key={item.id} className="cat-item-row">
-                  {item.photoUrl && <img src={item.photoUrl} alt="" style={{ width: 36, height: 36, borderRadius: 6, objectFit: "cover", flexShrink: 0 }} />}
-                  <div style={{ flex: 1 }}>
-                    <div className="cat-item-name">{item.name}</div>
-                    {item.why && <div className="cat-item-sub">{item.why.slice(0, 55)}{item.why.length > 55 ? "…" : ""}</div>}
-                  </div>
-                  <button className="build-item-remove" onClick={() => setItems(p => p.filter(i => i.id !== item.id))}>×</button>
-                </div>
-              ))}
-            </div>
-          );
-        })}
-        {/* Request other habit categories (exercise, diet, etc.) */}
+        {BUILD_CATEGORIES_PRIMARY.map(renderCatSection)}
+
+        {!moreOpen && (
+          <button className="cat-more-toggle" onClick={() => setShowMore(true)}>
+            + More categories <span>Nutrition · Fitness · Sleep · Mind</span>
+          </button>
+        )}
+        {moreOpen && BUILD_CATEGORIES_MORE.map(renderCatSection)}
+
+        {/* Request other habit categories */}
         <div className="cat-feedback" onClick={() => setShowFeedback(true)}>
           <span className="cat-feedback-icon">💡</span>
           <div>
-            <div className="cat-feedback-title">Track other habits?</div>
-            <div className="cat-feedback-sub">Exercise, diet, sleep routine, cold plunge… tell us what to add →</div>
+            <div className="cat-feedback-title">Don't see your habit?</div>
+            <div className="cat-feedback-sub">Tell us what else you'd track and we'll add it →</div>
           </div>
         </div>
 
@@ -2486,6 +2548,12 @@ function HomePage() {
           <button className="btn btn-primary" style={{ padding: "14px 22px", fontSize: 15 }} onClick={() => navigate("#/build")}>Build my stack — free →</button>
         </div>
         <div className="home-trust">Free to share · No account to start · Setup in 2 min</div>
+      </div>
+
+      {/* WHAT IS A HEALTH STACK — definition */}
+      <div className="home-def anim-1">
+        <div className="home-def-label">WHAT'S A HEALTH STACK?</div>
+        <div className="home-def-text">Everything you take, wear, do, and test to optimize your health.</div>
       </div>
 
       {/* EMBEDDED LIVE EXAMPLE (no click needed) */}
