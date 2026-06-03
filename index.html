@@ -129,6 +129,7 @@
     .profile-name { font-size: 20px; font-weight: 700; letter-spacing: -0.3px; line-height: 1.2; }
     .profile-handle { font-size: 13px; color: var(--text-muted); margin-top: 2px; }
     .profile-socials { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
+    .profile-updated { font-size: 11px; color: var(--text-dim); margin-top: 8px; }
     .social-link { display: inline-flex; align-items: center; gap: 5px; font-size: 12px; font-weight: 500; color: var(--text-muted); text-decoration: none; background: var(--surface2); border: 1px solid var(--border); padding: 4px 9px; border-radius: 99px; transition: all 0.15s ease; }
     .social-link:hover { color: var(--accent); border-color: var(--accent); }
     .badge-verified {
@@ -737,7 +738,7 @@
     .home-example-link { display: block; width: 100%; margin-top: 10px; background: none; border: none; color: var(--accent); font-family: var(--font-sans); font-size: 13px; font-weight: 600; cursor: pointer; padding: 8px; }
     .home-example-link:hover { text-decoration: underline; }
     /* Auto-scrolling reel */
-    .home-reel { position: relative; height: 380px; overflow: hidden; border-radius: 22px; border: 1px solid var(--border); background: var(--surface); margin: 0 20px; box-shadow: var(--sh, 0 1px 2px rgba(70,55,30,.06)); }
+    .home-reel { position: relative; height: 380px; overflow: hidden; border-radius: 24px; border: 1px solid var(--border); background: var(--surface); margin: 0 20px; box-shadow: 0 26px 56px rgba(70,55,30,0.16), 0 8px 20px rgba(70,55,30,0.08); }
     .home-reel::before, .home-reel::after { content: ""; position: absolute; left: 0; right: 0; height: 46px; z-index: 2; pointer-events: none; }
     .home-reel::before { top: 0; background: linear-gradient(var(--surface), rgba(255,253,248,0)); }
     .home-reel::after { bottom: 0; background: linear-gradient(rgba(255,253,248,0), var(--surface)); }
@@ -760,6 +761,22 @@
     .invite-showcase-dots { display: flex; gap: 6px; justify-content: center; margin-top: 12px; }
     .isc-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--border); transition: all 0.2s; }
     .isc-dot.on { background: var(--accent); width: 18px; border-radius: 4px; }
+
+    /* ── RESPONSIVE: roomier framed layout on tablet/desktop ── */
+    @media (min-width: 768px) {
+      body { background: #E7E0D2; }                      /* frames the ivory app column */
+      #root { max-width: 720px; box-shadow: 0 0 0 1px rgba(70,55,30,0.05), 0 30px 80px rgba(70,55,30,0.13); }
+      .action-bar { max-width: 720px; }
+      .modal-sheet, .edit-sheet { max-width: 720px; border-radius: var(--r) var(--r) 0 0; }
+      .stack-grid { grid-template-columns: repeat(3, 1fr); }   /* 3 columns of stack tiles */
+      .home-steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+      .home-step { flex-direction: column; align-items: flex-start; gap: 12px; }
+      .home-headline { font-size: 46px; }
+    }
+    @media (min-width: 1100px) {
+      #root { max-width: 800px; }
+      .action-bar { max-width: 800px; }
+    }
   </style>
 </head>
 <body>
@@ -1081,8 +1098,22 @@ if (sb) {
 const STORAGE_KEY = "stackpage_v1";
 function getStacks() { try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}"); } catch { return {}; } }
 function saveStack(s) {
+  s.updatedAt = Date.now();  // stamp every save so we can show "last updated"
   const all = getStacks(); all[s.username] = s; localStorage.setItem(STORAGE_KEY, JSON.stringify(all));
   remoteSaveStack(s);  // mirror to backend (non-blocking)
+}
+// "Updated 3 days ago" style relative time
+function relativeTime(ts) {
+  if (!ts) return "";
+  const d = Math.floor((Date.now() - ts) / 1000);
+  if (d < 60) return "just now";
+  if (d < 3600) return `${Math.floor(d / 60)} min ago`;
+  if (d < 86400) return `${Math.floor(d / 3600)}h ago`;
+  const days = Math.floor(d / 86400);
+  if (days === 1) return "yesterday";
+  if (days < 7) return `${days} days ago`;
+  if (days < 30) return `${Math.floor(days / 7)} week${Math.floor(days / 7) > 1 ? "s" : ""} ago`;
+  return new Date(ts).toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" });
 }
 function getStack(u) { if (u === "shehan") return SHEHAN_STACK; return getStacks()[u] || null; }
 function isUserStack(u) { return u !== "shehan" && !!getStacks()[u]; }
@@ -1404,6 +1435,7 @@ function ProfileSection({ stack }) {
               )}
             </div>
           )}
+          {stack.updatedAt && <div className="profile-updated">Updated {relativeTime(stack.updatedAt)}</div>}
         </div>
       </div>
     </div>
@@ -2927,8 +2959,7 @@ function HomePage() {
         <div className="home-eyebrow">YOUR HEALTH STACK, WORTH SHARING</div>
         <h1 className="home-headline">Show off your stack.<br/>Help your friends.<br/><em>Earn on the side.</em></h1>
         <p className="home-sub">
-          The fun way to show friends exactly what you take, use, and test — one beautiful link.
-          Affiliate links are built in, so you can earn from it whenever you're ready.
+          The fun way to show friends exactly what you take, use, and test to optimize your health.
         </p>
         <div className="home-hero-cta">
           <button className="btn btn-primary" style={{ padding: "14px 22px", fontSize: 15 }} onClick={() => navigate("#/build")}>Build my stack — free →</button>
@@ -2944,7 +2975,7 @@ function HomePage() {
 
       {/* EMBEDDED LIVE EXAMPLE (no click needed) */}
       <div className="home-section anim-1" style={{ marginBottom: 28 }}>
-        <div className="home-section-label">A REAL STACKPAGE</div>
+        <div className="home-section-label">A REAL HEALTHSTACK</div>
         <div className="home-reel">
           <div className="home-reel-track"><ReelBlock stack={demo} /><ReelBlock stack={demo} /></div>
         </div>
@@ -2971,7 +3002,7 @@ function HomePage() {
 
       {/* VALUE PROPS */}
       <div className="home-section anim-3">
-        <div className="home-section-label">WHY STACKPAGE</div>
+        <div className="home-section-label">WHY HEALTHSTACK</div>
         {HOME_VALUES.map((v, i) => (
           <div className="home-value" key={i}>
             <div className="home-value-icon">{v.icon}</div>
