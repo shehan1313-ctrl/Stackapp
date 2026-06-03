@@ -677,6 +677,15 @@
       padding: 14px; font-size: 13px; color: var(--text); line-height: 1.55; white-space: pre-wrap;
       max-height: 220px; overflow-y: auto;
     }
+    .invite-msg-edit {
+      width: 100%; box-sizing: border-box; resize: vertical; min-height: 150px;
+      background: var(--surface2); border: 1px solid var(--border); border-radius: var(--r-sm);
+      padding: 14px; font-family: var(--font-sans); font-size: 13px; color: var(--text); line-height: 1.55;
+      transition: border-color 0.15s ease;
+    }
+    .invite-msg-edit:focus { outline: none; border-color: var(--accent); }
+    .invite-label-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+    .invite-label-hint { font-size: 11px; color: var(--text-dim); font-weight: 500; text-transform: none; letter-spacing: 0; }
     .invite-hint { font-size: 11px; color: var(--text-dim); text-align: center; margin-top: 12px; line-height: 1.5; }
     .cat-feedback { margin: 4px 20px 0; padding: 14px 16px; display: flex; align-items: center; gap: 12px; cursor: pointer; background: var(--surface); border: 1px dashed var(--border); border-radius: var(--r); transition: border-color 0.15s ease; }
     .cat-feedback:hover { border-color: var(--accent); }
@@ -2128,10 +2137,20 @@ function InviteModal({ username, onClose, onToast }) {
   const [tone, setTone] = useState("warm");
   const base = `${window.location.origin}${window.location.pathname}`;
   const inviteUrl = username ? `${base}#/?ref=${username}` : `${base}#/build`;
-  const message = (INVITE_TONES.find(t => t.id === tone) || INVITE_TONES[0]).build(inviteUrl);
+  const [message, setMessage] = useState(() => INVITE_TONES[0].build(inviteUrl));
+  const [edited, setEdited] = useState(false);
+
+  // Switching tone loads that template — unless the user has hand-edited the text.
+  function pickTone(id) {
+    setTone(id);
+    if (!edited) {
+      const t = INVITE_TONES.find(x => x.id === id) || INVITE_TONES[0];
+      setMessage(t.build(inviteUrl));
+    }
+  }
 
   async function share() {
-    track("invite_shared", { username, tone });
+    track("invite_shared", { username, tone, edited });
     if (navigator.share) {
       try { await navigator.share({ title: "Build your Healthstack", text: message }); return; } catch(_) {}
     }
@@ -2153,19 +2172,27 @@ function InviteModal({ username, onClose, onToast }) {
         <div className="invite-reward">
           <div className="invite-reward-icon">🎁</div>
           <div>
-            <div className="invite-reward-title">Earn {REFERRAL_PCT}% of their earnings</div>
-            <div className="invite-reward-sub">For every creator you invite — for their first {REFERRAL_MONTHS} months. Stacks on top of your own commissions.</div>
+            <div className="invite-reward-title">Earn {REFERRAL_PCT}% of their earnings <span className="home-soon">Coming soon</span></div>
+            <div className="invite-reward-sub">When commissions launch, you'll earn a cut of every creator you invite — for their first {REFERRAL_MONTHS} months, on top of your own. For now, invites just grow the community.</div>
           </div>
         </div>
 
         <div className="invite-label">Pick a tone</div>
         <div className="hl-tabs" style={{ marginBottom: 12 }}>
           {INVITE_TONES.map(t => (
-            <button key={t.id} className={`hl-tab ${tone === t.id ? "on" : ""}`} onClick={() => setTone(t.id)}>{t.label}</button>
+            <button key={t.id} className={`hl-tab ${tone === t.id ? "on" : ""}`} onClick={() => pickTone(t.id)}>{t.label}</button>
           ))}
         </div>
 
-        <div className="invite-msg">{message}</div>
+        <div className="invite-label-row">
+          <div className="invite-label" style={{ marginBottom: 0 }}>Your message</div>
+          <span className="invite-label-hint">✏️ Tap to edit</span>
+        </div>
+        <textarea
+          className="invite-msg-edit"
+          value={message}
+          onChange={e => { setMessage(e.target.value); setEdited(true); }}
+        />
 
         <div style={{ display: "flex", flexDirection: "column", gap: 10, marginTop: 14 }}>
           <button className="btn btn-primary" style={{ width: "100%", padding: 14, fontSize: 15 }} onClick={share}>
@@ -2176,7 +2203,7 @@ function InviteModal({ username, onClose, onToast }) {
           </button>
         </div>
 
-        <div className="invite-hint">You can tweak the message after you tap send. Your link tags friends to you automatically.</div>
+        <div className="invite-hint">Edit the message above however you like. Your link tags friends to you automatically.</div>
       </div>
     </div>,
     document.body
