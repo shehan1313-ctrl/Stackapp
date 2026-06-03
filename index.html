@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>Healthstack — Share Your Wellness Stack</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A//www.w3.org/2000/svg%27%20viewBox%3D%270%200%2040%2040%27%3E%3Cdefs%3E%3ClinearGradient%20id%3D%27g%27%20x1%3D%270%27%20y1%3D%270%27%20x2%3D%271%27%20y2%3D%271%27%3E%3Cstop%20offset%3D%270%27%20stop-color%3D%27%23D9531F%27/%3E%3Cstop%20offset%3D%271%27%20stop-color%3D%27%23E89A4B%27/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect%20width%3D%2740%27%20height%3D%2740%27%20rx%3D%2710%27%20fill%3D%27url%28%23g%29%27/%3E%3Crect%20x%3D%279%27%20y%3D%2725%27%20width%3D%2722%27%20height%3D%275%27%20rx%3D%272.5%27%20fill%3D%27%23fff%27/%3E%3Crect%20x%3D%2712%27%20y%3D%2717.5%27%20width%3D%2716%27%20height%3D%275%27%20rx%3D%272.5%27%20fill%3D%27%23fff%27%20opacity%3D%270.85%27/%3E%3Crect%20x%3D%2715%27%20y%3D%2710%27%20width%3D%2710%27%20height%3D%275%27%20rx%3D%272.5%27%20fill%3D%27%23fff%27%20opacity%3D%270.7%27/%3E%3C/svg%3E" />
   <meta name="description" content="Share every supplement, wearable & lab you use — with why. Build your own health stack in 2 minutes, free." />
   <!-- Open Graph / Twitter link-preview card. Default (one card for all links). Per-stack cards need a backend (see notes). -->
   <meta property="og:type" content="website" />
@@ -96,6 +97,10 @@
       font-family: var(--font-serif); font-size: 18px; color: var(--accent);
       letter-spacing: -0.3px; cursor: pointer;
     }
+    .brand { display: flex; align-items: center; gap: 8px; cursor: pointer; }
+    .brand-mark { width: 22px; height: 22px; flex-shrink: 0; }
+    .brand-word { font-family: var(--font-sans); font-weight: 800; font-size: 18px; letter-spacing: -0.6px; color: var(--text); line-height: 1; }
+    .brand-word b { color: var(--accent); font-weight: 800; }
     .topbar-actions { display: flex; gap: 8px; align-items: center; }
 
     /* Buttons */
@@ -224,6 +229,38 @@
     .gitem-why { font-size: 11.5px; color: var(--text-muted); line-height: 1.45; margin-top: 7px; }
     .gitem-get { font-size: 11px; font-weight: 600; color: var(--accent); text-decoration: none; align-self: flex-start; }
     .gitem-get:hover { text-decoration: underline; }
+
+    /* Item detail modal (replaces inline expand) */
+    .item-modal-backdrop {
+      position: fixed; inset: 0; z-index: 4000; padding: 24px;
+      display: flex; align-items: center; justify-content: center;
+      background: rgba(23,19,16,0.55); backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);
+      animation: fadeIn 0.18s ease;
+    }
+    .item-modal {
+      position: relative; width: 100%; max-width: 380px; text-align: center;
+      background: var(--surface); border-radius: 22px; padding: 30px 24px 22px;
+      box-shadow: 0 30px 70px rgba(0,0,0,0.35); animation: popIn 0.22s cubic-bezier(.2,.8,.3,1);
+    }
+    .item-modal-close {
+      position: absolute; top: 14px; right: 14px; width: 30px; height: 30px; border-radius: 50%;
+      border: none; background: var(--surface2); color: var(--text-muted); font-size: 13px; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .item-modal-tile {
+      width: 72px; height: 72px; border-radius: 18px; margin: 4px auto 16px;
+      display: flex; align-items: center; justify-content: center; overflow: hidden; box-shadow: 0 6px 16px var(--shadow);
+    }
+    .item-modal-tile img { width: 100%; height: 100%; object-fit: cover; }
+    .item-modal-tile .gitem-ini { font-size: 30px; }
+    .item-modal-tile .gitem-emoji { font-size: 30px; }
+    .item-modal-cat { font-size: 11px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 6px; }
+    .item-modal-name { font-family: var(--font-serif); font-size: 24px; letter-spacing: -0.3px; color: var(--text); margin-bottom: 12px; line-height: 1.2; }
+    .item-modal-meta { display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; margin-bottom: 16px; }
+    .item-modal-chip { font-size: 12px; color: var(--text-muted); background: var(--surface2); border-radius: 99px; padding: 5px 11px; }
+    .item-modal-why { font-size: 14px; color: var(--text); line-height: 1.55; background: var(--surface2); border-radius: 14px; padding: 13px 15px; text-align: left; margin-bottom: 18px; }
+    .item-modal-why-label { font-size: 10px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--text-dim); margin-bottom: 6px; }
+    @keyframes popIn { from { opacity: 0; transform: scale(0.94) translateY(8px); } to { opacity: 1; transform: none; } }
     .item-card:last-child { margin-bottom: 0; }
     .item-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; margin-bottom: 6px; }
     .item-name { font-size: 15px; font-weight: 600; letter-spacing: -0.2px; line-height: 1.3; }
@@ -745,7 +782,7 @@
     .home-example-link { display: block; width: 100%; margin-top: 10px; background: none; border: none; color: var(--accent); font-family: var(--font-sans); font-size: 13px; font-weight: 600; cursor: pointer; padding: 8px; }
     .home-example-link:hover { text-decoration: underline; }
     /* Auto-scrolling reel */
-    .home-reel { position: relative; height: 380px; overflow: hidden; border-radius: 24px; border: 1px solid var(--border); background: var(--surface); margin: 0 20px; box-shadow: 0 26px 56px rgba(70,55,30,0.16), 0 8px 20px rgba(70,55,30,0.08); }
+    .home-reel { position: relative; height: 380px; overflow: hidden; border-radius: var(--r); border: 1px solid var(--border); background: var(--surface); margin: 0 20px; box-shadow: 0 26px 56px rgba(70,55,30,0.16), 0 8px 20px rgba(70,55,30,0.08); }
     .home-reel::before, .home-reel::after { content: ""; position: absolute; left: 0; right: 0; height: 46px; z-index: 2; pointer-events: none; }
     .home-reel::before { top: 0; background: linear-gradient(var(--surface), rgba(255,253,248,0)); }
     .home-reel::after { bottom: 0; background: linear-gradient(rgba(255,253,248,0), var(--surface)); }
@@ -778,6 +815,8 @@
     }
     @media (min-width: 1000px) {
       #root { max-width: 1180px; }
+      /* Full-bleed top nav across the whole viewport, content padded to a comfortable inset */
+      .topbar { margin-left: calc(50% - 50vw); margin-right: calc(50% - 50vw); width: 100vw; box-sizing: border-box; padding: 16px max(40px, calc(50vw - 590px + 8px)) 14px; }
       .home-headline { font-size: 50px; }
       .home-steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
       .home-step { flex-direction: column; align-items: flex-start; gap: 12px; }
@@ -816,6 +855,20 @@
 <div id="root"></div>
 <script type="text/babel">
 const { useState, useEffect, useRef, useCallback } = React;
+
+// Brand logo — "ascending stack" mark + wordmark
+function Logo({ onClick }) {
+  return (
+    <div className="brand" onClick={onClick}>
+      <svg className="brand-mark" viewBox="0 0 40 40" fill="none" aria-hidden="true">
+        <rect x="6" y="24" width="28" height="6" rx="3" fill="#CE5A2E"/>
+        <rect x="9" y="15" width="22" height="6" rx="3" fill="#E89A4B"/>
+        <rect x="12" y="6" width="16" height="6" rx="3" fill="#E8B57A"/>
+      </svg>
+      <span className="brand-word">health<b>stack</b></span>
+    </div>
+  );
+}
 
 // ── ANALYTICS ─────────────────────────────────────────────────────────────────
 // To enable product analytics + funnels, paste your PostHog project key below.
@@ -1358,7 +1411,7 @@ function useToast() {
 function Topbar({ rightContent }) {
   return (
     <div className="topbar">
-      <div className="topbar-logo" onClick={() => navigate("#/")}>healthstack</div>
+      <Logo onClick={() => navigate("#/")} />
       <div className="topbar-actions">
         <AuthButton />
         {rightContent || <button className="btn btn-primary btn-sm" onClick={() => navigate("#/build")}>Build mine</button>}
@@ -1591,27 +1644,60 @@ function itemInitials(name) {
 // ── STACK ITEM (Option B: gradient tile, photo-or-styled, tap for "why") ───────
 
 function GridItemCard({ item }) {
-  const [open, setOpen] = useState(false);
+  const [show, setShow] = useState(false);
   const color = CATEGORY_COLORS[item.category] || CATEGORY_COLORS.Other;
   const yearsLabel = item.years < 1 ? `${Math.round(item.years * 12)}mo` : item.years ? `${item.years}yr` : "";
   const affUrl = item.affiliateUrl || `https://amazon.com/s?k=${encodeURIComponent(item.name)}`; // ← real affiliate URLs swap in here
-  const meta = [item.dose, item.freq, yearsLabel, costLabel(item)].filter(Boolean).join(" · ");
+  const metaParts = [item.dose, item.freq, yearsLabel, costLabel(item)].filter(Boolean);
+  const meta = metaParts.join(" · ");
+  const tileInner = item.photoUrl
+    ? <img src={item.photoUrl} alt="" />
+    : usesInitials(item.category)
+      ? <span className="gitem-ini">{itemInitials(item.name)}</span>
+      : <span className="gitem-emoji">{CATEGORY_EMOJI[item.category] || "✦"}</span>;
+  const tileBg = { background: `linear-gradient(150deg, #fff, ${hexA(color, 0.12)})`, color };
+
+  useEffect(() => {
+    if (!show) return;
+    const onKey = e => { if (e.key === "Escape") setShow(false); };
+    document.addEventListener("keydown", onKey);
+    return () => document.removeEventListener("keydown", onKey);
+  }, [show]);
+
   return (
-    <div className="gitem" onClick={() => item.why && setOpen(o => !o)}>
-      <div className="gitem-tile" style={{ background: `linear-gradient(150deg, #fff, ${hexA(color, 0.12)})`, color }}>
-        {item.photoUrl
-          ? <img src={item.photoUrl} alt="" />
-          : usesInitials(item.category)
-            ? <span className="gitem-ini">{itemInitials(item.name)}</span>
-            : <span className="gitem-emoji">{CATEGORY_EMOJI[item.category] || "✦"}</span>}
+    <React.Fragment>
+      <div className="gitem" onClick={() => setShow(true)}>
+        <div className="gitem-tile" style={tileBg}>{tileInner}</div>
+        <div className="gitem-body">
+          <div className="gitem-name">{item.name}</div>
+          {meta && <div className="gitem-sub">{meta}</div>}
+        </div>
+        <a className="gitem-get" href={affUrl} target="_blank" rel="noopener noreferrer" onClick={e => e.stopPropagation()}>Get it ↗</a>
       </div>
-      <div className="gitem-body">
-        <div className="gitem-name">{item.name}</div>
-        {meta && <div className="gitem-sub">{meta}</div>}
-        {open && item.why && <div className="gitem-why">{item.why}</div>}
-      </div>
-      <a className="gitem-get" href={affUrl} target="_blank" rel="noopener noreferrer" onClick={e => e.stopPropagation()}>Get it ↗</a>
-    </div>
+      {show && ReactDOM.createPortal(
+        <div className="item-modal-backdrop" onClick={() => setShow(false)}>
+          <div className="item-modal" onClick={e => e.stopPropagation()}>
+            <button className="item-modal-close" onClick={() => setShow(false)} aria-label="Close">✕</button>
+            <div className="item-modal-tile" style={tileBg}>{tileInner}</div>
+            <div className="item-modal-cat" style={{ color }}>{item.category}</div>
+            <div className="item-modal-name">{item.name}</div>
+            {metaParts.length > 0 && (
+              <div className="item-modal-meta">
+                {metaParts.map((m, i) => <span className="item-modal-chip" key={i}>{m}</span>)}
+              </div>
+            )}
+            {item.why && (
+              <div className="item-modal-why">
+                <div className="item-modal-why-label">Why I use it</div>
+                {item.why}
+              </div>
+            )}
+            <a className="btn btn-primary" style={{ width: "100%", padding: 14, fontSize: 15 }} href={affUrl} target="_blank" rel="noopener noreferrer">Get it ↗</a>
+          </div>
+        </div>,
+        document.body
+      )}
+    </React.Fragment>
   );
 }
 
@@ -2989,7 +3075,7 @@ function HomePage() {
   return (
     <div className="home-page">
       <div className="topbar">
-        <div className="topbar-logo" onClick={() => navigate("#/")}>healthstack</div>
+        <Logo onClick={() => navigate("#/")} />
         <div className="topbar-actions">
           <AuthButton />
           <button className="btn btn-primary btn-sm" onClick={() => navigate("#/build")}>Build mine</button>
@@ -3057,7 +3143,7 @@ function HomePage() {
       </div>
 
       {/* ASK A FRIEND */}
-      <div className="home-section anim-5" style={{ textAlign: "center", marginBottom: 30 }}>
+      <div className="home-section anim-5" style={{ textAlign: "center", marginBottom: 30, marginTop: 48, paddingTop: 36, borderTop: "1px solid var(--border)" }}>
         <div className="home-section-label">KNOW SOMEONE HEALTHY?</div>
         <p style={{ fontSize: 14, color: "var(--text-muted)", lineHeight: 1.55, maxWidth: 320, margin: "0 auto 16px" }}>
           Ask a friend to share the supplements, wearables &amp; habits they swear by — pick a tone, they build theirs in 2 minutes.
@@ -3098,7 +3184,7 @@ function Landing() {
   return (
     <div className="land-page">
       <div className="land-topbar">
-        <div className="topbar-logo" onClick={() => navigate("#/")}>healthstack</div>
+        <Logo onClick={() => navigate("#/")} />
         <button className="land-skip" onClick={() => navigate("#/build")}>Skip →</button>
       </div>
 
