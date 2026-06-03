@@ -1325,7 +1325,8 @@ function AuthModal({ onClose }) {
     if (error) setErr(error.message || "Something went wrong");
     else { setSent(true); track("login_link_sent"); }
   }
-  return (
+  // Portal to <body> so the frosted top-bar's backdrop-filter doesn't trap the fixed overlay.
+  return ReactDOM.createPortal(
     <div className="modal-bg" onClick={e => e.target === e.currentTarget && onClose()}>
       <div className="modal-sheet" style={{ paddingBottom: 32 }}>
         {sent ? (
@@ -1355,7 +1356,8 @@ function AuthModal({ onClose }) {
           </>
         )}
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }
 
