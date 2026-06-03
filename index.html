@@ -535,6 +535,11 @@
     .build-item-info { flex: 1; min-width: 0; }
     .build-item-name { font-size: 14px; font-weight: 600; }
     .build-item-meta { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+    .build-item-empty { font-size: 13px; color: var(--text-dim); padding: 8px 2px 14px; }
+    .edit-avatar-row { display: flex; align-items: center; gap: 14px; padding: 14px 20px 4px; }
+    .edit-avatar { width: 56px; height: 56px; border-radius: 50%; background-size: cover; background-position: center; background-color: var(--surface2); border: 1px solid var(--border); cursor: pointer; flex-shrink: 0; }
+    .edit-avatar-remove { margin-left: 10px; background: none; border: none; color: var(--text-dim); font-size: 12px; cursor: pointer; font-family: var(--font-sans); }
+    .edit-avatar-remove:hover { color: var(--red); }
     .build-item-remove {
       background: none; border: none; color: var(--text-dim); cursor: pointer;
       font-size: 20px; line-height: 1; padding: 0 2px; font-family: var(--font-sans); flex-shrink: 0;
@@ -2311,9 +2316,22 @@ function EditSheet({ stack, onSave, onClose, initialCategory }) {
   const [items, setItems] = useState(stack.items);
   const [bioAge, setBioAge] = useState(stack.bioAge);
   const [chronoAge, setChronoAge] = useState(stack.chronoAge);
+  const [avatarUrl, setAvatarUrl] = useState(stack.avatarUrl || "");
   const [editingItem, setEditingItem] = useState(null);
   const [showAdd, setShowAdd] = useState(false);
   const [form, setForm] = useState({ name: "", dose: "", freq: "", category: initialCategory || "Supplements", why: "", years: "", cost: "", costPeriod: "mo", affiliateUrl: "" });
+  const avatarInputRef = useRef(null);
+  // Category-scoped edit (opened via a category's pencil) shows only that category.
+  const scoped = !!initialCategory;
+  const visibleItems = scoped ? items.filter(i => i.category === initialCategory) : items;
+
+  async function handleAvatar(e) {
+    const file = e.target.files?.[0];
+    e.target.value = "";
+    if (!file) return;
+    const dataUrl = await resizeImage(file, 256);
+    if (dataUrl) setAvatarUrl(dataUrl);
+  }
 
   function handleEditItem(item) {
     setEditingItem(item);
@@ -2333,7 +2351,7 @@ function EditSheet({ stack, onSave, onClose, initialCategory }) {
     setShowAdd(false);
   }
   function handleSave() {
-    const u = { ...stack, items, bioAge: parseInt(bioAge)||stack.bioAge, chronoAge: parseInt(chronoAge)||stack.chronoAge };
+    const u = { ...stack, items, avatarUrl, bioAge: parseInt(bioAge)||stack.bioAge, chronoAge: parseInt(chronoAge)||stack.chronoAge };
     saveStack(u); onSave(u); onClose();
   }
   function pickPreset(p) {
@@ -2351,19 +2369,32 @@ function EditSheet({ stack, onSave, onClose, initialCategory }) {
     <div className="modal-bg" onClick={e => e.target === e.currentTarget && onClose()}>
       <div className="modal-sheet">
         <div className="modal-header">
-          <div className="modal-title">Edit Stack</div>
+          <div className="modal-title">{scoped ? `Edit ${initialCategory}` : "Edit Stack"}</div>
           <button className="modal-close" onClick={onClose}>×</button>
         </div>
-        <div style={{ padding: "12px 4px 0" }}>
-          <MagicAdd existingItems={items} onAdd={(fresh) => setItems(prev => [...prev, ...fresh])} />
-        </div>
-        <div className="section-title" style={{ padding: "8px 20px 0", marginBottom: 12 }}>Items</div>
+        {!scoped && (
+          <div className="edit-avatar-row">
+            <input ref={avatarInputRef} type="file" accept="image/*" style={{ display: "none" }} onChange={handleAvatar} />
+            <div className="edit-avatar" style={{ backgroundImage: `url(${avatarUrl || DEFAULT_AVATAR})` }} onClick={() => avatarInputRef.current?.click()} />
+            <div>
+              <button className="btn btn-outline btn-sm" onClick={() => avatarInputRef.current?.click()}>{avatarUrl ? "Change photo" : "Add a profile photo"}</button>
+              {avatarUrl && <button className="edit-avatar-remove" onClick={() => setAvatarUrl("")}>Remove</button>}
+            </div>
+          </div>
+        )}
+        {!scoped && (
+          <div style={{ padding: "0 4px" }}>
+            <MagicAdd existingItems={items} onAdd={(fresh) => setItems(prev => [...prev, ...fresh])} />
+          </div>
+        )}
+        <div className="section-title" style={{ padding: "8px 20px 0", marginBottom: 12 }}>{scoped ? `${initialCategory} items` : "Items"}</div>
         <div style={{ padding: "0 20px" }}>
-          {items.map(item => (
+          {visibleItems.length === 0 && <div className="build-item-empty">No {scoped ? initialCategory.toLowerCase() : ""} items yet. Add one below.</div>}
+          {visibleItems.map(item => (
             <div key={item.id} className="build-item-card">
               <div className="build-item-info">
                 <div className="build-item-name">{item.name}</div>
-                <div className="build-item-meta">{item.category} · {item.years}yr{item.cost ? ` · $${item.cost}/mo` : ""}</div>
+                <div className="build-item-meta">{[item.category, item.years ? `${item.years}yr` : "", costLabel(item)].filter(Boolean).join(" · ")}</div>
               </div>
               <button className="btn btn-ghost btn-sm" onClick={() => handleEditItem(item)}>Edit</button>
               <button className="build-item-remove" onClick={() => setItems(p => p.filter(i => i.id !== item.id))}>×</button>
