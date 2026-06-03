@@ -3346,23 +3346,6 @@ function HomePage() {
         <button className="home-example-link" onClick={() => navigate(`#/stack/${exampleUser}`)}>See the full example →</button>
       </div>
 
-      {/* HOW IT WORKS */}
-      <div className="home-section anim-2">
-        <div className="home-section-label">HOW IT WORKS</div>
-        <div className="home-steps">
-          {HOME_STEPS.map((s, i) => (
-            <div className="home-step" key={i}>
-              <div className="home-step-icon" style={{ background: s.bg }}>{s.icon}</div>
-              <div className="home-step-text">
-                <div className="home-step-num" style={{ color: s.color }}>STEP {i + 1}</div>
-                <div className="home-step-title">{s.title} {s.soon && <span className="home-soon">Coming soon</span>}</div>
-                <div className="home-step-desc">{s.desc}</div>
-              </div>
-            </div>
-          ))}
-        </div>
-        <button className="home-tour-link" onClick={() => navigate("#/tour")}>See how it works ▸</button>
-      </div>
 
       {/* VALUE PROPS */}
       <div className="home-section anim-3">
