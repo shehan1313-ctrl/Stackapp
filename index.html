@@ -197,6 +197,33 @@
       background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-sm);
       padding: 14px 14px 14px 18px; margin-bottom: 8px; border-left-width: 3px;
     }
+    /* Option B — gradient tile grid */
+    .stack-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .gitem {
+      position: relative; border: 1px solid; border-radius: 18px; padding: 14px;
+      min-height: 152px; display: flex; flex-direction: column; justify-content: space-between;
+      cursor: pointer; overflow: hidden; transition: transform 0.12s ease;
+    }
+    .gitem:active { transform: scale(0.985); }
+    .gitem-get {
+      position: absolute; top: 11px; right: 11px; z-index: 2;
+      font-size: 10px; font-weight: 700; letter-spacing: 0.2px;
+      background: var(--text); color: var(--bg); padding: 5px 10px; border-radius: 99px;
+      text-decoration: none;
+    }
+    .gitem-get:active { transform: scale(0.95); }
+    .gitem-img { height: 72px; display: flex; align-items: center; justify-content: center; margin: 4px 0 10px; }
+    .gitem-tile {
+      width: 62px; height: 62px; border-radius: 14px; background: rgba(255,253,248,0.6);
+      display: flex; align-items: center; justify-content: center; overflow: hidden;
+      box-shadow: 0 2px 8px rgba(42,38,32,0.06);
+    }
+    .gitem-tile img { width: 100%; height: 100%; object-fit: cover; }
+    .gitem-ini { font-family: var(--font-serif); font-style: italic; font-size: 24px; }
+    .gitem-emoji { font-size: 28px; }
+    .gitem-name { font-size: 14px; font-weight: 700; color: var(--text); line-height: 1.2; letter-spacing: -0.2px; }
+    .gitem-sub { font-size: 11px; color: var(--text-dim); margin-top: 3px; }
+    .gitem-why { font-size: 12px; color: var(--text-muted); line-height: 1.45; margin-top: 8px; }
     .item-card:last-child { margin-bottom: 0; }
     .item-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; margin-bottom: 6px; }
     .item-name { font-size: 15px; font-weight: 600; letter-spacing: -0.2px; line-height: 1.3; }
@@ -1455,30 +1482,46 @@ function AIInsights({ items }) {
 
 // ── STACK ITEM CARD ───────────────────────────────────────────────────────────
 
-function StackItemCard({ item, editable, onEdit, onDelete }) {
+// hex → rgba string (for soft category-tinted gradients)
+function hexA(hex, a) {
+  const h = (hex || "#888888").replace("#", "");
+  const r = parseInt(h.slice(0, 2), 16), g = parseInt(h.slice(2, 4), 16), b = parseInt(h.slice(4, 6), 16);
+  return `rgba(${r},${g},${b},${a})`;
+}
+const CATEGORY_EMOJI = { Supplements: "💊", Wearables: "⌚", Labs: "🔬", Nutrition: "🥗", Fitness: "🏃", Sleep: "😴", Mind: "🧘", Services: "✨", Other: "✦" };
+// Supplements & Nutrition feel like "named products" → serif initials; others → category emoji.
+function usesInitials(cat) { return cat === "Supplements" || cat === "Nutrition"; }
+function itemInitials(name) {
+  const words = (name || "").split(/\s+/).filter(w => /[a-z]/i.test(w[0] || ""));
+  if (words.length >= 2) return (words[0][0] + words[1][0]).toUpperCase();
+  return ((name || "").replace(/[^a-z]/ig, "").slice(0, 2) || "★").toUpperCase();
+}
+
+// ── STACK ITEM (Option B: gradient tile, photo-or-styled, tap for "why") ───────
+
+function GridItemCard({ item }) {
+  const [open, setOpen] = useState(false);
   const color = CATEGORY_COLORS[item.category] || CATEGORY_COLORS.Other;
-  const yearsLabel = item.years < 1 ? `${Math.round(item.years * 12)}mo` : `${item.years}yr`;
-  // ← Swap in real affiliate URLs per product below
-  const affUrl = item.affiliateUrl || `https://amazon.com/s?k=${encodeURIComponent(item.name)}`;
+  const yearsLabel = item.years < 1 ? `${Math.round(item.years * 12)}mo` : item.years ? `${item.years}yr` : "";
+  const affUrl = item.affiliateUrl || `https://amazon.com/s?k=${encodeURIComponent(item.name)}`; // ← real affiliate URLs swap in here
+  const meta = [yearsLabel, item.cost > 0 ? `$${item.cost}/mo` : ""].filter(Boolean).join(" · ");
   return (
-    <div className="item-card" style={{ borderLeftColor: color }}>
-      <div className="item-top">
-        <div style={{ display: "flex", alignItems: "center", gap: 10, flex: 1, minWidth: 0 }}>
-          {item.photoUrl && <img src={item.photoUrl} alt="" className="item-photo" />}
-          <div className="item-name">{item.name}</div>
+    <div className="gitem" style={{ background: `linear-gradient(150deg, ${hexA(color, 0.10)}, ${hexA(color, 0.24)})`, borderColor: hexA(color, 0.22) }}
+         onClick={() => item.why && setOpen(o => !o)}>
+      <a className="gitem-get" href={affUrl} target="_blank" rel="noopener noreferrer" onClick={e => e.stopPropagation()}>Get it ↗</a>
+      <div className="gitem-img">
+        <div className="gitem-tile">
+          {item.photoUrl
+            ? <img src={item.photoUrl} alt="" />
+            : usesInitials(item.category)
+              ? <span className="gitem-ini" style={{ color }}>{itemInitials(item.name)}</span>
+              : <span className="gitem-emoji">{CATEGORY_EMOJI[item.category] || "✦"}</span>}
         </div>
-        <div className="item-years">{yearsLabel}</div>
       </div>
-      {item.why && <div className="item-why">{item.why}</div>}
-      <div className="item-actions">
-        <a className="btn-getit" href={affUrl} target="_blank" rel="noopener noreferrer">Get it ↗</a>
-        {item.cost > 0 && <span className="item-cost">${item.cost}/mo</span>}
-        {editable && (
-          <>
-            <button className="btn btn-ghost btn-sm" style={{ marginLeft: "auto" }} onClick={() => onEdit(item)}>Edit</button>
-            <button className="btn btn-ghost btn-sm" style={{ color: "var(--red)" }} onClick={() => onDelete(item.id)}>✕</button>
-          </>
-        )}
+      <div>
+        <div className="gitem-name">{item.name}</div>
+        {meta && <div className="gitem-sub">{meta}</div>}
+        {open && item.why && <div className="gitem-why">{item.why}</div>}
       </div>
     </div>
   );
@@ -1486,7 +1529,7 @@ function StackItemCard({ item, editable, onEdit, onDelete }) {
 
 // ── STACK SECTION ─────────────────────────────────────────────────────────────
 
-function StackSection({ items, editable, onEdit, onDelete }) {
+function StackSection({ items }) {
   const grouped = CATEGORIES.reduce((acc, cat) => {
     const ci = items.filter(i => i.category === cat);
     if (ci.length) acc[cat] = ci;
@@ -1507,7 +1550,9 @@ function StackSection({ items, editable, onEdit, onDelete }) {
             <div className="category-name">{cat}</div>
             <div className="category-count">{ci.length}</div>
           </div>
-          {ci.map(item => <StackItemCard key={item.id} item={item} editable={editable} onEdit={onEdit} onDelete={onDelete} />)}
+          <div className="stack-grid">
+            {ci.map(item => <GridItemCard key={item.id} item={item} />)}
+          </div>
         </div>
       ))}
     </div>
@@ -1829,10 +1874,7 @@ function StackPage({ username }) {
             <div><span className="cost-value">${cost}</span><span className="cost-period"> /mo</span></div>
           </div>
         )}
-        <StackSection items={stack.items} editable={editable}
-          onEdit={() => setShowEdit(true)}
-          onDelete={id => { const u = { ...stack, items: stack.items.filter(i => i.id !== id) }; saveStack(u); setStack(u); }}
-        />
+        <StackSection items={stack.items} />
         <div className="qr-section anim-6" style={{ marginTop: 8 }}>
           <div className="qr-title">SCAN TO VIEW ON ANOTHER DEVICE</div>
           <div className="qr-wrapper"><QRWidget url={url} /></div>
