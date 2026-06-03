@@ -336,6 +336,32 @@
     .sc-url { display: flex; justify-content: space-between; align-items: center; margin-top: 18px; padding-top: 16px; border-top: 1px solid rgba(255,255,255,0.14); font-size: 14px; color: #b8b0a4; }
     .sc-url b { color: #fff; }
 
+    /* ── "Just added" share card (off-screen 540×540, design A — funny/graphic) ── */
+    .sca { width: 540px; height: 540px; background: radial-gradient(130% 130% at 0% 0%, #2a2420, #141019 62%); color: #fff; padding: 34px; display: flex; flex-direction: column; font-family: var(--font-sans); box-sizing: border-box; position: relative; overflow: hidden; }
+    .sca-spark { position: absolute; color: var(--accent2); opacity: 0.55; }
+    .sca-top { display: flex; align-items: center; justify-content: space-between; position: relative; z-index: 2; }
+    .sca-brand { display: flex; align-items: center; gap: 9px; font-weight: 800; font-size: 21px; letter-spacing: -0.4px; }
+    .sca-brand b { color: var(--accent2); }
+    .sca-brand svg { width: 26px; height: 26px; }
+    .sca-tag { font-size: 15px; color: #b8b0a4; }
+    .sca-seal { position: absolute; top: 92px; right: 28px; width: 108px; height: 108px; transform: rotate(11deg); z-index: 4; filter: drop-shadow(0 6px 14px rgba(0,0,0,0.35)); }
+    .sca-mid { flex: 1; display: flex; flex-direction: column; justify-content: center; position: relative; z-index: 2; }
+    .sca-eyebrow { font-size: 16px; font-weight: 800; letter-spacing: 1px; text-transform: uppercase; color: var(--accent2); margin-bottom: 16px; }
+    .sca-chip { width: 92px; height: 92px; border-radius: 22px; display: flex; align-items: center; justify-content: center; font-size: 38px; box-shadow: 0 10px 30px rgba(0,0,0,0.35); margin-bottom: 18px; }
+    .sca-chip .ini { font-family: var(--font-serif); font-style: italic; }
+    .sca-nm { font-family: var(--font-serif); font-size: 50px; line-height: 1.02; letter-spacing: -0.5px; max-width: 78%; }
+    .sca-meta { font-size: 15px; color: #b8b0a4; margin-top: 12px; }
+    .sca-why { font-size: 17px; color: #ece7df; line-height: 1.4; margin-top: 14px; font-style: italic; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+    .sca-foot { display: flex; align-items: center; justify-content: space-between; margin-top: auto; padding-top: 16px; border-top: 1px solid rgba(255,255,255,0.14); position: relative; z-index: 2; }
+    .sca-getit { background: linear-gradient(135deg,#D9531F,#E89A4B); color: #fff; font-weight: 800; font-size: 16px; border-radius: 12px; padding: 12px 22px; }
+    .sca-url { font-size: 14px; color: #fff; font-weight: 700; }
+
+    /* "Just added" share row inside the item modal (owner only) */
+    .item-modal-share { display: flex; align-items: center; gap: 8px; margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--border); }
+    .item-modal-share-lbl { font-size: 11px; font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase; color: var(--text-dim); margin-right: auto; text-align: left; }
+    .ims-btn { width: 34px; height: 34px; border-radius: 50%; border: 1px solid var(--border); background: var(--surface); color: var(--text-muted); display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.15s ease; }
+    .ims-btn:hover { color: var(--accent); border-color: var(--accent); }
+
     .bj-share-btn { display: block; width: auto; margin: -4px 20px 16px; padding: 12px; border: 1px solid var(--border); background: var(--surface); color: var(--text); font-family: var(--font-sans); font-weight: 600; font-size: 13px; border-radius: var(--r-sm); cursor: pointer; transition: all 0.15s ease; }
     .bj-share-btn:hover { border-color: var(--accent); color: var(--accent); }
     /* In-rail B2 card (responsive display version of the share card) */
@@ -1721,6 +1747,75 @@ async function shareCardTo(platform, node, stack, cost, onToast) {
   } catch (e) { console.debug("shareCardTo", e); onToast && onToast("Couldn't generate the card"); }
 }
 
+// Funny, graphic "Just added" announcement card (design A) — same share pipeline as the Bryan card.
+function ShareAddCard({ item, username, handle, cardRef }) {
+  const color = CATEGORY_COLORS[item.category] || CATEGORY_COLORS.Other;
+  const drop = {
+    Supplements: "New supp just dropped 💊", Wearables: "New gear unlocked 🔓", Labs: "New test on the books 🧪",
+    Fitness: "New habit unlocked 💪", Sleep: "Sleep upgrade incoming 😴", Mind: "New ritual unlocked 🧘", Nutrition: "Diet upgrade 🥗",
+  }[item.category] || "Fresh in my stack ✨";
+  const meta = [item.category, item.dose, item.freq, costLabel(item)].filter(Boolean).join(" · ");
+  const usesIni = usesInitials(item.category);
+  return (
+    <div className="sc-stage" aria-hidden="true">
+      <div className="sca" ref={cardRef}>
+        <span className="sca-spark" style={{ top: 26, right: 168, fontSize: 22 }}>✦</span>
+        <span className="sca-spark" style={{ bottom: 132, left: 34, fontSize: 14 }}>✦</span>
+        <span className="sca-spark" style={{ top: 210, left: 16, fontSize: 17 }}>✦</span>
+        <div className="sca-top">
+          <div className="sca-brand">
+            <svg viewBox="0 0 40 40" fill="none"><rect x="6" y="24" width="28" height="6" rx="3" fill="#CE5A2E"/><rect x="9" y="15" width="22" height="6" rx="3" fill="#E89A4B"/><rect x="12" y="6" width="16" height="6" rx="3" fill="#E8B57A"/></svg>
+            <span>health<b>stack</b></span>
+          </div>
+          <div className="sca-tag">{handle || ("@" + username)}</div>
+        </div>
+        <svg className="sca-seal" viewBox="0 0 100 100">
+          <defs><linearGradient id="sealg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stopColor="#E89A4B"/><stop offset="1" stopColor="#D9531F"/></linearGradient></defs>
+          <circle cx="50" cy="50" r="46" fill="url(#sealg)"/>
+          <circle cx="50" cy="50" r="39" fill="none" stroke="#fff" strokeWidth="1.5" strokeDasharray="3 4" opacity="0.75"/>
+          <text x="50" y="47" textAnchor="middle" fontFamily="DM Serif Display, serif" fontStyle="italic" fontSize="26" fill="#fff">NEW</text>
+          <text x="50" y="64" textAnchor="middle" fontFamily="Inter, sans-serif" fontSize="8.5" letterSpacing="1.5" fill="#fff" opacity="0.9">IN MY STACK</text>
+        </svg>
+        <div className="sca-mid">
+          <div className="sca-eyebrow">🚨 {drop}</div>
+          <div className="sca-chip" style={{ background: `linear-gradient(150deg, #fff, ${hexA(color, 0.22)})`, color }}>
+            {usesIni ? <span className="ini">{itemInitials(item.name)}</span> : <span>{CATEGORY_EMOJI[item.category] || "✦"}</span>}
+          </div>
+          <div className="sca-nm">{item.name}</div>
+          <div className="sca-meta">{meta}</div>
+          {item.why && <div className="sca-why">“{item.why}”</div>}
+        </div>
+        <div className="sca-foot"><span className="sca-getit">Get it ↗</span><span className="sca-url">healthstack.app/stack/{username}</span></div>
+      </div>
+    </div>
+  );
+}
+async function shareAdditionTo(platform, node, { item, username, handle }, onToast) {
+  if (!node || !window.htmlToImage) { onToast && onToast("Sharing not available"); return; }
+  const pageUrl = `${window.location.origin}${window.location.pathname}#/stack/${username}`;
+  const text = `Just added ${item.name} to my health stack 🧬 Here's everything I take 👇`;
+  const _err = console.error;
+  console.error = (...a) => { if (/cssRules|inlining remote css|remote stylesheet|reading CSS rules/i.test(String(a[0] || ""))) return; _err.apply(console, a); };
+  try {
+    const dataUrl = await window.htmlToImage.toPng(node, { pixelRatio: 2, cacheBust: true, width: 540, height: 540, skipFonts: true, fontEmbedCSS: "" }).finally(() => { console.error = _err; });
+    const blob = await (await fetch(dataUrl)).blob();
+    const file = new File([blob], "healthstack-just-added.png", { type: "image/png" });
+    track("share_addition", { username, platform, item: item.name });
+    if (navigator.canShare && navigator.canShare({ files: [file] })) {
+      try { await navigator.share({ files: [file], text: `${text} ${pageUrl}` }); return; } catch (e) { if (e && e.name === "AbortError") return; }
+    }
+    const a = document.createElement("a"); a.href = dataUrl; a.download = "healthstack-just-added.png"; a.click();
+    if (platform === "x") {
+      try { await navigator.clipboard.write([new window.ClipboardItem({ "image/png": blob })]); } catch (_) {}
+      window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(`${text} ${pageUrl}`)}`, "_blank", "noopener");
+      onToast && onToast("Card saved & copied, paste it into your post 𝕏");
+    } else {
+      window.open("https://www.instagram.com/", "_blank", "noopener");
+      onToast && onToast("Card saved, upload it to Instagram 📸");
+    }
+  } catch (e) { console.debug("shareAdditionTo", e); onToast && onToast("Couldn't generate the card"); }
+}
+
 // ── REFERRALS (Path 2: creators inviting creators) ──
 // Read ?ref=<username> from the hash, e.g. #/?ref=maya or #/build?ref=maya
 function getRefParam() {
@@ -2276,8 +2371,9 @@ function itemInitials(name) {
 
 // ── STACK ITEM (Option B: gradient tile, photo-or-styled, tap for "why") ───────
 
-function GridItemCard({ item }) {
+function GridItemCard({ item, editable, username, handle, onToast }) {
   const [show, setShow] = useState(false);
+  const addCardRef = useRef(null);
   const color = CATEGORY_COLORS[item.category] || CATEGORY_COLORS.Other;
   const yearsLabel = item.years < 1 ? `${Math.round(item.years * 12)}mo` : item.years ? `${item.years}yr` : "";
   const affUrl = item.affiliateUrl || `https://amazon.com/s?k=${encodeURIComponent(item.name)}`; // ← real affiliate URLs swap in here
@@ -2326,7 +2422,19 @@ function GridItemCard({ item }) {
               </div>
             )}
             {isPurchasable(item) && <a className="btn btn-primary" style={{ width: "100%", padding: 14, fontSize: 15 }} href={affUrl} target="_blank" rel="noopener noreferrer">Get it ↗</a>}
+            {editable && (
+              <div className="item-modal-share">
+                <span className="item-modal-share-lbl">Share as "Just added"</span>
+                <button className="ims-btn" onClick={() => shareAdditionTo("x", addCardRef.current, { item, username, handle }, onToast)} aria-label="Share on X" title="Post on X">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+                </button>
+                <button className="ims-btn" onClick={() => shareAdditionTo("instagram", addCardRef.current, { item, username, handle }, onToast)} aria-label="Share on Instagram" title="Share to Instagram">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg>
+                </button>
+              </div>
+            )}
           </div>
+          {editable && <ShareAddCard item={item} username={username} handle={handle} cardRef={addCardRef} />}
         </div>,
         document.body
       )}
@@ -2336,7 +2444,7 @@ function GridItemCard({ item }) {
 
 // ── STACK SECTION ─────────────────────────────────────────────────────────────
 
-function StackSection({ items, editable, onEditCategory }) {
+function StackSection({ items, editable, onEditCategory, username, handle, onToast }) {
   const grouped = CATEGORIES.reduce((acc, cat) => {
     const ci = items.filter(i => i.category === cat);
     if (ci.length) acc[cat] = ci;
@@ -2363,7 +2471,7 @@ function StackSection({ items, editable, onEditCategory }) {
             <div className="category-count">{ci.length}</div>
           </div>
           <div className="stack-grid">
-            {ci.map(item => <GridItemCard key={item.id} item={item} />)}
+            {ci.map(item => <GridItemCard key={item.id} item={item} editable={editable} username={username} handle={handle} onToast={onToast} />)}
           </div>
         </div>
       ))}
@@ -2780,7 +2888,7 @@ function Healthstack({ username }) {
             <BryanCardB2 stack={stack} cost={cost} url={`healthstack.app/stack/${username}`} onShare={isExample ? undefined : (p) => shareCardTo(p, shareCardRef.current, stack, cost, toast)} />
           </div>
           <div className="stack-main">
-            <StackSection items={stack.items} editable={editable} onEditCategory={(cat) => { setEditCategory(cat); setShowEdit(true); }} />
+            <StackSection items={stack.items} editable={editable} onEditCategory={(cat) => { setEditCategory(cat); setShowEdit(true); }} username={username} handle={stack.handle} onToast={toast} />
           </div>
         </div>
       </div>
@@ -3986,6 +4094,7 @@ function HomePage() {
               {[
                 ["Your affiliate links, your money", "Connect your links, keep 100%"],
                 ["Click & conversion analytics", "See what gets tapped and converts"],
+                ["Shareable \"Just added\" cards", "Announce each new item → drive referrals"],
                 ["Custom URL + verified badge", "healthstack.app/yourname"],
                 ["Lead capture", "\"Email me this stack\" → your audience list"],
                 ["Invite a creator, get Pro free", "Each creator you bring earns a free month"],
