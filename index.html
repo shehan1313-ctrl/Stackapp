@@ -2644,7 +2644,7 @@ function BuildFlow() {
       <Topbar />
       <div className="build-page">
         <div className="build-header anim-0">
-          <button className="build-back" onClick={() => step > 1 ? setStep(s => s - 1) : navigate("#/stack/shehan")}>
+          <button className="build-back" onClick={() => step > 1 ? setStep(s => s - 1) : navigate(`#/stack/${DEMO_STACK.username}`)}>
             ← {step > 1 ? "Back" : "View demo"}
           </button>
           <div className="build-title">{titleMap[step]}</div>
@@ -3560,7 +3560,7 @@ function App() {
     <div><Topbar />
       <div className="not-found">
         <div className="not-found-title">Page not found</div>
-        <button className="btn btn-primary" onClick={() => navigate("#/stack/shehan")}>Go home</button>
+        <button className="btn btn-primary" onClick={() => navigate("#/")}>Go home</button>
       </div>
     </div>
   );
