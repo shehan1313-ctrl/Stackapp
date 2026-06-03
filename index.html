@@ -2528,7 +2528,10 @@ function BuildFlow() {
 
   function submit() {
     if (!profile.name.trim()) return;
-    const username = uniqueUsername(profile.name);
+    // If a signed-in user already has a stack, update it in place (one canonical
+    // username per account) instead of minting a new slug like shehan2/shehan3.
+    const existing = currentUserId() ? myStackUsername() : null;
+    const username = existing || uniqueUsername(profile.name);
     const referredBy = consumeRef();  // who invited this creator (Path 2), if anyone
     const hl = buildHighlight();
     const stack = {
