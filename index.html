@@ -1850,6 +1850,16 @@ function EditSheet({ stack, onSave, onClose }) {
     const u = { ...stack, items, bioAge: parseInt(bioAge)||stack.bioAge, chronoAge: parseInt(chronoAge)||stack.chronoAge };
     saveStack(u); onSave(u); onClose();
   }
+  function pickPreset(p) {
+    setForm(f => ({ ...f, name: p.name, dose: f.dose || p.dose || "" }));
+  }
+
+  // Preset picker + "why" (AI) suggestions, scoped to the chosen category.
+  const pickerOptions = (PREDEFINED_ITEMS[form.category] || []).filter(p => !p.name.toLowerCase().startsWith("custom"));
+  const typed = form.name.trim().toLowerCase();
+  const pickerList = typed ? pickerOptions.filter(p => p.name.toLowerCase().includes(typed)) : pickerOptions;
+  const whyMatch = pickerOptions.find(p => p.name.toLowerCase() === typed);
+  const whyOptions = whyMatch ? whyMatch.whys : [];
 
   return (
     <div className="modal-bg" onClick={e => e.target === e.currentTarget && onClose()}>
@@ -1881,11 +1891,6 @@ function EditSheet({ stack, onSave, onClose }) {
         </div>
         {showAdd ? (
           <div className="form-section" style={{ marginTop: 12 }}>
-            <div className="form-group"><label className="form-label">Name *</label><input className="form-input" placeholder="Item name" value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))} /></div>
-            <div className="form-row">
-              <div className="form-group" style={{ flex: 1 }}><label className="form-label">Dose</label><input className="form-input" placeholder="500mg" value={form.dose} onChange={e => setForm(f => ({ ...f, dose: e.target.value }))} /></div>
-              <div className="form-group" style={{ flex: 1 }}><label className="form-label">Frequency</label><input className="form-input" placeholder="daily" value={form.freq} onChange={e => setForm(f => ({ ...f, freq: e.target.value }))} /></div>
-            </div>
             <div className="form-row">
               <div className="form-group">
                 <label className="form-label">Category</label>
@@ -1895,7 +1900,38 @@ function EditSheet({ stack, onSave, onClose }) {
               </div>
               <div className="form-group"><label className="form-label">Years</label><input className="form-input" type="number" value={form.years} onChange={e => setForm(f => ({ ...f, years: e.target.value }))} /></div>
             </div>
-            <div className="form-group"><label className="form-label">Why</label><textarea className="form-textarea" value={form.why} onChange={e => setForm(f => ({ ...f, why: e.target.value }))} /></div>
+            <div className="form-group"><label className="form-label">Name *</label><input className="form-input" placeholder={`Search or type a ${form.category.toLowerCase().replace(/s$/, "")}…`} value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))} /></div>
+            {pickerList.length > 0 && (
+              <div className="picker-list" style={{ marginTop: -2 }}>
+                {pickerList.map(p => {
+                  const sel = p.name.toLowerCase() === typed;
+                  return (
+                    <div key={p.name} className={`picker-item ${sel ? "selected" : ""}`} onClick={() => pickPreset(p)}>
+                      <span>{p.name}</span>
+                      {sel && <span className="picker-item-check">✓</span>}
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+            <div className="form-row">
+              <div className="form-group" style={{ flex: 1 }}><label className="form-label">Dose</label><input className="form-input" placeholder="500mg" value={form.dose} onChange={e => setForm(f => ({ ...f, dose: e.target.value }))} /></div>
+              <div className="form-group" style={{ flex: 1 }}><label className="form-label">Frequency</label><input className="form-input" placeholder="daily" value={form.freq} onChange={e => setForm(f => ({ ...f, freq: e.target.value }))} /></div>
+            </div>
+            <div className="form-group">
+              <label className="form-label">Why</label>
+              {whyOptions.length > 0 && (
+                <div style={{ marginBottom: 8 }}>
+                  <div className="suggestions-label">💡 Tap to use a suggestion</div>
+                  <div className="suggestion-chips">
+                    {whyOptions.map((s, i) => (
+                      <button key={i} className={`suggestion-chip ${form.why === s ? "applied" : ""}`} onClick={() => setForm(f => ({ ...f, why: s }))}>{s}</button>
+                    ))}
+                  </div>
+                </div>
+              )}
+              <textarea className="form-textarea" value={form.why} onChange={e => setForm(f => ({ ...f, why: e.target.value }))} />
+            </div>
             <div className="form-row">
               <div className="form-group"><label className="form-label">Cost ($)</label>
                 <div style={{ display: "flex", gap: 6 }}>
