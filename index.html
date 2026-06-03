@@ -1507,7 +1507,7 @@ function navigate(path) { window.location.hash = path; }
 function useRouter() {
   const [loc, setLoc] = useState(() => parseHash(window.location.hash));
   useEffect(() => {
-    const fn = () => setLoc(parseHash(window.location.hash));
+    const fn = () => { setLoc(parseHash(window.location.hash)); window.scrollTo(0, 0); };
     window.addEventListener("hashchange", fn);
     return () => window.removeEventListener("hashchange", fn);
   }, []);
