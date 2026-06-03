@@ -333,6 +333,30 @@
 
     .bj-share-btn { display: block; width: auto; margin: -4px 20px 16px; padding: 12px; border: 1px solid var(--border); background: var(--surface); color: var(--text); font-family: var(--font-sans); font-weight: 600; font-size: 13px; border-radius: var(--r-sm); cursor: pointer; transition: all 0.15s ease; }
     .bj-share-btn:hover { border-color: var(--accent); color: var(--accent); }
+    /* In-rail B2 card (responsive display version of the share card) */
+    .bjb2 { margin: 0 20px 12px; background: #171310; border-radius: var(--r-sm); padding: 16px; color: #fff; box-shadow: 0 12px 30px rgba(0,0,0,0.28); }
+    .bjb2-top { display: flex; align-items: center; justify-content: space-between; }
+    .bjb2-brand { display: flex; align-items: center; gap: 6px; font-weight: 800; font-size: 13px; }
+    .bjb2-brand b { color: var(--accent2); }
+    .bjb2-brand svg { width: 16px; height: 16px; }
+    .bjb2-tag { font-size: 10px; color: #b8b0a4; }
+    .bjb2-cap { display: flex; justify-content: space-between; gap: 8px; font-size: 10.5px; color: #cfc7bb; margin: 16px 0 9px; }
+    .bjb2-cap b { color: var(--accent2); font-weight: 700; }
+    .bjb2-bar { height: 86px; border-radius: 12px; background: linear-gradient(160deg, #2a2420, #141019); border: 1px solid rgba(255,255,255,0.1); position: relative; display: flex; align-items: center; padding: 0 14px; }
+    .bjb2-sliver { position: absolute; left: 0; top: 0; bottom: 0; width: 7px; background: linear-gradient(180deg, #E89A4B, #D9531F); box-shadow: 0 0 14px rgba(232,154,75,0.9); border-radius: 12px 0 0 12px; }
+    .bjb2-me { position: absolute; left: 12px; top: -12px; display: flex; align-items: center; gap: 7px; background: #231d18; border: 1px solid rgba(232,154,75,0.45); border-radius: 99px; padding: 4px 11px 4px 4px; }
+    .bjb2-me .bjb2-av { width: 26px; height: 26px; }
+    .bjb2-me-t { font-size: 11px; } .bjb2-me-t b { color: var(--accent2); }
+    .bjb2-bryan { margin-left: auto; display: flex; align-items: center; gap: 10px; }
+    .bjb2-amt { font-family: var(--font-serif); font-size: 26px; line-height: 1; }
+    .bjb2-who { font-size: 9.5px; color: #b8b0a4; text-transform: uppercase; letter-spacing: 0.5px; margin-top: 3px; }
+    .bjb2-av { border-radius: 50%; background-size: cover; background-position: center; flex-shrink: 0; }
+    .bjb2-bryan .bjb2-av { width: 44px; height: 44px; border: 2px solid rgba(255,255,255,0.5); }
+    .bjb2-foot { font-size: 12px; color: #ece7df; text-align: center; line-height: 1.4; margin-top: 12px; }
+    .bjb2-foot b { color: var(--accent2); }
+    .bjb2-url { display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-top: 12px; padding-top: 12px; border-top: 1px solid rgba(255,255,255,0.14); font-size: 10.5px; color: #b8b0a4; }
+    .bjb2-url b { color: #fff; white-space: nowrap; }
+
     /* Bryan Johnson comparison card (nested-scale share card, dark) */
     .bj-card { margin: 0 20px 16px; background: #171310; border-radius: var(--r-sm); padding: 18px; color: #fff; box-shadow: 0 12px 30px rgba(0,0,0,0.28); }
     .bj-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
@@ -1429,6 +1453,34 @@ function BryanCompareCard({ cost, handle, name, url, compact }) {
   );
 }
 
+// In-rail B2 card (my sliver inside Bryan's box) — the visible Bryan card on the dashboard.
+function BryanCardB2({ stack, cost, url }) {
+  if (!cost || cost <= 0) return null;
+  const avatar = stack.avatarUrl || DEFAULT_AVATAR;
+  return (
+    <div className="bjb2 anim-4">
+      <div className="bjb2-top">
+        <div className="bjb2-brand">
+          <svg viewBox="0 0 40 40" fill="none"><rect x="6" y="24" width="28" height="6" rx="3" fill="#CE5A2E"/><rect x="9" y="15" width="22" height="6" rx="3" fill="#E89A4B"/><rect x="12" y="6" width="16" height="6" rx="3" fill="#E8B57A"/></svg>
+          <span>health<b>stack</b></span>
+        </div>
+        {stack.handle && <div className="bjb2-tag">{stack.handle}</div>}
+      </div>
+      <div className="bjb2-cap"><span>The whole box = Bryan's monthly budget</span><b>{bjPercent(cost)}%</b></div>
+      <div className="bjb2-bar">
+        <div className="bjb2-sliver" />
+        <div className="bjb2-me"><div className="bjb2-av" style={{ backgroundImage: `url(${avatar})` }} /><span className="bjb2-me-t"><b>${cost.toLocaleString()}</b> · me</span></div>
+        <div className="bjb2-bryan">
+          <div style={{ textAlign: "right" }}><div className="bjb2-amt">$167K<span style={{ fontSize: 13 }}>/mo</span></div><div className="bjb2-who">Bryan Johnson</div></div>
+          <div className="bjb2-av" style={{ backgroundImage: "url(/bryan-avatar.jpg)" }} />
+        </div>
+      </div>
+      <div className="bjb2-foot">⏳ Bryan blows my <b>annual</b> health budget in <b>{bjTimeToMatch(cost)}</b>.</div>
+      {url && <div className="bjb2-url"><span>${cost.toLocaleString()}/mo vs ~$167K/mo</span><b>{url}</b></div>}
+    </div>
+  );
+}
+
 // Off-screen 540×540 card (B2: my sliver inside Bryan's box) — captured to a PNG for sharing.
 function ShareCardB2({ stack, cost, cardRef }) {
   const avatar = stack.avatarUrl || DEFAULT_AVATAR;
@@ -1465,7 +1517,7 @@ function ShareCardB2({ stack, cost, cardRef }) {
 async function shareStackCard(node, stack, cost, onToast) {
   if (!node || !window.htmlToImage) { onToast && onToast("Sharing not available"); return; }
   try {
-    const dataUrl = await window.htmlToImage.toPng(node, { pixelRatio: 2, cacheBust: true, width: 540, height: 540 });
+    const dataUrl = await window.htmlToImage.toPng(node, { pixelRatio: 2, cacheBust: true, width: 540, height: 540, skipFonts: true });
     const blob = await (await fetch(dataUrl)).blob();
     const file = new File([blob], "healthstack-card.png", { type: "image/png" });
     const text = `My entire health stack is ${bjPercent(cost)}% of Bryan Johnson's budget 🧬 Build yours free:`;
@@ -2370,7 +2422,7 @@ function Healthstack({ username }) {
             {stack.highlight
               ? <HighlightCard highlight={stack.highlight} />
               : (stack.bioAge > 0 && stack.chronoAge > 0 && <BioAgeCard bioAge={stack.bioAge} chronoAge={stack.chronoAge} />)}
-            <BryanCompareCard cost={cost} handle={stack.handle} name={stack.name} url={`healthstack.app/stack/${username}`} />
+            <BryanCardB2 stack={stack} cost={cost} url={`healthstack.app/stack/${username}`} />
             {cost > 0 && (
               <button className="bj-share-btn anim-4" onClick={() => shareStackCard(shareCardRef.current, stack, cost, toast)}>
                 📸 Share this card
