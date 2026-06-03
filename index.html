@@ -290,8 +290,10 @@
       display: flex; align-items: center; justify-content: space-between;
     }
     .cost-label { font-size: 12px; color: var(--text-muted); font-weight: 500; }
+    .cost-figures { text-align: right; }
     .cost-value { font-size: 18px; font-weight: 700; color: var(--text); }
     .cost-period { font-size: 11px; color: var(--text-dim); }
+    .cost-annual { font-size: 11px; color: var(--text-dim); margin-top: 2px; }
 
     /* QR */
     .qr-section {
@@ -1519,12 +1521,6 @@ function ProfileSection({ stack }) {
         <div className="profile-info">
           <div className="profile-name">{stack.name}</div>
           <div className="profile-handle">{stack.handle}</div>
-          {stack.verified && (
-            <div className="badge-verified">
-              <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-              Verified
-            </div>
-          )}
           {(stack.twitter || stack.instagram) && (
             <div className="profile-socials">
               {stack.twitter && (
@@ -2078,8 +2074,11 @@ function Healthstack({ username }) {
               : (stack.bioAge > 0 && stack.chronoAge > 0 && <BioAgeCard bioAge={stack.bioAge} chronoAge={stack.chronoAge} />)}
             {cost > 0 && (
               <div className="cost-banner anim-4">
-                <div className="cost-label">Monthly investment</div>
-                <div><span className="cost-value">~${cost}</span><span className="cost-period"> /mo</span></div>
+                <div className="cost-label">Investment<br /><span style={{ fontSize: 10.5, color: "var(--text-dim)" }}>annual items amortized</span></div>
+                <div className="cost-figures">
+                  <div><span className="cost-value">~${cost}</span><span className="cost-period"> /mo</span></div>
+                  <div className="cost-annual">≈ ${(cost * 12).toLocaleString()}/yr</div>
+                </div>
               </div>
             )}
             <div className="qr-section anim-6">
