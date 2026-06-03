@@ -1964,6 +1964,12 @@ function parseHash(h) {
   return { route: "404" };
 }
 function navigate(path) { window.location.hash = path; }
+// Jump to the pricing section on the home page (works from any route).
+function goToPricing() {
+  const onHome = !/^#\/(stack|earnings|build|examples|about|privacy|terms|tour)/.test(window.location.hash || "");
+  const scroll = () => { const el = document.getElementById("pricing"); if (el) el.scrollIntoView({ behavior: "smooth", block: "start" }); };
+  if (onHome) { scroll(); } else { navigate("#/"); setTimeout(scroll, 360); }
+}
 function useRouter() {
   const [loc, setLoc] = useState(() => parseHash(window.location.hash));
   useEffect(() => {
@@ -2044,6 +2050,7 @@ function Topbar({ rightContent }) {
       <Logo onClick={() => navigate("#/")} />
       <div className="topbar-actions">
         <button className="btn btn-ghost btn-sm topbar-examples" onClick={() => navigate("#/examples")}>Examples</button>
+        <button className="btn btn-ghost btn-sm topbar-examples" onClick={goToPricing}>Pricing</button>
         <AuthButton />
         {rightContent || <BuildCTA />}
       </div>
@@ -3886,6 +3893,7 @@ function HomePage() {
         <Logo onClick={() => navigate("#/")} />
         <div className="topbar-actions">
           <button className="btn btn-ghost btn-sm topbar-examples" onClick={() => navigate("#/examples")}>Examples</button>
+          <button className="btn btn-ghost btn-sm topbar-examples" onClick={goToPricing}>Pricing</button>
           <AuthButton />
           <BuildCTA />
         </div>
@@ -3938,7 +3946,7 @@ function HomePage() {
       </div>
 
       {/* PRICING */}
-      <div className="home-section anim-4" style={{ marginTop: 44 }}>
+      <div className="home-section anim-4" id="pricing" style={{ marginTop: 44, scrollMarginTop: 80 }}>
         <div className="home-section-label">PRICING</div>
         <div className="home-def-text" style={{ fontSize: 20, textAlign: "center", margin: "0 auto 18px", maxWidth: 460 }}>Share for free. Earn when you're ready.</div>
         <div className="pr-grid">
