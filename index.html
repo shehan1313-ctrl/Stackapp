@@ -153,7 +153,7 @@
       display: inline-flex; align-items: center; gap: 4px;
       font-size: 11px; font-weight: 600; padding: 4px 8px; border-radius: 99px;
       letter-spacing: 0.3px; margin-top: 8px;
-      background: rgba(90,155,116,0.15); color: var(--teal); border: 1px solid rgba(90,155,116,0.25);
+      background: rgba(232,154,75,0.15); color: var(--teal); border: 1px solid rgba(232,154,75,0.25);
     }
 
     /* Bio Age */
@@ -163,7 +163,7 @@
     }
     .bio-age-card::before {
       content: ''; position: absolute; inset: 0;
-      background: radial-gradient(ellipse at top right, rgba(47,122,85,0.06) 0%, transparent 70%);
+      background: radial-gradient(ellipse at top right, rgba(206,90,46,0.06) 0%, transparent 70%);
       pointer-events: none;
     }
     .bio-age-label { font-size: 11px; font-weight: 600; letter-spacing: 1.2px; text-transform: uppercase; color: var(--text-muted); margin-bottom: 12px; }
@@ -277,12 +277,12 @@
     .item-why { font-size: 13px; color: var(--text-muted); line-height: 1.5; margin-bottom: 10px; }
     .item-actions { display: flex; align-items: center; gap: 8px; }
     .btn-getit {
-      background: rgba(47,122,85,0.12); color: var(--accent); border: 1px solid rgba(47,122,85,0.2);
+      background: rgba(206,90,46,0.12); color: var(--accent); border: 1px solid rgba(206,90,46,0.2);
       padding: 6px 12px; border-radius: var(--r-xs); font-size: 12px; font-weight: 600;
       cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; gap: 4px;
       transition: all 0.15s ease; font-family: var(--font-sans);
     }
-    .btn-getit:hover { background: rgba(47,122,85,0.2); }
+    .btn-getit:hover { background: rgba(206,90,46,0.2); }
     .btn-getit:active { transform: scale(0.97); }
     .item-cost { margin-left: auto; font-size: 11px; color: var(--text-dim); }
 
@@ -447,7 +447,7 @@
       font-size: 12px; font-weight: 700; flex-shrink: 0; transition: all 0.2s ease;
     }
     .step-dot.active { background: var(--accent); color: #FFFDF8; }
-    .step-dot.done { background: rgba(47,122,85,0.2); color: var(--accent); }
+    .step-dot.done { background: rgba(206,90,46,0.2); color: var(--accent); }
     .step-dot.pending { background: var(--surface2); color: var(--text-dim); }
     .step-line { flex: 1; height: 1px; background: var(--border); }
     .step-line.done { background: var(--accent); }
@@ -487,7 +487,7 @@
     .cat-section-header-left { display: flex; align-items: center; gap: 8px; }
     .cat-label { font-size: 13px; font-weight: 700; letter-spacing: 0.3px; }
     .cat-count {
-      font-size: 11px; color: var(--accent); background: rgba(47,122,85,0.1);
+      font-size: 11px; color: var(--accent); background: rgba(206,90,46,0.1);
       padding: 2px 7px; border-radius: 99px; font-weight: 600;
     }
     .cat-item-row {
@@ -508,8 +508,8 @@
       display: flex; align-items: center; justify-content: space-between;
     }
     .picker-item:last-child { border-bottom: none; }
-    .picker-item:hover { background: rgba(47,122,85,0.06); }
-    .picker-item.selected { background: rgba(47,122,85,0.1); color: var(--accent); }
+    .picker-item:hover { background: rgba(206,90,46,0.06); }
+    .picker-item.selected { background: rgba(206,90,46,0.1); color: var(--accent); }
     .picker-item-check { color: var(--accent); font-size: 14px; }
 
     /* Why suggestion chips */
@@ -521,9 +521,9 @@
       cursor: pointer; font-family: var(--font-sans); text-align: left;
       transition: all 0.15s ease; line-height: 1.4;
     }
-    .suggestion-chip:hover { border-color: var(--accent); color: var(--text); background: rgba(47,122,85,0.06); }
+    .suggestion-chip:hover { border-color: var(--accent); color: var(--text); background: rgba(206,90,46,0.06); }
     .suggestion-chip:active { transform: scale(0.98); }
-    .suggestion-chip.applied { border-color: var(--accent); color: var(--accent); background: rgba(47,122,85,0.08); }
+    .suggestion-chip.applied { border-color: var(--accent); color: var(--accent); background: rgba(206,90,46,0.08); }
 
     /* Build item row */
     .build-item-card {
@@ -585,7 +585,7 @@
       font-size: 14px; font-weight: 600; color: var(--text-muted);
       transition: all 0.15s ease;
     }
-    .scan-btn:hover { border-color: var(--accent); color: var(--accent); background: rgba(47,122,85,0.05); }
+    .scan-btn:hover { border-color: var(--accent); color: var(--accent); background: rgba(206,90,46,0.05); }
     .scan-btn:active { transform: scale(0.98); }
     .scan-btn-icon { font-size: 20px; line-height: 1; }
     .photo-preview {
@@ -599,7 +599,7 @@
       font-size: 13px; font-weight: 600; color: var(--text); gap: 8px; flex-direction: column;
     }
     .scan-spinner {
-      width: 24px; height: 24px; border: 2px solid rgba(47,122,85,0.3);
+      width: 24px; height: 24px; border: 2px solid rgba(206,90,46,0.3);
       border-top-color: var(--accent); border-radius: 50%;
       animation: spin 0.8s linear infinite;
     }
@@ -612,15 +612,15 @@
     }
     .photo-remove:hover { color: var(--red); }
     .picker-add-custom { display: block; width: 100%; padding: 12px; border: 1px dashed var(--border); border-radius: var(--r-sm); background: var(--surface2); color: var(--accent); font-family: var(--font-sans); font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.15s ease; }
-    .picker-add-custom:hover { border-color: var(--accent); background: rgba(47,122,85,0.05); }
-    .picker-item.matched { background: rgba(47,122,85,0.08); }
+    .picker-add-custom:hover { border-color: var(--accent); background: rgba(206,90,46,0.05); }
+    .picker-item.matched { background: rgba(206,90,46,0.08); }
     .picker-item.matched .match-label {
       font-size: 10px; font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase;
-      color: var(--accent); background: rgba(47,122,85,0.15); padding: 2px 6px; border-radius: 99px;
+      color: var(--accent); background: rgba(206,90,46,0.15); padding: 2px 6px; border-radius: 99px;
     }
     .scan-result-note {
       font-size: 12px; color: var(--text-muted); margin-bottom: 8px; padding: 8px 12px;
-      background: rgba(47,122,85,0.06); border: 1px solid rgba(47,122,85,0.15);
+      background: rgba(206,90,46,0.06); border: 1px solid rgba(206,90,46,0.15);
       border-radius: var(--r-xs); line-height: 1.4;
     }
     .item-photo {
@@ -644,7 +644,7 @@
       position: absolute; font-family: var(--font-serif); font-size: 280px; font-weight: 700;
       line-height: 1; top: 50%; left: 50%; transform: translate(-50%, -52%);
       pointer-events: none; user-select: none; letter-spacing: -12px; z-index: 0;
-      color: rgba(47,122,85,0.045);
+      color: rgba(206,90,46,0.045);
     }
     .land-slide-inner { position: relative; z-index: 1; display: flex; flex-direction: column; align-items: center; width: 100%; }
     .land-icon-ring {
@@ -693,7 +693,7 @@
     /* ── CLAIM BANNER (unclaimed owner stack) ── */
     .claim-banner {
       margin: 0 20px 16px; padding: 14px 16px; cursor: pointer;
-      background: linear-gradient(135deg, rgba(194,137,90,0.12), rgba(47,122,85,0.1));
+      background: linear-gradient(135deg, rgba(194,137,90,0.12), rgba(206,90,46,0.1));
       border: 1px solid rgba(194,137,90,0.25); border-radius: var(--r);
       display: flex; align-items: center; gap: 12px; transition: all 0.15s ease;
     }
@@ -721,7 +721,7 @@
     }
     .earn-hero::before {
       content: ''; position: absolute; inset: 0;
-      background: radial-gradient(ellipse at top, rgba(47,122,85,0.1) 0%, transparent 65%); pointer-events: none;
+      background: radial-gradient(ellipse at top, rgba(206,90,46,0.1) 0%, transparent 65%); pointer-events: none;
     }
     .earn-hero-label { font-size: 11px; font-weight: 600; letter-spacing: 1.2px; color: var(--text-muted); margin-bottom: 8px; }
     .earn-hero-amount { font-family: var(--font-serif); font-size: 56px; line-height: 1; letter-spacing: -2px; color: var(--accent); margin-bottom: 12px; }
@@ -755,7 +755,7 @@
     .earn-item-name { font-size: 14px; font-weight: 600; }
     .earn-item-meta { font-size: 11px; color: var(--text-muted); margin-top: 1px; }
     .earn-item-earned { font-size: 15px; font-weight: 700; color: var(--accent); }
-    .earn-cta { margin: 4px 20px 0; background: linear-gradient(135deg, rgba(47,122,85,0.1), rgba(90,155,116,0.06)); border: 1px solid rgba(47,122,85,0.2); border-radius: var(--r); padding: 18px; text-align: center; }
+    .earn-cta { margin: 4px 20px 0; background: linear-gradient(135deg, rgba(206,90,46,0.1), rgba(232,154,75,0.06)); border: 1px solid rgba(206,90,46,0.2); border-radius: var(--r); padding: 18px; text-align: center; }
     .earn-cta-title { font-size: 16px; font-weight: 700; margin-bottom: 6px; }
     .earn-cta-sub { font-size: 13px; color: var(--text-muted); line-height: 1.5; margin-bottom: 14px; }
 
@@ -769,8 +769,8 @@
     .earn-invite-count-label { font-size: 10px; color: var(--text-muted); letter-spacing: 0.5px; margin-top: 2px; }
     .invite-reward {
       display: flex; gap: 12px; align-items: center; padding: 14px;
-      background: linear-gradient(135deg, rgba(90,155,116,0.1), rgba(47,122,85,0.06));
-      border: 1px solid rgba(90,155,116,0.25); border-radius: var(--r-sm); margin-bottom: 18px;
+      background: linear-gradient(135deg, rgba(232,154,75,0.1), rgba(206,90,46,0.06));
+      border: 1px solid rgba(232,154,75,0.25); border-radius: var(--r-sm); margin-bottom: 18px;
     }
     .invite-reward-icon { font-size: 26px; flex-shrink: 0; }
     .invite-reward-title { font-size: 15px; font-weight: 700; color: var(--teal); margin-bottom: 2px; }
@@ -794,7 +794,7 @@
     .cat-feedback { margin: 4px 20px 0; padding: 14px 16px; display: flex; align-items: center; gap: 12px; cursor: pointer; background: var(--surface); border: 1px dashed var(--border); border-radius: var(--r); transition: border-color 0.15s ease; }
     .cat-feedback:hover { border-color: var(--accent); }
     .cat-more-toggle { display: flex; align-items: center; justify-content: center; gap: 8px; width: calc(100% - 40px); margin: 0 20px 12px; padding: 13px; background: transparent; border: 1px dashed var(--border); border-radius: var(--r-sm); color: var(--accent); font-family: var(--font-sans); font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.15s ease; }
-    .cat-more-toggle:hover { border-color: var(--accent); background: rgba(47,122,85,0.04); }
+    .cat-more-toggle:hover { border-color: var(--accent); background: rgba(206,90,46,0.04); }
     .cat-more-toggle span { color: var(--text-dim); font-weight: 400; font-size: 12px; }
     .cat-feedback-icon { font-size: 20px; flex-shrink: 0; }
     .cat-feedback-title { font-size: 14px; font-weight: 700; }
@@ -839,7 +839,7 @@
     .home-page { background: var(--bg); }
     .home-hero {
       padding: 40px 24px 28px; text-align: center; position: relative; overflow: hidden;
-      background: radial-gradient(ellipse at top, rgba(47,122,85,0.09) 0%, transparent 60%);
+      background: radial-gradient(ellipse at top, rgba(206,90,46,0.09) 0%, transparent 60%);
     }
     .home-eyebrow { font-size: 11px; font-weight: 700; letter-spacing: 1.5px; color: var(--accent); margin-bottom: 18px; }
     .home-headline { font-family: var(--font-serif); font-size: 40px; line-height: 1.12; letter-spacing: -1px; font-weight: 400; margin-bottom: 16px; }
@@ -880,7 +880,7 @@
     .home-demo-handle { font-size: 12px; color: var(--text-muted); }
     .home-demo-arrow { font-size: 18px; color: var(--accent); }
     .home-demo-chips { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 12px; }
-    .home-demo-chip { font-size: 11px; font-weight: 700; padding: 4px 9px; border-radius: 99px; background: rgba(47,122,85,0.1); color: var(--accent); }
+    .home-demo-chip { font-size: 11px; font-weight: 700; padding: 4px 9px; border-radius: 99px; background: rgba(206,90,46,0.1); color: var(--accent); }
     .home-demo-cta { font-size: 13px; font-weight: 600; color: var(--accent); }
     .home-soon { font-size: 9px; font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase; color: var(--amber); background: rgba(194,137,90,0.14); border: 1px solid rgba(194,137,90,0.3); padding: 2px 6px; border-radius: 99px; vertical-align: middle; white-space: nowrap; }
     /* Embedded live example */
@@ -968,10 +968,10 @@
     .sf-link { background: none; border: none; padding: 0; text-align: left; font-family: var(--font-sans); font-size: 13.5px; color: var(--text-muted); cursor: pointer; text-decoration: none; transition: color 0.12s ease; }
     .sf-link:hover { color: var(--accent); }
     .sf-bottom { display: flex; flex-wrap: wrap; gap: 6px 16px; justify-content: space-between; align-items: center; margin-top: 30px; padding-top: 18px; border-top: 1px solid var(--border); font-size: 11.5px; color: var(--text-dim); }
-    .home-footer { margin: 0 20px; padding: 28px 22px; text-align: center; background: linear-gradient(135deg, rgba(47,122,85,0.1), rgba(90,155,116,0.05)); border: 1px solid rgba(47,122,85,0.2); border-radius: var(--r); }
+    .home-footer { margin: 0 20px; padding: 28px 22px; text-align: center; background: linear-gradient(135deg, rgba(206,90,46,0.1), rgba(232,154,75,0.05)); border: 1px solid rgba(206,90,46,0.2); border-radius: var(--r); }
     .home-footer-title { font-family: var(--font-serif); font-size: 24px; letter-spacing: -0.5px; margin-bottom: 18px; }
     .invite-showcase { max-width: 330px; margin: 0 auto 18px; min-height: 96px; }
-    .invite-bubble { position: relative; background: var(--accent); color: #FFFDF8; border-radius: 16px 16px 4px 16px; padding: 13px 16px; text-align: left; font-size: 14px; line-height: 1.5; animation: fadeUp 0.45s ease; box-shadow: 0 6px 18px rgba(47,122,85,0.18); }
+    .invite-bubble { position: relative; background: var(--accent); color: #FFFDF8; border-radius: 16px 16px 4px 16px; padding: 13px 16px; text-align: left; font-size: 14px; line-height: 1.5; animation: fadeUp 0.45s ease; box-shadow: 0 6px 18px rgba(206,90,46,0.18); }
     .invite-bubble-tone { font-size: 9px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; opacity: 0.7; margin-bottom: 5px; }
     .invite-showcase-dots { display: flex; gap: 6px; justify-content: center; margin-top: 12px; }
     .isc-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--border); transition: all 0.2s; }
@@ -2784,7 +2784,7 @@ function EarningsPage({ username }) {
                 <div key={idx} className="earn-bar-col">
                   <div className="earn-bar-val">${v}</div>
                   <div className="earn-bar-track">
-                    <div className="earn-bar-fill" style={{ height: `${Math.round(v / maxMonth * 100)}%`, background: isCurrent ? "var(--accent)" : "rgba(47,122,85,0.35)" }} />
+                    <div className="earn-bar-fill" style={{ height: `${Math.round(v / maxMonth * 100)}%`, background: isCurrent ? "var(--accent)" : "rgba(206,90,46,0.35)" }} />
                   </div>
                   <div className="earn-bar-label">{MONTH_LABELS[monthIdx]}</div>
                 </div>
@@ -3460,14 +3460,14 @@ function Step2Items({ items, setItems, onNext }) {
 const LAND_SLIDES = [
   {
     n: 1, icon: "📷", color: "var(--teal)",
-    bg: "rgba(90,155,116,0.12)", border: "rgba(90,155,116,0.2)",
+    bg: "rgba(232,154,75,0.12)", border: "rgba(232,154,75,0.2)",
     label: "Step 1 of 3",
     title: <>Snap a photo.<br/>Skip the typing.</>,
     desc: "Point your camera at any supplement bottle or wearable. We identify it and build your stack in under 60 seconds.",
   },
   {
     n: 2, icon: "🔗", color: "var(--accent)",
-    bg: "rgba(47,122,85,0.12)", border: "rgba(47,122,85,0.2)",
+    bg: "rgba(206,90,46,0.12)", border: "rgba(206,90,46,0.2)",
     label: "Step 2 of 3",
     title: <>One link.<br/>Endless reach.</>,
     desc: "Drop your Healthstack link anywhere. Followers copy your exact protocol with one tap — and never DM \"what do you take?\" again.",
@@ -3485,8 +3485,8 @@ const LAND_SLIDES = [
 // ── HOME / LANDING PAGE (the front door) ──────────────────────────────────────
 
 const HOME_STEPS = [
-  { icon: "📷", color: "var(--teal)",   bg: "rgba(90,155,116,0.12)", title: "Add your stack", desc: "Scan a label with your camera or pick from our list." },
-  { icon: "🔗", color: "var(--accent)", bg: "rgba(47,122,85,0.12)",  title: "Share one link",  desc: "Friends copy your exact protocol with one tap." },
+  { icon: "📷", color: "var(--teal)",   bg: "rgba(232,154,75,0.12)", title: "Add your stack", desc: "Scan a label with your camera or pick from our list." },
+  { icon: "🔗", color: "var(--accent)", bg: "rgba(206,90,46,0.12)",  title: "Share one link",  desc: "Friends copy your exact protocol with one tap." },
   { icon: "💸", color: "var(--amber)",  bg: "rgba(194,137,90,0.12)", title: "Earn on every buy", desc: "Get a commission when people buy from your links.", soon: true },
 ];
 
