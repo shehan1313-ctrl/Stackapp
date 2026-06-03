@@ -287,13 +287,20 @@
     .cost-banner {
       margin: 0 20px 16px; background: var(--surface); border: 1px solid var(--border);
       border-radius: var(--r-sm); padding: 12px 16px;
-      display: flex; align-items: center; justify-content: space-between;
     }
+    .cost-row { display: flex; align-items: center; justify-content: space-between; }
     .cost-label { font-size: 12px; color: var(--text-muted); font-weight: 500; }
     .cost-figures { text-align: right; }
     .cost-value { font-size: 18px; font-weight: 700; color: var(--text); }
     .cost-period { font-size: 11px; color: var(--text-dim); }
     .cost-annual { font-size: 11px; color: var(--text-dim); margin-top: 2px; }
+    .cost-compare {
+      display: flex; gap: 8px; align-items: flex-start; margin-top: 12px; padding-top: 12px;
+      border-top: 1px solid var(--border); font-size: 12px; color: var(--text-muted); line-height: 1.45;
+    }
+    .cost-compare-emoji { font-size: 15px; flex-shrink: 0; line-height: 1.2; }
+    .cost-compare b { color: var(--accent); font-weight: 700; }
+    .cost-compare a { color: var(--text-muted); text-decoration: underline; text-underline-offset: 2px; }
 
     /* QR */
     .qr-section {
@@ -2074,10 +2081,16 @@ function Healthstack({ username }) {
               : (stack.bioAge > 0 && stack.chronoAge > 0 && <BioAgeCard bioAge={stack.bioAge} chronoAge={stack.chronoAge} />)}
             {cost > 0 && (
               <div className="cost-banner anim-4">
-                <div className="cost-label">Investment<br /><span style={{ fontSize: 10.5, color: "var(--text-dim)" }}>annual items amortized</span></div>
-                <div className="cost-figures">
-                  <div><span className="cost-value">~${cost}</span><span className="cost-period"> /mo</span></div>
-                  <div className="cost-annual">≈ ${(cost * 12).toLocaleString()}/yr</div>
+                <div className="cost-row">
+                  <div className="cost-label">Investment<br /><span style={{ fontSize: 10.5, color: "var(--text-dim)" }}>annual items amortized</span></div>
+                  <div className="cost-figures">
+                    <div><span className="cost-value">~${cost}</span><span className="cost-period"> /mo</span></div>
+                    <div className="cost-annual">≈ ${(cost * 12).toLocaleString()}/yr</div>
+                  </div>
+                </div>
+                <div className="cost-compare">
+                  <span className="cost-compare-emoji">🧬</span>
+                  <span>Bryan Johnson spends <b>{Math.round(166667 / cost).toLocaleString()}× more</b> than you — ~$167K/mo on <a href="https://blueprint.bryanjohnson.com" target="_blank" rel="noopener noreferrer">Blueprint</a>.</span>
                 </div>
               </div>
             )}
