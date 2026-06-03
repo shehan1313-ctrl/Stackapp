@@ -756,8 +756,8 @@
     .reel-cat { font-size: 10px; font-weight: 700; letter-spacing: 0.6px; text-transform: uppercase; color: var(--text-muted); padding: 12px 14px 8px; display: flex; align-items: center; gap: 6px; }
     .reel-dot { width: 7px; height: 7px; border-radius: 50%; }
     .reel-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; padding: 0 14px; }
-    .reel-tile { display: flex; align-items: center; gap: 9px; border: 1px solid; border-radius: 12px; padding: 10px; min-height: 56px; }
-    .reel-chip { width: 34px; height: 34px; border-radius: 9px; background: rgba(255,253,248,0.6); display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0; }
+    .reel-tile { display: flex; align-items: center; gap: 9px; border: 1px solid var(--border); border-radius: 12px; padding: 10px; min-height: 56px; background: var(--surface); box-shadow: 0 6px 16px var(--shadow); }
+    .reel-chip { width: 34px; height: 34px; border-radius: 9px; display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0; box-shadow: 0 2px 6px var(--shadow); }
     .reel-name { font-size: 12px; font-weight: 600; color: var(--text); line-height: 1.15; }
 
     .home-footer { margin: 0 20px; padding: 28px 22px; text-align: center; background: linear-gradient(135deg, rgba(47,122,85,0.1), rgba(90,155,116,0.05)); border: 1px solid rgba(47,122,85,0.2); border-radius: var(--r); }
@@ -769,31 +769,46 @@
     .isc-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--border); transition: all 0.2s; }
     .isc-dot.on { background: var(--accent); width: 18px; border-radius: 4px; }
 
-    /* ── RESPONSIVE: framed column for landing/build/earnings; wide dashboard for the stack page ── */
-    @media (min-width: 768px) {
+    /* ── RESPONSIVE ── tablet: roomy framed column; desktop: full-width, desktop-native ── */
+    @media (min-width: 768px) and (max-width: 999px) {
       body { background: #E7E0D2; }
       #root { max-width: 760px; box-shadow: 0 0 0 1px rgba(70,55,30,0.05), 0 30px 80px rgba(70,55,30,0.13); }
       .action-bar { max-width: 760px; }
       .modal-sheet, .edit-sheet { max-width: 760px; border-radius: var(--r) var(--r) 0 0; }
-      .home-steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
-      .home-step { flex-direction: column; align-items: flex-start; gap: 12px; }
-      .home-headline { font-size: 46px; }
     }
-    /* The stack page becomes a real desktop dashboard */
     @media (min-width: 1000px) {
-      #root:has(.page-stack) { max-width: 1180px; }
+      #root { max-width: 1180px; }
+      .home-headline { font-size: 50px; }
+      .home-steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+      .home-step { flex-direction: column; align-items: flex-start; gap: 12px; }
+      .modal-sheet, .edit-sheet { max-width: 760px; border-radius: var(--r) var(--r) 0 0; }
+
+      /* HOME — wider centered landing, multi-column value props */
+      .home-page { max-width: 1040px; margin: 0 auto; }
+      .home-hero { padding-top: 56px; }
+      .home-values { display: grid; grid-template-columns: 1fr 1fr; gap: 4px 36px; }
+      .home-value { border-bottom: 1px solid var(--border); }
+      .home-reel { max-width: 760px; margin: 0 auto; }
+      .home-def, .home-usecase, .home-footer { max-width: 760px; margin-left: auto; margin-right: auto; }
+
+      /* BUILD — focused centered form on the wide canvas */
+      .build-page { max-width: 620px; margin: 0 auto; }
+      .build-header, .step-indicator { max-width: 620px; margin-left: auto; margin-right: auto; }
+
+      /* STACK — dashboard: sticky left rail + wide grid */
       .page-stack { max-width: 1180px; margin: 0 auto; }
-      .page-stack .stack-layout {
-        display: grid; grid-template-columns: 360px 1fr; gap: 4px 30px; align-items: start; padding: 4px 8px 0;
-      }
+      .page-stack .stack-layout { display: grid; grid-template-columns: 360px 1fr; gap: 4px 30px; align-items: start; padding: 4px 8px 0; }
       .page-stack .stack-rail { position: sticky; top: 84px; display: flex; flex-direction: column; }
-      .page-stack .stack-rail > * , .page-stack .stack-main > * { margin-left: 0 !important; margin-right: 0 !important; }
+      .page-stack .stack-rail > *, .page-stack .stack-main > * { margin-left: 0 !important; margin-right: 0 !important; }
       .page-stack .stack-main { min-width: 0; }
-      .page-stack .stack-grid { grid-template-columns: repeat(3, 1fr); }
-      .page-stack .action-bar { max-width: 1180px; }
-      .page-stack .claim-banner { margin-left: 8px !important; margin-right: 8px !important; }
-      /* in the wide main column, fit more tiles per row */
       .page-stack .stack-grid { grid-template-columns: repeat(4, 1fr); }
+      .page-stack .claim-banner { margin-left: 8px !important; margin-right: 8px !important; }
+      .action-bar { max-width: 1180px; }
+
+      /* EARNINGS — dashboard: left rail (totals) + right (chart, earners, invite) */
+      .page-earn .earn-layout { display: grid; grid-template-columns: 360px 1fr; gap: 4px 30px; align-items: start; padding: 4px 8px 0; max-width: 1080px; margin: 0 auto; }
+      .page-earn .earn-rail { position: sticky; top: 84px; display: flex; flex-direction: column; }
+      .page-earn .earn-layout > * > * { margin-left: 0 !important; margin-right: 0 !important; }
     }
   </style>
 </head>
@@ -2110,7 +2125,7 @@ function EarningsPage({ username }) {
         </div>
       } />
 
-      <div className="page" style={{ paddingBottom: 100 }}>
+      <div className="page page-earn" style={{ paddingBottom: 100 }}>
         <div className="scroll-pad" />
 
         {/* Locked state for unclaimed stacks */}
@@ -2123,6 +2138,8 @@ function EarningsPage({ username }) {
           </div>
         )}
 
+        <div className="earn-layout">
+        <div className="earn-rail">
         {/* Hero total */}
         <div className="earn-hero anim-0">
           <div className="earn-hero-label">PROJECTED EARNINGS · PREVIEW</div>
@@ -2155,7 +2172,9 @@ function EarningsPage({ username }) {
           </div>
           <div className="earn-payout-note">Next payout {MONTH_LABELS[(now + 1) % 12]} 1 · via Stripe</div>
         </div>
+        </div>{/* /earn-rail */}
 
+        <div className="earn-main">
         {/* 6-month chart */}
         <div className="earn-chart-card anim-3">
           <div className="section-title" style={{ marginBottom: 16 }}>Last 6 months</div>
@@ -2214,10 +2233,12 @@ function EarningsPage({ username }) {
               <div className="earn-invite-count-label">invited</div>
             </div>
           </div>
-          <button className="btn btn-outline" style={{ width: "100%", borderColor: "rgba(90,155,116,0.35)", color: "var(--teal)" }} onClick={() => setShowInvite(true)}>
+          <button className="btn btn-outline" style={{ width: "100%", borderColor: "rgba(206,90,46,0.35)", color: "var(--accent)" }} onClick={() => setShowInvite(true)}>
             🤝 Invite a creator
           </button>
         </div>
+        </div>{/* /earn-main */}
+        </div>{/* /earn-layout */}
       </div>
 
       {msg && <div className="toast">{msg}</div>}
@@ -2935,10 +2956,10 @@ function ReelBlock({ stack }) {
             {g.items.map((nm, i) => {
               const color = CATEGORY_COLORS[g.cat];
               return (
-                <div key={i} className="reel-tile" style={{ background: `linear-gradient(150deg, ${hexA(color, 0.10)}, ${hexA(color, 0.24)})`, borderColor: hexA(color, 0.22) }}>
-                  <div className="reel-chip">
+                <div key={i} className="reel-tile">
+                  <div className="reel-chip" style={{ background: `linear-gradient(150deg, #fff, ${hexA(color, 0.12)})`, color }}>
                     {usesInitials(g.cat)
-                      ? <span style={{ fontFamily: "var(--font-serif)", fontStyle: "italic", color }}>{itemInitials(nm)}</span>
+                      ? <span style={{ fontFamily: "var(--font-serif)", fontStyle: "italic" }}>{itemInitials(nm)}</span>
                       : <span>{CATEGORY_EMOJI[g.cat] || "✦"}</span>}
                   </div>
                   <div className="reel-name">{nm}</div>
