@@ -2395,7 +2395,7 @@ function EditSheet({ stack, onSave, onClose, initialCategory }) {
           </div>
         )}
         {!scoped && (
-          <div style={{ padding: "0 4px" }}>
+          <div style={{ marginTop: 12 }}>
             <MagicAdd existingItems={items} onAdd={(fresh) => setItems(prev => [...prev, ...fresh])} />
           </div>
         )}
