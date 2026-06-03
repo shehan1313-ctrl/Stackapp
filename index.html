@@ -363,9 +363,10 @@
     .bjb2-foot b { color: var(--accent2); }
     .bjb2-url { display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-top: 12px; padding-top: 12px; border-top: 1px solid rgba(255,255,255,0.14); font-size: 10.5px; color: #b8b0a4; }
     .bjb2-url b { color: #fff; white-space: nowrap; }
-    .bjb2-share { display: flex; gap: 8px; margin-top: 12px; }
-    .bjb2-sbtn { flex: 1; display: inline-flex; align-items: center; justify-content: center; gap: 7px; padding: 9px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.18); background: rgba(255,255,255,0.06); color: #fff; font-family: var(--font-sans); font-weight: 600; font-size: 12.5px; cursor: pointer; transition: all 0.15s ease; }
-    .bjb2-sbtn:hover { background: rgba(255,255,255,0.12); border-color: rgba(255,255,255,0.32); }
+    .bjb2-share { display: flex; align-items: center; gap: 9px; margin-top: 12px; }
+    .bjb2-share-lbl { font-size: 10px; font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase; color: #8c857a; margin-right: auto; }
+    .bjb2-sbtn { display: inline-flex; align-items: center; justify-content: center; width: 32px; height: 32px; padding: 0; border-radius: 50%; border: 1px solid rgba(255,255,255,0.15); background: transparent; color: #cfc7bb; cursor: pointer; transition: all 0.15s ease; }
+    .bjb2-sbtn:hover { color: #fff; border-color: rgba(255,255,255,0.4); background: rgba(255,255,255,0.08); }
     .reel-dash-rail .bjb2 { margin: 8px 14px 0; }
 
     /* Bryan Johnson comparison card (nested-scale share card, dark) */
@@ -1489,13 +1490,12 @@ function BryanCardB2({ stack, cost, url, onShare }) {
       {url && <div className="bjb2-url"><span>${cost.toLocaleString()}/mo vs ~$167K/mo</span><b>{url}</b></div>}
       {onShare && (
         <div className="bjb2-share">
-          <button className="bjb2-sbtn" onClick={() => onShare("x")} aria-label="Share on X">
+          <span className="bjb2-share-lbl">Share</span>
+          <button className="bjb2-sbtn" onClick={() => onShare("x")} aria-label="Share on X" title="Post on X">
             <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
-            Post on X
           </button>
-          <button className="bjb2-sbtn" onClick={() => onShare("instagram")} aria-label="Share on Instagram">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg>
-            Instagram
+          <button className="bjb2-sbtn" onClick={() => onShare("instagram")} aria-label="Share on Instagram" title="Share to Instagram">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg>
           </button>
         </div>
       )}
