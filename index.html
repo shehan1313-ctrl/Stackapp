@@ -464,6 +464,8 @@
       font-family: var(--font-sans);
     }
     .photo-remove:hover { color: var(--red); }
+    .picker-add-custom { display: block; width: 100%; padding: 12px; border: 1px dashed var(--border); border-radius: var(--r-sm); background: var(--surface2); color: var(--accent); font-family: var(--font-sans); font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.15s ease; }
+    .picker-add-custom:hover { border-color: var(--accent); background: rgba(47,122,85,0.05); }
     .picker-item.matched { background: rgba(47,122,85,0.08); }
     .picker-item.matched .match-label {
       font-size: 10px; font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase;
@@ -800,28 +802,27 @@ const BUILD_CATEGORIES_MORE = ["Nutrition", "Fitness", "Sleep", "Mind"];
 // Predefined items with "why" suggestions
 const PREDEFINED_ITEMS = {
   Supplements: [
-    { name: "NMN 500mg",            whys: ["Boosts NAD+ levels for cellular energy and DNA repair.", "Slows cellular aging by supporting mitochondrial function."] },
-    { name: "NMN 1000mg",           whys: ["Higher-dose NAD+ precursor for advanced longevity protocols.", "Supports energy production and sirtuin activation."] },
-    { name: "Magnesium Glycinate",  whys: ["Deep sleep scores improved noticeably within 2 weeks.", "Most bioavailable form — reduces tension and aids recovery."] },
-    { name: "Magnesium L-Threonate",whys: ["Crosses the blood-brain barrier for cognitive support.", "Supports memory retention and reduces brain fog."] },
-    { name: "Omega-3 2g EPA/DHA",   whys: ["Reduces systemic inflammation — my hs-CRP dropped significantly.", "Supports heart health and brain function long-term."] },
-    { name: "Vitamin D3 + K2",      whys: ["Most people are deficient — non-negotiable for immune function.", "K2 directs calcium to bones, not arteries."] },
-    { name: "Creatine 5g",          whys: ["Improves working memory and processing speed, not just muscle.", "Cheap, safe, and one of the most studied compounds."] },
-    { name: "Ashwagandha 600mg",    whys: ["Measurable cortisol reduction after 4 weeks.", "Improved HRV and stress resilience."] },
-    { name: "CoQ10 200mg",          whys: ["Supports mitochondrial energy production.", "Essential if taking a statin — statins deplete CoQ10."] },
-    { name: "Alpha Lipoic Acid",    whys: ["Potent antioxidant that regenerates other antioxidants.", "Supports glucose metabolism and mitochondrial function."] },
-    { name: "Berberine 500mg",      whys: ["AMPK activator — clinically shown to improve insulin sensitivity.", "Mimics some effects of metformin on glucose metabolism."] },
-    { name: "Quercetin",            whys: ["Senolytic — helps clear senescent ('zombie') cells.", "Synergistic with NMN for anti-aging protocols."] },
-    { name: "Lion's Mane",          whys: ["Stimulates NGF production for neurogenesis.", "Noticeable improvement in focus and long-term memory."] },
-    { name: "L-Theanine 200mg",     whys: ["Smooth calm focus — synergistic with caffeine.", "Reduces anxiety without sedation."] },
-    { name: "Collagen Peptides",    whys: ["Supports skin elasticity, joints, and connective tissue.", "Visible improvement in skin quality after 3 months."] },
-    { name: "Probiotics",           whys: ["Supports gut microbiome diversity and immune function.", "Reduced bloating significantly within 30 days."] },
-    { name: "B-Complex",            whys: ["Key cofactors for methylation and energy metabolism.", "Supports nervous system function and stress resilience."] },
-    { name: "Spermidine",           whys: ["Induces autophagy — cellular recycling and renewal.", "One of the most promising emerging longevity compounds."] },
-    { name: "Resveratrol",          whys: ["Sirtuin activator — supports longevity signaling pathways.", "Often stacked with NMN for synergistic effect."] },
-    { name: "NAC (N-Acetyl Cysteine)", whys: ["Glutathione precursor — major antioxidant support.", "Supports liver detoxification and respiratory health."] },
-    { name: "Vitamin C 1g",         whys: ["Antioxidant support and collagen synthesis cofactor.", "Immune function baseline I don't skip."] },
-    { name: "Zinc 30mg",            whys: ["Supports immune function and testosterone production.", "Most people are borderline deficient."] },
+    { name: "NMN",                  dose: "500mg", whys: ["Boosts NAD+ levels for cellular energy and DNA repair.", "Slows cellular aging by supporting mitochondrial function."] },
+    { name: "Magnesium Glycinate",  dose: "400mg", whys: ["Deep sleep scores improved noticeably within 2 weeks.", "Most bioavailable form — reduces tension and aids recovery."] },
+    { name: "Magnesium L-Threonate",dose: "2g",    whys: ["Crosses the blood-brain barrier for cognitive support.", "Supports memory retention and reduces brain fog."] },
+    { name: "Omega-3",              dose: "2g EPA/DHA", whys: ["Reduces systemic inflammation — my hs-CRP dropped significantly.", "Supports heart health and brain function long-term."] },
+    { name: "Vitamin D3 + K2",      dose: "5000 IU", whys: ["Most people are deficient — non-negotiable for immune function.", "K2 directs calcium to bones, not arteries."] },
+    { name: "Creatine",             dose: "5g",    whys: ["Improves working memory and processing speed, not just muscle.", "Cheap, safe, and one of the most studied compounds."] },
+    { name: "Ashwagandha",          dose: "600mg", whys: ["Measurable cortisol reduction after 4 weeks.", "Improved HRV and stress resilience."] },
+    { name: "CoQ10",                dose: "200mg", whys: ["Supports mitochondrial energy production.", "Essential if taking a statin — statins deplete CoQ10."] },
+    { name: "Alpha Lipoic Acid",    dose: "600mg", whys: ["Potent antioxidant that regenerates other antioxidants.", "Supports glucose metabolism and mitochondrial function."] },
+    { name: "Berberine",            dose: "500mg", whys: ["AMPK activator — clinically shown to improve insulin sensitivity.", "Mimics some effects of metformin on glucose metabolism."] },
+    { name: "Quercetin",            dose: "500mg", whys: ["Senolytic — helps clear senescent ('zombie') cells.", "Synergistic with NMN for anti-aging protocols."] },
+    { name: "Lion's Mane",          dose: "1g",    whys: ["Stimulates NGF production for neurogenesis.", "Noticeable improvement in focus and long-term memory."] },
+    { name: "L-Theanine",           dose: "200mg", whys: ["Smooth calm focus — synergistic with caffeine.", "Reduces anxiety without sedation."] },
+    { name: "Collagen Peptides",    dose: "10g",   whys: ["Supports skin elasticity, joints, and connective tissue.", "Visible improvement in skin quality after 3 months."] },
+    { name: "Probiotics",           dose: "",      whys: ["Supports gut microbiome diversity and immune function.", "Reduced bloating significantly within 30 days."] },
+    { name: "B-Complex",            dose: "",      whys: ["Key cofactors for methylation and energy metabolism.", "Supports nervous system function and stress resilience."] },
+    { name: "Spermidine",           dose: "1mg",   whys: ["Induces autophagy — cellular recycling and renewal.", "One of the most promising emerging longevity compounds."] },
+    { name: "Resveratrol",          dose: "500mg", whys: ["Sirtuin activator — supports longevity signaling pathways.", "Often stacked with NMN for synergistic effect."] },
+    { name: "NAC",                  dose: "600mg", whys: ["Glutathione precursor — major antioxidant support.", "Supports liver detoxification and respiratory health."] },
+    { name: "Vitamin C",            dose: "1g",    whys: ["Antioxidant support and collagen synthesis cofactor.", "Immune function baseline I don't skip."] },
+    { name: "Zinc",                 dose: "30mg",  whys: ["Supports immune function and testosterone production.", "Most people are borderline deficient."] },
     { name: "Custom supplement",    whys: [] },
   ],
   Wearables: [
@@ -1519,7 +1520,7 @@ function GridItemCard({ item }) {
   const color = CATEGORY_COLORS[item.category] || CATEGORY_COLORS.Other;
   const yearsLabel = item.years < 1 ? `${Math.round(item.years * 12)}mo` : item.years ? `${item.years}yr` : "";
   const affUrl = item.affiliateUrl || `https://amazon.com/s?k=${encodeURIComponent(item.name)}`; // ← real affiliate URLs swap in here
-  const meta = [yearsLabel, item.cost > 0 ? `$${item.cost}/mo` : ""].filter(Boolean).join(" · ");
+  const meta = [item.dose, yearsLabel, item.cost > 0 ? `$${item.cost}/mo` : ""].filter(Boolean).join(" · ");
   return (
     <div className="gitem" style={{ background: `linear-gradient(150deg, ${hexA(color, 0.10)}, ${hexA(color, 0.24)})`, borderColor: hexA(color, 0.22) }}
          onClick={() => item.why && setOpen(o => !o)}>
@@ -1582,22 +1583,23 @@ function EditSheet({ stack, onSave, onClose }) {
   const [chronoAge, setChronoAge] = useState(stack.chronoAge);
   const [editingItem, setEditingItem] = useState(null);
   const [showAdd, setShowAdd] = useState(false);
-  const [form, setForm] = useState({ name: "", category: "Supplements", why: "", years: "", cost: "", affiliateUrl: "" });
+  const [form, setForm] = useState({ name: "", dose: "", category: "Supplements", why: "", years: "", cost: "", affiliateUrl: "" });
 
   function handleEditItem(item) {
     setEditingItem(item);
-    setForm({ name: item.name, category: item.category, why: item.why || "", years: String(item.years), cost: String(item.cost || ""), affiliateUrl: item.affiliateUrl || "" });
+    setForm({ name: item.name, dose: item.dose || "", category: item.category, why: item.why || "", years: String(item.years), cost: String(item.cost || ""), affiliateUrl: item.affiliateUrl || "" });
     setShowAdd(true);
   }
   function handleAddOrUpdate() {
     if (!form.name.trim()) return;
+    const clean = { ...form, dose: form.dose.trim() || undefined };
     if (editingItem) {
-      setItems(prev => prev.map(i => i.id === editingItem.id ? { ...i, ...form, years: parseFloat(form.years)||0, cost: parseFloat(form.cost)||0 } : i));
+      setItems(prev => prev.map(i => i.id === editingItem.id ? { ...i, ...clean, years: parseFloat(form.years)||0, cost: parseFloat(form.cost)||0 } : i));
       setEditingItem(null);
     } else {
-      setItems(prev => [...prev, { ...form, id: Date.now(), years: parseFloat(form.years)||0, cost: parseFloat(form.cost)||0, tags: [] }]);
+      setItems(prev => [...prev, { ...clean, id: Date.now(), years: parseFloat(form.years)||0, cost: parseFloat(form.cost)||0, tags: [] }]);
     }
-    setForm({ name: "", category: "Supplements", why: "", years: "", cost: "", affiliateUrl: "" });
+    setForm({ name: "", dose: "", category: "Supplements", why: "", years: "", cost: "", affiliateUrl: "" });
     setShowAdd(false);
   }
   function handleSave() {
@@ -1635,7 +1637,10 @@ function EditSheet({ stack, onSave, onClose }) {
         </div>
         {showAdd ? (
           <div className="form-section" style={{ marginTop: 12 }}>
-            <div className="form-group"><label className="form-label">Name *</label><input className="form-input" placeholder="Item name" value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))} /></div>
+            <div className="form-row">
+              <div className="form-group" style={{ flex: 2 }}><label className="form-label">Name *</label><input className="form-input" placeholder="Item name" value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))} /></div>
+              <div className="form-group" style={{ flex: 1 }}><label className="form-label">Dose</label><input className="form-input" placeholder="500mg" value={form.dose} onChange={e => setForm(f => ({ ...f, dose: e.target.value }))} /></div>
+            </div>
             <div className="form-row">
               <div className="form-group">
                 <label className="form-label">Category</label>
@@ -2414,7 +2419,7 @@ function Step2Items({ items, setItems, onNext }) {
   const [openCat, setOpenCat] = useState(null);
   const [search, setSearch] = useState("");
   const [selected, setSelected] = useState(null);
-  const [form, setForm] = useState({ name: "", why: "", years: "", cost: "", affiliateUrl: "" });
+  const [form, setForm] = useState({ name: "", dose: "", why: "", years: "", cost: "", affiliateUrl: "" });
   // Camera / scan state
   const [photoUrl, setPhotoUrl] = useState(null);       // resized dataURL
   const [scanState, setScanState] = useState(null);     // null | 'scanning' | 'done' | 'failed'
@@ -2425,13 +2430,18 @@ function Step2Items({ items, setItems, onNext }) {
 
   function openCategory(cat) {
     setOpenCat(cat); setSearch(""); setSelected(null); setPhotoUrl(null); setScanState(null); setScanMatches([]);
-    setForm({ name: "", why: "", years: "", cost: "", affiliateUrl: "" });
+    setForm({ name: "", dose: "", why: "", years: "", cost: "", affiliateUrl: "" });
   }
 
   function pickPredefined(item) {
     const isCustom = item.name.toLowerCase().startsWith("custom");
     setSelected(item);
-    setForm(f => ({ ...f, name: isCustom ? "" : item.name, why: "" }));
+    setForm(f => ({ ...f, name: isCustom ? "" : item.name, dose: item.dose || "", why: "" }));
+  }
+  // Open the custom form, optionally pre-filling the name from the search box
+  function pickCustom(prefillName) {
+    setSelected({ name: "custom", whys: [] });
+    setForm(f => ({ ...f, name: prefillName || "", dose: "", why: "" }));
   }
 
   function applyWhy(text) { setForm(f => ({ ...f, why: text })); }
@@ -2440,14 +2450,16 @@ function Step2Items({ items, setItems, onNext }) {
     const name = form.name.trim();
     if (!name) return;
     setItems(prev => [...prev, {
-      id: Date.now(), category: openCat, name, why: form.why,
+      id: Date.now(), category: openCat, name, dose: form.dose.trim() || undefined, why: form.why,
       years: parseFloat(form.years)||0, cost: parseFloat(form.cost)||0,
       affiliateUrl: form.affiliateUrl, tags: [],
       photoUrl: photoUrl || undefined,  // store captured photo with the item
     }]);
     setOpenCat(null); setSelected(null); setPhotoUrl(null); setScanState(null); setScanMatches([]);
-    setForm({ name: "", why: "", years: "", cost: "", affiliateUrl: "" });
+    setForm({ name: "", dose: "", why: "", years: "", cost: "", affiliateUrl: "" });
   }
+  // Dosage helps for supplements & nutrition; other categories don't need it.
+  const showDose = openCat === "Supplements" || openCat === "Nutrition";
 
   async function handlePhotoChange(e) {
     const file = e.target.files?.[0];
@@ -2615,8 +2627,15 @@ function Step2Items({ items, setItems, onNext }) {
             <input className="form-input" placeholder={`Search ${openCat.toLowerCase()}...`}
               value={search} onChange={e => setSearch(e.target.value)} style={{ marginBottom: 10 }} />
 
+            {/* No search match → offer to add exactly what they typed */}
+            {search.trim() && displayList.filter(p => !p.name.toLowerCase().startsWith("custom")).length === 0 && (
+              <button className="picker-add-custom" onClick={() => pickCustom(search.trim())}>
+                ＋ Add “{search.trim()}”
+              </button>
+            )}
+
             <div className="picker-list">
-              {displayList.map(p => {
+              {displayList.filter(p => !p.name.toLowerCase().startsWith("custom")).map(p => {
                 const isMatch = matchedNames.has(p.name);
                 return (
                   <div
@@ -2633,6 +2652,11 @@ function Step2Items({ items, setItems, onNext }) {
                 );
               })}
             </div>
+
+            {/* Always-available manual entry */}
+            <button className="picker-add-custom" style={{ marginTop: 10 }} onClick={() => pickCustom(search.trim())}>
+              ＋ Add your own {openCat.toLowerCase().replace(/s$/, "")}
+            </button>
           </>
         )}
 
@@ -2647,10 +2671,20 @@ function Step2Items({ items, setItems, onNext }) {
               <button className="btn btn-ghost btn-sm" onClick={() => setSelected(null)}>← Back</button>
             </div>
 
-            {isCustomSelected && (
-              <div className="form-group">
-                <label className="form-label">Name *</label>
-                <input className="form-input" placeholder={`Enter ${openCat.toLowerCase()} name...`} value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))} autoFocus />
+            {(isCustomSelected || showDose) && (
+              <div className="form-row">
+                {isCustomSelected && (
+                  <div className="form-group" style={{ flex: showDose ? 2 : 1 }}>
+                    <label className="form-label">Name *</label>
+                    <input className="form-input" placeholder={`Enter ${openCat.toLowerCase().replace(/s$/, "")} name…`} value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))} autoFocus />
+                  </div>
+                )}
+                {showDose && (
+                  <div className="form-group" style={{ flex: 1 }}>
+                    <label className="form-label">Dosage <span style={{color:"var(--text-dim)",fontWeight:400}}>· optional</span></label>
+                    <input className="form-input" placeholder={openCat === "Nutrition" ? "e.g. daily" : "e.g. 500mg"} value={form.dose} onChange={e => setForm(f => ({ ...f, dose: e.target.value }))} />
+                  </div>
+                )}
               </div>
             )}
 
