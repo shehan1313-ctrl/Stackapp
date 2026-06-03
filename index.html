@@ -1357,14 +1357,11 @@ function bjPercent(cost) {
   const pct = (cost / BJ_MONTHLY) * 100;
   return pct < 1 ? pct.toFixed(2) : pct.toFixed(1);
 }
-// How long it takes Bryan ($167K/mo) to spend the user's whole monthly stack.
+// How long it takes Bryan ($167K/mo) to spend the user's whole ANNUAL budget, in hours.
 function bjTimeToMatch(cost) {
-  const minutes = Math.round((cost / BJ_MONTHLY) * 43200); // 43,200 min ≈ one month
-  if (minutes < 1) return "under a minute";
-  if (minutes < 90) return `~${minutes} minutes`;
-  const hours = minutes / 60;
-  if (hours < 36) return `~${Math.round(hours)} hours`;
-  return `~${Math.round(hours / 24)} days`;
+  const hours = Math.round((cost * 12 / BJ_MONTHLY) * 720); // 720 hours ≈ one month
+  if (hours < 1) return "under an hour";
+  return `~${hours.toLocaleString()} hour${hours === 1 ? "" : "s"}`;
 }
 // "0.28% of Bryan Johnson's budget" share-style card (nested-scale).
 function BryanCompareCard({ cost, handle, name, url, compact }) {
@@ -1387,7 +1384,7 @@ function BryanCompareCard({ cost, handle, name, url, compact }) {
         <div className="bj-r">
           <div className="bj-big">{bjPercent(cost)}%</div>
           <div className="bj-sub">of <b>Bryan Johnson's</b> monthly longevity budget — that's my whole stack 🧬</div>
-          <div className="bj-context">⏳ Bryan blows my whole monthly stack in {bjTimeToMatch(cost)}.</div>
+          <div className="bj-context">⏳ Bryan Johnson blows my annual health budget in {bjTimeToMatch(cost)}.</div>
         </div>
       </div>
       <div className="bj-foot">
