@@ -1798,6 +1798,16 @@ async function ocrImage(dataUrl) {
 
 // Fuzzy-match OCR text against predefined item names for a given category.
 // Returns items sorted by match strength (matched ones first).
+// Which input fields are relevant per category.
+// Dose → only Supplements. Frequency/cadence → everything except devices (Wearables). Wearables → one-time fee.
+function categoryFields(cat) {
+  return {
+    dose: cat === "Supplements",
+    freq: cat !== "Wearables",
+    oneTime: cat === "Wearables",
+  };
+}
+
 function matchByText(text, category) {
   if (!text) return { matched: [], rest: PREDEFINED_ITEMS[category] || [] };
   const lower = text.toLowerCase();
@@ -2363,6 +2373,8 @@ function EditSheet({ stack, onSave, onClose, initialCategory }) {
     setForm(f => ({ ...f, name: p.name, dose: f.dose || p.dose || "" }));
   }
 
+  const ef = categoryFields(form.category);
+  const freqPlaceholder = form.category === "Labs" ? "2×/year" : form.category === "Fitness" ? "5×/week" : form.category === "Mind" ? "10 min daily" : "daily";
   // Preset picker + "why" (AI) suggestions, scoped to the chosen category.
   const pickerOptions = (PREDEFINED_ITEMS[form.category] || []).filter(p => !p.name.toLowerCase().startsWith("custom"));
   const typed = form.name.trim().toLowerCase();
@@ -2438,10 +2450,12 @@ function EditSheet({ stack, onSave, onClose, initialCategory }) {
                 })}
               </div>
             )}
-            <div className="form-row">
-              <div className="form-group" style={{ flex: 1 }}><label className="form-label">Dose</label><input className="form-input" placeholder="500mg" value={form.dose} onChange={e => setForm(f => ({ ...f, dose: e.target.value }))} /></div>
-              <div className="form-group" style={{ flex: 1 }}><label className="form-label">Frequency</label><input className="form-input" placeholder="daily" value={form.freq} onChange={e => setForm(f => ({ ...f, freq: e.target.value }))} /></div>
-            </div>
+            {(ef.dose || ef.freq) && (
+              <div className="form-row">
+                {ef.dose && <div className="form-group" style={{ flex: 1 }}><label className="form-label">Dose</label><input className="form-input" placeholder="500mg" value={form.dose} onChange={e => setForm(f => ({ ...f, dose: e.target.value }))} /></div>}
+                {ef.freq && <div className="form-group" style={{ flex: 1 }}><label className="form-label">Frequency</label><input className="form-input" placeholder={freqPlaceholder} value={form.freq} onChange={e => setForm(f => ({ ...f, freq: e.target.value }))} /></div>}
+              </div>
+            )}
             <div className="form-group">
               <label className="form-label">Why</label>
               {whyOptions.length > 0 && (
@@ -3374,8 +3388,8 @@ function Step2Items({ items, setItems, onNext }) {
     setForm({ name: "", dose: "", freq: "", why: "", years: "", cost: "", costPeriod: "mo", affiliateUrl: "" });
   }
   // Dosage helps for supplements & nutrition; frequency mainly for supplements.
-  const showDose = openCat === "Supplements" || openCat === "Nutrition";
-  const showFreq = openCat === "Supplements";
+  const showDose = categoryFields(openCat).dose;
+  const showFreq = categoryFields(openCat).freq;
 
   async function handlePhotoChange(e) {
     const file = e.target.files?.[0];
