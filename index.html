@@ -1269,7 +1269,52 @@ function relativeTime(ts) {
   if (days < 30) return `${Math.floor(days / 7)} week${Math.floor(days / 7) > 1 ? "s" : ""} ago`;
   return new Date(ts).toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" });
 }
-function getStack(u) { if (u === "shehan") return SHEHAN_STACK; return getStacks()[u] || null; }
+// Curated, fictional demo persona — shown on the home reel + "See the full example"
+// so visitors see the full breadth of the product (not the owner's real stack).
+const DEMO_STACK = {
+  username: "maya",
+  name: "Maya Chen",
+  handle: "@mayaoptimized",
+  credential: "Longevity nerd · SF",
+  verified: true,
+  bioAge: 31,
+  chronoAge: 38,
+  highlight: { type: "metric", value: "58", label: "VO₂ max" },
+  items: [
+    { id: 1, category: "Supplements", name: "NMN", dose: "500mg", freq: "Once daily", years: 3, cost: 45, costPeriod: "mo",
+      why: "Core longevity molecule — supports NAD+ which declines ~50% by 40. Taken fasted, first thing.", affiliateUrl: "", tags: ["longevity","nad"] },
+    { id: 2, category: "Supplements", name: "Magnesium Glycinate", dose: "400mg", freq: "Nightly", years: 2, cost: 20, costPeriod: "mo",
+      why: "Most bioavailable form — deep sleep on Oura jumped within two weeks.", affiliateUrl: "", tags: ["sleep"] },
+    { id: 3, category: "Supplements", name: "Omega-3", dose: "2g EPA/DHA", freq: "Once daily", years: 4, cost: 30, costPeriod: "mo",
+      why: "Anti-inflammatory — my hs-CRP dropped from 1.8 to 0.6 in six months.", affiliateUrl: "", tags: ["inflammation"] },
+    { id: 4, category: "Supplements", name: "Creatine", dose: "5g", freq: "Once daily", years: 5, cost: 15, costPeriod: "mo",
+      why: "Cognitive + strength. The most studied, safest compound I take.", affiliateUrl: "", tags: ["cognitive"] },
+    { id: 5, category: "Supplements", name: "Vitamin D3 + K2", dose: "5000 IU", freq: "Once daily", years: 3, cost: 18, costPeriod: "mo",
+      why: "K2 directs calcium to bones, not arteries. Non-negotiable for immunity.", affiliateUrl: "", tags: ["immunity"] },
+    { id: 6, category: "Supplements", name: "Ashwagandha", dose: "600mg", freq: "AM", years: 1, cost: 22, costPeriod: "mo",
+      why: "Measurable cortisol drop after 4 weeks — calmer baseline, better HRV.", affiliateUrl: "", tags: ["stress"] },
+    { id: 7, category: "Wearables", name: "Oura Ring Gen 4", years: 3, cost: 30, costPeriod: "mo",
+      why: "Best consumer sleep + readiness tracker. Flagged illness 2 days early via HRV.", affiliateUrl: "", tags: ["sleep","recovery"] },
+    { id: 8, category: "Wearables", name: "Levels CGM", years: 1, cost: 99, costPeriod: "mo",
+      why: "Continuous glucose data reshaped how I eat — rice spikes me, pasta doesn't.", affiliateUrl: "", tags: ["metabolic"] },
+    { id: 9, category: "Sleep", name: "Eight Sleep Pod 4", years: 2, cost: 89, costPeriod: "mo",
+      why: "Cools the bed to 62°F — deep sleep up 22% vs my old mattress.", affiliateUrl: "", tags: ["sleep"] },
+    { id: 10, category: "Labs", name: "Superpower Biannual Bloodwork", freq: "2×/year", years: 2, cost: 49, costPeriod: "mo",
+      why: "70+ biomarkers twice a year. Caught a TSH drift before symptoms.", affiliateUrl: "", tags: ["preventive"] },
+    { id: 11, category: "Labs", name: "Function Health", freq: "2×/year", years: 1, cost: 42, costPeriod: "mo",
+      why: "100+ lab panel with trends over time — the data backbone of my protocol.", affiliateUrl: "", tags: ["preventive"] },
+    { id: 12, category: "Fitness", name: "Zone 2 + VO₂ max training", freq: "5×/week", years: 4, cost: 0, costPeriod: "mo",
+      why: "Single biggest lever on lifespan. Pushed my VO₂ max from 44 to 58.", affiliateUrl: "", tags: ["cardio"] },
+    { id: 13, category: "Mind", name: "Daily meditation (Waking Up)", freq: "10 min daily", years: 2, cost: 10, costPeriod: "mo",
+      why: "Lower resting heart rate and a noticeably calmer baseline.", affiliateUrl: "", tags: ["stress"] },
+  ],
+};
+
+function getStack(u) {
+  if (u === "shehan") return SHEHAN_STACK;
+  if (u === DEMO_STACK.username) return DEMO_STACK;
+  return getStacks()[u] || null;
+}
 function isUserStack(u) { return u !== "shehan" && !!getStacks()[u]; }
 function toUsername(h) { return h.replace(/^@/, "").toLowerCase().replace(/[^a-z0-9_]/g, ""); }
 // Derive a unique URL slug from a name (handle field removed). Appends a number on collision.
@@ -3184,8 +3229,6 @@ function InviteMessagesShowcase() {
   );
 }
 
-// The home reel reflects a real stack when available, else the sample above.
-const DEMO_USERNAME = "shehan1313";
 function ReelBlock({ stack }) {
   const groups = stack && stack.items && stack.items.length
     ? CATEGORIES.map(cat => ({ cat, items: stack.items.filter(i => i.category === cat).map(i => i.name) })).filter(g => g.items.length)
@@ -3244,18 +3287,13 @@ function ReelBlock({ stack }) {
 }
 
 function HomePage() {
-  // Pull the real demo stack (shehan1313) from the backend so the card self-updates.
-  const [demo, setDemo] = useState(null);
+  // Curated fictional demo so visitors see the full breadth of the product.
+  const demo = DEMO_STACK;
   const [showInvite, setShowInvite] = useState(false);
   const { msg, show: toast } = useToast();
   const reelRef = useRef(null);
   const blockRef = useRef(null);
   const [needLoop, setNeedLoop] = useState(false); // only duplicate + scroll when content overflows
-  useEffect(() => {
-    let alive = true;
-    fetchStackRemote(DEMO_USERNAME).then(s => { if (alive && s && s.items && s.items.length) setDemo(s); });
-    return () => { alive = false; };
-  }, []);
   useEffect(() => {
     const measure = () => {
       if (reelRef.current && blockRef.current)
@@ -3266,7 +3304,7 @@ function HomePage() {
     const t = setTimeout(measure, 300); // re-measure after fonts/layout settle
     return () => { window.removeEventListener("resize", measure); clearTimeout(t); };
   }, [demo]);
-  const exampleUser = DEMO_USERNAME;  // always link to the real shehan1313 stack
+  const exampleUser = DEMO_STACK.username;  // always link to the curated demo stack
   // Inviter = the visitor's own stack (if they have one); otherwise the link just sends them to build.
   const myUsername = Object.keys(getStacks()).find(u => u !== "shehan") || "";
   return (
