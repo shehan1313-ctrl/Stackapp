@@ -1505,13 +1505,35 @@ function useToast() {
 
 // ── TOPBAR ────────────────────────────────────────────────────────────────────
 
+// The username of the signed-in user's own stack (prefers one they own), or null.
+function myStackUsername() {
+  const uid = currentUserId();
+  const entries = Object.entries(getStacks()).filter(([u]) => u !== "shehan");
+  if (uid) {
+    const owned = entries.find(([, s]) => s.owner_id === uid);
+    if (owned) return owned[0];
+  }
+  return entries.length ? entries[0][0] : null;
+}
+
+// Primary CTA — "Build mine" for new visitors, "Update my stack" once signed in with a stack.
+function BuildCTA({ className = "btn btn-primary btn-sm", style, buildLabel = "Build mine", updateLabel = "Update my stack" }) {
+  const user = useAuth();
+  const mine = user ? myStackUsername() : null;
+  return (
+    <button className={className} style={style} onClick={() => navigate(mine ? `#/stack/${mine}` : "#/build")}>
+      {mine ? updateLabel : buildLabel}
+    </button>
+  );
+}
+
 function Topbar({ rightContent }) {
   return (
     <div className="topbar">
       <Logo onClick={() => navigate("#/")} />
       <div className="topbar-actions">
         <AuthButton />
-        {rightContent || <button className="btn btn-primary btn-sm" onClick={() => navigate("#/build")}>Build mine</button>}
+        {rightContent || <BuildCTA />}
       </div>
     </div>
   );
@@ -3246,7 +3268,7 @@ function HomePage() {
         <Logo onClick={() => navigate("#/")} />
         <div className="topbar-actions">
           <AuthButton />
-          <button className="btn btn-primary btn-sm" onClick={() => navigate("#/build")}>Build mine</button>
+          <BuildCTA />
         </div>
       </div>
 
@@ -3258,7 +3280,7 @@ function HomePage() {
           The fun way to show friends exactly what you take, use, and test to optimize your health.
         </p>
         <div className="home-hero-cta">
-          <button className="btn btn-primary" style={{ padding: "14px 22px", fontSize: 15 }} onClick={() => navigate("#/build")}>Build my stack — free →</button>
+          <BuildCTA className="btn btn-primary" style={{ padding: "14px 22px", fontSize: 15 }} buildLabel="Build my stack — free →" updateLabel="Update my stack →" />
         </div>
         <div className="home-trust">Free to share · No account to start · Setup in 2 min</div>
       </div>
@@ -3326,7 +3348,7 @@ function HomePage() {
       {/* FOOTER CTA */}
       <div className="home-footer anim-6">
         <div className="home-footer-title">Your stack is worth sharing.</div>
-        <button className="btn btn-primary" style={{ width: "100%", padding: 16, fontSize: 16 }} onClick={() => navigate("#/build")}>Build my stack — free →</button>
+        <BuildCTA className="btn btn-primary" style={{ width: "100%", padding: 16, fontSize: 16 }} buildLabel="Build my stack — free →" updateLabel="Update my stack →" />
         <div className="home-trust" style={{ marginTop: 12 }}>Takes 2 minutes · No account needed</div>
       </div>
 
