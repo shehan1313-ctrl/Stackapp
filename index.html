@@ -1798,6 +1798,15 @@ async function ocrImage(dataUrl) {
 
 // Fuzzy-match OCR text against predefined item names for a given category.
 // Returns items sorted by match strength (matched ones first).
+// Whether an item is something you can actually buy (so "Get it" makes sense).
+// Products/services are purchasable; free habits/practices (Zone 2, fasting, "65° room") are not.
+const PURCHASABLE_CATEGORIES = new Set(["Supplements", "Wearables", "Labs", "Services"]);
+function isPurchasable(item) {
+  if (item.affiliateUrl) return true;                 // an explicit link means it's buyable
+  if (PURCHASABLE_CATEGORIES.has(item.category)) return true;
+  return (item.cost || 0) > 0;                         // a paid product/app/device in a habit-leaning category
+}
+
 // Which input fields are relevant per category.
 // Dose → only Supplements. Frequency/cadence → everything except devices (Wearables). Wearables → one-time fee.
 function categoryFields(cat) {
@@ -2259,7 +2268,7 @@ function GridItemCard({ item }) {
           <div className="gitem-name">{item.name}</div>
           {meta && <div className="gitem-sub">{meta}</div>}
         </div>
-        <a className="gitem-get" href={affUrl} target="_blank" rel="noopener noreferrer" onClick={e => e.stopPropagation()}>Get it ↗</a>
+        {isPurchasable(item) && <a className="gitem-get" href={affUrl} target="_blank" rel="noopener noreferrer" onClick={e => e.stopPropagation()}>Get it ↗</a>}
       </div>
       {show && ReactDOM.createPortal(
         <div className="item-modal-backdrop" onClick={() => setShow(false)}>
@@ -2279,7 +2288,7 @@ function GridItemCard({ item }) {
                 {item.why}
               </div>
             )}
-            <a className="btn btn-primary" style={{ width: "100%", padding: 14, fontSize: 15 }} href={affUrl} target="_blank" rel="noopener noreferrer">Get it ↗</a>
+            {isPurchasable(item) && <a className="btn btn-primary" style={{ width: "100%", padding: 14, fontSize: 15 }} href={affUrl} target="_blank" rel="noopener noreferrer">Get it ↗</a>}
           </div>
         </div>,
         document.body
