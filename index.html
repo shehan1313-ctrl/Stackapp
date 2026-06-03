@@ -1946,7 +1946,8 @@ const INVITE_TONES = [
 
 function InviteModal({ username, onClose, onToast }) {
   const [tone, setTone] = useState("warm");
-  const inviteUrl = `${window.location.origin}${window.location.pathname}#/?ref=${username}`;
+  const base = `${window.location.origin}${window.location.pathname}`;
+  const inviteUrl = username ? `${base}#/?ref=${username}` : `${base}#/build`;
   const message = (INVITE_TONES.find(t => t.id === tone) || INVITE_TONES[0]).build(inviteUrl);
 
   async function share() {
@@ -2847,12 +2848,16 @@ function ReelBlock({ stack }) {
 function HomePage() {
   // Pull the real demo stack (shehan1313) from the backend so the card self-updates.
   const [demo, setDemo] = useState(null);
+  const [showInvite, setShowInvite] = useState(false);
+  const { msg, show: toast } = useToast();
   useEffect(() => {
     let alive = true;
     fetchStackRemote(DEMO_USERNAME).then(s => { if (alive && s && s.items && s.items.length) setDemo(s); });
     return () => { alive = false; };
   }, []);
   const exampleUser = demo ? DEMO_USERNAME : "shehan";  // fall back to built-in demo until the real one exists
+  // Inviter = the visitor's own stack (if they have one); otherwise the link just sends them to build.
+  const myUsername = Object.keys(getStacks()).find(u => u !== "shehan") || "";
   return (
     <div className="home-page">
       <div className="topbar">
@@ -2924,12 +2929,24 @@ function HomePage() {
         ))}
       </div>
 
+      {/* ASK A FRIEND */}
+      <div className="home-section anim-5" style={{ textAlign: "center", marginBottom: 30 }}>
+        <div className="home-section-label">KNOW SOMEONE HEALTHY?</div>
+        <p style={{ fontSize: 14, color: "var(--text-muted)", lineHeight: 1.55, maxWidth: 320, margin: "0 auto 16px" }}>
+          Ask a friend to share the supplements, wearables &amp; habits they swear by — they build theirs in 2 minutes.
+        </p>
+        <button className="btn btn-outline" style={{ padding: "13px 24px", fontSize: 15 }} onClick={() => setShowInvite(true)}>🙋 Invite a friend</button>
+      </div>
+
       {/* FOOTER CTA */}
-      <div className="home-footer anim-5">
+      <div className="home-footer anim-6">
         <div className="home-footer-title">Your stack is worth sharing.</div>
         <button className="btn btn-primary" style={{ width: "100%", padding: 16, fontSize: 16 }} onClick={() => navigate("#/build")}>Build my stack — free →</button>
         <div className="home-trust" style={{ marginTop: 12 }}>Takes 2 minutes · No account needed</div>
       </div>
+
+      {msg && <div className="toast">{msg}</div>}
+      {showInvite && <InviteModal username={myUsername} onToast={toast} onClose={() => setShowInvite(false)} />}
     </div>
   );
 }
