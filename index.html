@@ -984,6 +984,34 @@
     .home-proof-lbl { font-size: 11.5px; color: var(--text-muted); margin-top: 5px; letter-spacing: 0.2px; }
     .home-proof-divider { width: 1px; background: var(--border); align-self: stretch; }
 
+    /* Home pricing */
+    .pr-grid { display: grid; grid-template-columns: 1fr; gap: 16px; }
+    .pr-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r); padding: 24px; box-shadow: 0 10px 26px var(--shadow); position: relative; }
+    .pr-card.pro { border: 2px solid var(--accent); box-shadow: 0 16px 38px rgba(206,90,46,0.16); }
+    .pr-badge { position: absolute; top: -12px; left: 24px; background: linear-gradient(135deg,#D9531F,#E89A4B); color: #fff; font-size: 10px; font-weight: 800; letter-spacing: 0.5px; text-transform: uppercase; padding: 4px 11px; border-radius: 99px; }
+    .pr-tier { font-size: 12px; font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase; color: var(--text-muted); margin-bottom: 3px; text-align: left; }
+    .pr-tier.pro { color: var(--accent); }
+    .pr-who { font-family: var(--font-serif); font-size: 22px; letter-spacing: -0.3px; margin-bottom: 12px; }
+    .pr-price { display: flex; align-items: baseline; gap: 6px; }
+    .pr-price-num { font-family: var(--font-serif); font-size: 36px; line-height: 1; }
+    .pr-price-per { font-size: 13px; color: var(--text-muted); }
+    .pr-price-note { font-size: 12px; color: var(--text-dim); margin: 4px 0 16px; }
+    .pr-vp { font-size: 13.5px; line-height: 1.5; background: var(--surface2); border-radius: 12px; padding: 11px 13px; margin-bottom: 16px; text-align: left; }
+    .pr-vp b { color: var(--accent); }
+    .pr-cta { display: block; width: 100%; text-align: center; padding: 12px; border-radius: 12px; font-weight: 700; font-size: 14px; cursor: pointer; border: none; font-family: var(--font-sans); }
+    .pr-cta.free { background: var(--surface2); color: var(--text); border: 1px solid var(--border); }
+    .pr-cta.pro { background: linear-gradient(135deg,#D9531F,#E89A4B); color: #fff; box-shadow: 0 6px 16px rgba(206,90,46,0.28); }
+    .pr-feat-label { font-size: 10.5px; font-weight: 700; letter-spacing: 0.6px; text-transform: uppercase; color: var(--text-dim); margin: 18px 0 11px; text-align: left; }
+    .pr-feats { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+    .pr-feat { display: flex; align-items: flex-start; gap: 10px; font-size: 13.5px; line-height: 1.4; text-align: left; }
+    .pr-feat .ic { flex-shrink: 0; width: 18px; height: 18px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-top: 1px; }
+    .pr-feat .ic svg { width: 11px; height: 11px; }
+    .pr-feat .ic.y { background: rgba(62,155,110,0.15); color: #3E9B6E; }
+    .pr-feat .ic.p { background: rgba(206,90,46,0.14); color: var(--accent); }
+    .pr-feat small { display: block; color: var(--text-muted); font-size: 12px; font-weight: 400; margin-top: 1px; }
+    .pr-note { text-align: center; font-size: 12px; color: var(--text-dim); margin-top: 16px; }
+    @media (min-width: 1000px) { .pr-grid { grid-template-columns: 1fr 1fr; gap: 20px; align-items: start; } }
+
     /* Site footer */
     .site-footer { margin-top: 40px; padding: 36px 20px 22px; border-top: 1px solid var(--border); background: var(--surface2); }
     .sf-top { display: flex; flex-direction: column; gap: 28px; }
@@ -3907,6 +3935,56 @@ function HomePage() {
             </div>
           </div>
         ))}
+      </div>
+
+      {/* PRICING */}
+      <div className="home-section anim-4" style={{ marginTop: 44 }}>
+        <div className="home-section-label">PRICING</div>
+        <div className="home-def-text" style={{ fontSize: 20, textAlign: "center", margin: "0 auto 18px", maxWidth: 460 }}>Share for free. Earn when you're ready.</div>
+        <div className="pr-grid">
+          <div className="pr-card">
+            <div className="pr-tier">Free</div>
+            <div className="pr-who">For sharers</div>
+            <div className="pr-price"><span className="pr-price-num">$0</span><span className="pr-price-per">forever</span></div>
+            <div className="pr-price-note">No account needed to start.</div>
+            <div className="pr-vp">Track what you take, show it off, and <b>see what your healthiest friends take</b>.</div>
+            <BuildCTA className="pr-cta free" buildLabel="Build my stack — free" updateLabel="Go to my stack" />
+            <div className="pr-feat-label">What you get</div>
+            <ul className="pr-feats">
+              {[
+                ["Your shareable stack page", "One link + QR, beautiful anywhere"],
+                ["Ask friends for their stacks", "Invite anyone, see what they use"],
+                ["Unlimited items", "Supplements, wearables, labs, habits"],
+                ["Add by voice or camera", "Describe your stack, we sort it out"],
+                ["Viral share cards", "Post your Bryan Johnson card to X & IG"],
+              ].map(([t, s], i) => (
+                <li className="pr-feat" key={i}><span className="ic y"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3.5"><path d="M20 6 9 17l-5-5"/></svg></span><div><b>{t}</b><small>{s}</small></div></li>
+              ))}
+            </ul>
+          </div>
+          <div className="pr-card pro">
+            <div className="pr-badge">For creators</div>
+            <div className="pr-tier pro">Creator Pro</div>
+            <div className="pr-who">Turn your stack into income</div>
+            <div className="pr-price"><span className="pr-price-num">$79</span><span className="pr-price-per">/ year</span></div>
+            <div className="pr-price-note">Flat fee. Keep 100% of what you earn.</div>
+            <div className="pr-vp">Use <b>your own affiliate links</b> on every item and <b>keep every dollar</b> of commission. No complicated splits.</div>
+            <button className="pr-cta pro" onClick={() => toast("Creator Pro is coming soon — we'll let you know ✓")}>Go Pro</button>
+            <div className="pr-feat-label">Everything in Free, plus</div>
+            <ul className="pr-feats">
+              {[
+                ["Your affiliate links, your money", "Connect your links, keep 100%"],
+                ["Click & conversion analytics", "See what gets tapped and converts"],
+                ["Custom URL + verified badge", "healthstack.app/yourname"],
+                ["Lead capture", "\"Email me this stack\" → your audience list"],
+                ["Invite a creator, get Pro free", "Each creator you bring earns a free month"],
+              ].map(([t, s], i) => (
+                <li className="pr-feat" key={i}><span className="ic p"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3.5"><path d="M20 6 9 17l-5-5"/></svg></span><div><b>{t}</b><small>{s}</small></div></li>
+              ))}
+            </ul>
+          </div>
+        </div>
+        <div className="pr-note">On the free plan, "Get it" links are healthstack's. Pro swaps in your own.</div>
       </div>
 
       {/* ASK A FRIEND */}
