@@ -1522,7 +1522,7 @@ function GridItemCard({ item }) {
   const color = CATEGORY_COLORS[item.category] || CATEGORY_COLORS.Other;
   const yearsLabel = item.years < 1 ? `${Math.round(item.years * 12)}mo` : item.years ? `${item.years}yr` : "";
   const affUrl = item.affiliateUrl || `https://amazon.com/s?k=${encodeURIComponent(item.name)}`; // ← real affiliate URLs swap in here
-  const meta = [item.dose, yearsLabel, item.cost > 0 ? `$${item.cost}/mo` : ""].filter(Boolean).join(" · ");
+  const meta = [item.dose, item.freq, yearsLabel, item.cost > 0 ? `$${item.cost}/mo` : ""].filter(Boolean).join(" · ");
   return (
     <div className="gitem" style={{ background: `linear-gradient(150deg, ${hexA(color, 0.10)}, ${hexA(color, 0.24)})`, borderColor: hexA(color, 0.22) }}
          onClick={() => item.why && setOpen(o => !o)}>
@@ -1585,23 +1585,23 @@ function EditSheet({ stack, onSave, onClose }) {
   const [chronoAge, setChronoAge] = useState(stack.chronoAge);
   const [editingItem, setEditingItem] = useState(null);
   const [showAdd, setShowAdd] = useState(false);
-  const [form, setForm] = useState({ name: "", dose: "", category: "Supplements", why: "", years: "", cost: "", affiliateUrl: "" });
+  const [form, setForm] = useState({ name: "", dose: "", freq: "", category: "Supplements", why: "", years: "", cost: "", affiliateUrl: "" });
 
   function handleEditItem(item) {
     setEditingItem(item);
-    setForm({ name: item.name, dose: item.dose || "", category: item.category, why: item.why || "", years: String(item.years), cost: String(item.cost || ""), affiliateUrl: item.affiliateUrl || "" });
+    setForm({ name: item.name, dose: item.dose || "", freq: item.freq || "", category: item.category, why: item.why || "", years: String(item.years), cost: String(item.cost || ""), affiliateUrl: item.affiliateUrl || "" });
     setShowAdd(true);
   }
   function handleAddOrUpdate() {
     if (!form.name.trim()) return;
-    const clean = { ...form, dose: form.dose.trim() || undefined };
+    const clean = { ...form, dose: form.dose.trim() || undefined, freq: form.freq.trim() || undefined };
     if (editingItem) {
       setItems(prev => prev.map(i => i.id === editingItem.id ? { ...i, ...clean, years: parseFloat(form.years)||0, cost: parseFloat(form.cost)||0 } : i));
       setEditingItem(null);
     } else {
       setItems(prev => [...prev, { ...clean, id: Date.now(), years: parseFloat(form.years)||0, cost: parseFloat(form.cost)||0, tags: [] }]);
     }
-    setForm({ name: "", dose: "", category: "Supplements", why: "", years: "", cost: "", affiliateUrl: "" });
+    setForm({ name: "", dose: "", freq: "", category: "Supplements", why: "", years: "", cost: "", affiliateUrl: "" });
     setShowAdd(false);
   }
   function handleSave() {
@@ -1639,9 +1639,10 @@ function EditSheet({ stack, onSave, onClose }) {
         </div>
         {showAdd ? (
           <div className="form-section" style={{ marginTop: 12 }}>
+            <div className="form-group"><label className="form-label">Name *</label><input className="form-input" placeholder="Item name" value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))} /></div>
             <div className="form-row">
-              <div className="form-group" style={{ flex: 2 }}><label className="form-label">Name *</label><input className="form-input" placeholder="Item name" value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))} /></div>
               <div className="form-group" style={{ flex: 1 }}><label className="form-label">Dose</label><input className="form-input" placeholder="500mg" value={form.dose} onChange={e => setForm(f => ({ ...f, dose: e.target.value }))} /></div>
+              <div className="form-group" style={{ flex: 1 }}><label className="form-label">Frequency</label><input className="form-input" placeholder="daily" value={form.freq} onChange={e => setForm(f => ({ ...f, freq: e.target.value }))} /></div>
             </div>
             <div className="form-row">
               <div className="form-group">
@@ -1936,18 +1937,20 @@ function StackPage({ username }) {
 const REFERRAL_PCT = 10;       // % of an invited creator's earnings you receive
 const REFERRAL_MONTHS = 3;     // for how many months
 
+// Pickable invite tones — the sender chooses how the message sounds.
+const INVITE_TONES = [
+  { id: "warm", label: "Warm", build: (url) => `You're one of the healthiest people I know 🙌\n\nI've always wondered what you actually take & do. If you're up for sharing, build your health stack here — takes 2 min, and you'll see mine too 👇\n${url}` },
+  { id: "sincere", label: "Sincere", build: (url) => `Honestly, you've inspired me to take my health more seriously.\n\nWould you share what's in your routine — supplements, wearables, habits? I'd love to see what works for you 👇\n${url}` },
+  { id: "humble", label: "Humble", build: (url) => `I'm trying to dial in my own health, and you clearly have it figured out.\n\nIf you don't mind sharing, what's your stack? Would mean a lot to see what's worked for you 👇\n${url}` },
+];
+
 function InviteModal({ username, onClose, onToast }) {
+  const [tone, setTone] = useState("warm");
   const inviteUrl = `${window.location.origin}${window.location.pathname}#/?ref=${username}`;
-  const message =
-`I just built my health stack on StackPage 💊
-
-Every supplement, wearable & lab I actually use — with my protocol scores and bio age.
-
-Build yours in 2 min (you can scan your bottles with your camera) and earn when people copy it:
-${inviteUrl}`;
+  const message = (INVITE_TONES.find(t => t.id === tone) || INVITE_TONES[0]).build(inviteUrl);
 
   async function share() {
-    track("invite_shared", { username });
+    track("invite_shared", { username, tone });
     if (navigator.share) {
       try { await navigator.share({ title: "Build your StackPage", text: message }); return; } catch(_) {}
     }
@@ -1958,11 +1961,11 @@ ${inviteUrl}`;
     try { await navigator.clipboard.writeText(inviteUrl); onToast("Invite link copied ✓"); } catch(_) {}
   }
 
-  return (
+  return ReactDOM.createPortal(
     <div className="modal-bg" onClick={e => e.target === e.currentTarget && onClose()}>
       <div className="modal-sheet" style={{ paddingBottom: 32 }}>
         <div className="modal-header">
-          <div className="modal-title">Invite creators</div>
+          <div className="modal-title">Invite a friend</div>
           <button className="modal-close" onClick={onClose}>×</button>
         </div>
 
@@ -1974,7 +1977,13 @@ ${inviteUrl}`;
           </div>
         </div>
 
-        <div className="invite-label">Your invite message</div>
+        <div className="invite-label">Pick a tone</div>
+        <div className="hl-tabs" style={{ marginBottom: 12 }}>
+          {INVITE_TONES.map(t => (
+            <button key={t.id} className={`hl-tab ${tone === t.id ? "on" : ""}`} onClick={() => setTone(t.id)}>{t.label}</button>
+          ))}
+        </div>
+
         <div className="invite-msg">{message}</div>
 
         <div style={{ display: "flex", flexDirection: "column", gap: 10, marginTop: 14 }}>
@@ -1986,9 +1995,10 @@ ${inviteUrl}`;
           </button>
         </div>
 
-        <div className="invite-hint">Your link tags new creators to you automatically, so you get credit for everyone you bring in.</div>
+        <div className="invite-hint">You can tweak the message after you tap send. Your link tags friends to you automatically.</div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }
 
@@ -2421,7 +2431,7 @@ function Step2Items({ items, setItems, onNext }) {
   const [openCat, setOpenCat] = useState(null);
   const [search, setSearch] = useState("");
   const [selected, setSelected] = useState(null);
-  const [form, setForm] = useState({ name: "", dose: "", why: "", years: "", cost: "", affiliateUrl: "" });
+  const [form, setForm] = useState({ name: "", dose: "", freq: "", why: "", years: "", cost: "", affiliateUrl: "" });
   // Camera / scan state
   const [photoUrl, setPhotoUrl] = useState(null);       // resized dataURL
   const [scanState, setScanState] = useState(null);     // null | 'scanning' | 'done' | 'failed'
@@ -2432,7 +2442,7 @@ function Step2Items({ items, setItems, onNext }) {
 
   function openCategory(cat) {
     setOpenCat(cat); setSearch(""); setSelected(null); setPhotoUrl(null); setScanState(null); setScanMatches([]);
-    setForm({ name: "", dose: "", why: "", years: "", cost: "", affiliateUrl: "" });
+    setForm({ name: "", dose: "", freq: "", why: "", years: "", cost: "", affiliateUrl: "" });
   }
 
   function pickPredefined(item) {
@@ -2452,16 +2462,17 @@ function Step2Items({ items, setItems, onNext }) {
     const name = form.name.trim();
     if (!name) return;
     setItems(prev => [...prev, {
-      id: Date.now(), category: openCat, name, dose: form.dose.trim() || undefined, why: form.why,
+      id: Date.now(), category: openCat, name, dose: form.dose.trim() || undefined, freq: form.freq.trim() || undefined, why: form.why,
       years: parseFloat(form.years)||0, cost: parseFloat(form.cost)||0,
       affiliateUrl: form.affiliateUrl, tags: [],
       photoUrl: photoUrl || undefined,  // store captured photo with the item
     }]);
     setOpenCat(null); setSelected(null); setPhotoUrl(null); setScanState(null); setScanMatches([]);
-    setForm({ name: "", dose: "", why: "", years: "", cost: "", affiliateUrl: "" });
+    setForm({ name: "", dose: "", freq: "", why: "", years: "", cost: "", affiliateUrl: "" });
   }
-  // Dosage helps for supplements & nutrition; other categories don't need it.
+  // Dosage helps for supplements & nutrition; frequency mainly for supplements.
   const showDose = openCat === "Supplements" || openCat === "Nutrition";
+  const showFreq = openCat === "Supplements";
 
   async function handlePhotoChange(e) {
     const file = e.target.files?.[0];
@@ -2685,6 +2696,12 @@ function Step2Items({ items, setItems, onNext }) {
                   <div className="form-group" style={{ flex: 1 }}>
                     <label className="form-label">Dosage <span style={{color:"var(--text-dim)",fontWeight:400}}>· optional</span></label>
                     <input className="form-input" placeholder={openCat === "Nutrition" ? "e.g. daily" : "e.g. 500mg"} value={form.dose} onChange={e => setForm(f => ({ ...f, dose: e.target.value }))} />
+                  </div>
+                )}
+                {showFreq && (
+                  <div className="form-group" style={{ flex: 1 }}>
+                    <label className="form-label">Frequency <span style={{color:"var(--text-dim)",fontWeight:400}}>· optional</span></label>
+                    <input className="form-input" placeholder="e.g. daily, AM" value={form.freq} onChange={e => setForm(f => ({ ...f, freq: e.target.value }))} />
                   </div>
                 )}
               </div>
