@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>Healthstack — Share Your Wellness Stack</title>
+  <title>Healthstack, Share Your Wellness Stack</title>
   <link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A//www.w3.org/2000/svg%27%20viewBox%3D%270%200%2040%2040%27%3E%3Cdefs%3E%3ClinearGradient%20id%3D%27g%27%20x1%3D%270%27%20y1%3D%270%27%20x2%3D%271%27%20y2%3D%271%27%3E%3Cstop%20offset%3D%270%27%20stop-color%3D%27%23D9531F%27/%3E%3Cstop%20offset%3D%271%27%20stop-color%3D%27%23E89A4B%27/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect%20width%3D%2740%27%20height%3D%2740%27%20rx%3D%2710%27%20fill%3D%27url%28%23g%29%27/%3E%3Crect%20x%3D%279%27%20y%3D%2725%27%20width%3D%2722%27%20height%3D%275%27%20rx%3D%272.5%27%20fill%3D%27%23fff%27/%3E%3Crect%20x%3D%2712%27%20y%3D%2717.5%27%20width%3D%2716%27%20height%3D%275%27%20rx%3D%272.5%27%20fill%3D%27%23fff%27%20opacity%3D%270.85%27/%3E%3Crect%20x%3D%2715%27%20y%3D%2710%27%20width%3D%2710%27%20height%3D%275%27%20rx%3D%272.5%27%20fill%3D%27%23fff%27%20opacity%3D%270.7%27/%3E%3C/svg%3E" />
   <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
   <link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png" />
@@ -11,19 +11,19 @@
   <link rel="manifest" href="/site.webmanifest" />
   <meta name="theme-color" content="#CE5A2E" />
   <meta name="apple-mobile-web-app-title" content="healthstack" />
-  <meta name="description" content="Share every supplement, wearable & lab you use — with why. Build your own health stack in 2 minutes, free." />
+  <meta name="description" content="Share every supplement, wearable & lab you use, with why. Build your own health stack in 2 minutes, free." />
   <!-- Open Graph / Twitter link-preview card. Default (one card for all links). Per-stack cards need a backend (see notes). -->
   <meta property="og:type" content="website" />
   <meta property="og:site_name" content="Healthstack" />
-  <meta property="og:title" content="Healthstack — Show off your stack" />
-  <meta property="og:description" content="Share every supplement, wearable & lab you use — with why. Build your own in 2 minutes, free." />
+  <meta property="og:title" content="Healthstack, Show off your stack" />
+  <meta property="og:description" content="Share every supplement, wearable & lab you use, with why. Build your own in 2 minutes, free." />
   <meta property="og:url" content="https://stackapp-one.vercel.app/" />
   <meta property="og:image" content="https://stackapp-one.vercel.app/og-card.png?v=2" />
   <meta property="og:image:width" content="1200" />
   <meta property="og:image:height" content="630" />
   <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="Healthstack — Show off your stack" />
-  <meta name="twitter:description" content="Share every supplement, wearable & lab you use — with why. Build yours free." />
+  <meta name="twitter:title" content="Healthstack, Show off your stack" />
+  <meta name="twitter:description" content="Share every supplement, wearable & lab you use, with why. Build yours free." />
   <meta name="twitter:image" content="https://stackapp-one.vercel.app/og-card.png?v=2" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -75,7 +75,7 @@
       min-height: 100vh;
     }
     #root { max-width: 480px; margin: 0 auto; min-height: 100vh; position: relative; background: var(--bg); }
-    /* Home ends in a full-width footer — don't force extra white height below it on tall screens */
+    /* Home ends in a full-width footer, don't force extra white height below it on tall screens */
     #root:has(.home-page) { min-height: 0; background: transparent; }
 
     @keyframes fadeUp {
@@ -215,8 +215,8 @@
       background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-sm);
       padding: 14px 14px 14px 18px; margin-bottom: 8px; border-left-width: 3px;
     }
-    /* Option B — gradient tile grid */
-    /* Tile B — clean neutral card, 3 columns, color only in the icon, quiet "Get it" */
+    /* Option B, gradient tile grid */
+    /* Tile B, clean neutral card, 3 columns, color only in the icon, quiet "Get it" */
     .stack-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
     .gitem {
       display: flex; flex-direction: column; gap: 9px; padding: 13px;
@@ -993,7 +993,7 @@
       .home-step { flex-direction: column; align-items: flex-start; gap: 12px; }
       .modal-sheet, .edit-sheet { max-width: 760px; border-radius: var(--r) var(--r) 0 0; }
 
-      /* HOME — wider centered landing, multi-column value props */
+      /* HOME, wider centered landing, multi-column value props */
       .home-page { max-width: 1040px; margin: 0 auto; }
       .home-hero { padding-top: 56px; }
       .home-values { display: grid; grid-template-columns: 1fr 1fr; gap: 4px 36px; }
@@ -1019,11 +1019,11 @@
       .site-footer .sf-top { flex-direction: row; justify-content: space-between; gap: 60px; }
       .site-footer .sf-cols { gap: 28px 64px; }
 
-      /* BUILD — focused centered form on the wide canvas */
+      /* BUILD, focused centered form on the wide canvas */
       .build-page { max-width: 620px; margin: 0 auto; }
       .build-header, .step-indicator { max-width: 620px; margin-left: auto; margin-right: auto; }
 
-      /* STACK — dashboard: sticky left rail + wide grid */
+      /* STACK, dashboard: sticky left rail + wide grid */
       .page-stack { max-width: 1180px; margin: 0 auto; }
       .page-stack .stack-layout { display: grid; grid-template-columns: 360px 1fr; gap: 4px 30px; align-items: start; padding: 4px 8px 0; }
       .page-stack .stack-rail { position: sticky; top: 84px; display: flex; flex-direction: column; }
@@ -1033,7 +1033,7 @@
       .page-stack .claim-banner { margin-left: 8px !important; margin-right: 8px !important; }
       .action-bar { max-width: 1180px; }
 
-      /* EARNINGS — dashboard: left rail (totals) + right (chart, earners, invite) */
+      /* EARNINGS, dashboard: left rail (totals) + right (chart, earners, invite) */
       .page-earn .earn-layout { display: grid; grid-template-columns: 360px 1fr; gap: 4px 30px; align-items: start; padding: 4px 8px 0; max-width: 1080px; margin: 0 auto; }
       .page-earn .earn-rail { position: sticky; top: 84px; display: flex; flex-direction: column; }
       .page-earn .earn-layout > * > * { margin-left: 0 !important; margin-right: 0 !important; }
@@ -1048,7 +1048,7 @@ const { useState, useEffect, useRef, useCallback } = React;
 // Default illustrated avatar shown when a stack has no uploaded photo.
 const DEFAULT_AVATAR = "data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A//www.w3.org/2000/svg%27%20viewBox%3D%270%200%20100%20100%27%3E%3Cdefs%3E%3ClinearGradient%20id%3D%27g%27%20x1%3D%270%27%20y1%3D%270%27%20x2%3D%271%27%20y2%3D%271%27%3E%3Cstop%20offset%3D%270%27%20stop-color%3D%27%23EFE7DA%27/%3E%3Cstop%20offset%3D%271%27%20stop-color%3D%27%23DCD0BD%27/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect%20width%3D%27100%27%20height%3D%27100%27%20fill%3D%27url%28%23g%29%27/%3E%3Ccircle%20cx%3D%2750%27%20cy%3D%2740%27%20r%3D%2715%27%20fill%3D%27%23BBA486%27/%3E%3Cpath%20d%3D%27M22%2084c0-16%2012-26%2028-26s28%2010%2028%2026z%27%20fill%3D%27%23BBA486%27/%3E%3C/svg%3E";
 
-// Brand logo — "ascending stack" mark + wordmark
+// Brand logo, "ascending stack" mark + wordmark
 function Logo({ onClick }) {
   return (
     <div className="brand" onClick={onClick}>
@@ -1091,7 +1091,7 @@ const CATEGORY_COLORS = {
   Fitness:     "#E58A4D",  // orange (energy)
   Sleep:       "#7C73C6",  // indigo (night)
   Mind:        "#4FA89E",  // teal (calm)
-  Services:    "#4FA89E",  // legacy — folded into Mind
+  Services:    "#4FA89E",  // legacy, folded into Mind
   Other:       "#9AA8A0",  // grey
 };
 // Display order (also used by the stack page + edit). Legacy "Services" still renders if present.
@@ -1104,40 +1104,40 @@ const BUILD_CATEGORIES_MORE = ["Nutrition", "Fitness", "Sleep", "Mind"];
 const PREDEFINED_ITEMS = {
   Supplements: [
     { name: "NMN",                  dose: "500mg", whys: ["Boosts NAD+ levels for cellular energy and DNA repair.", "Slows cellular aging by supporting mitochondrial function."] },
-    { name: "Magnesium Glycinate",  dose: "400mg", whys: ["Deep sleep scores improved noticeably within 2 weeks.", "Most bioavailable form — reduces tension and aids recovery."] },
+    { name: "Magnesium Glycinate",  dose: "400mg", whys: ["Deep sleep scores improved noticeably within 2 weeks.", "Most bioavailable form, reduces tension and aids recovery."] },
     { name: "Magnesium L-Threonate",dose: "2g",    whys: ["Crosses the blood-brain barrier for cognitive support.", "Supports memory retention and reduces brain fog."] },
-    { name: "Omega-3",              dose: "2g EPA/DHA", whys: ["Reduces systemic inflammation — my hs-CRP dropped significantly.", "Supports heart health and brain function long-term."] },
-    { name: "Vitamin D3 + K2",      dose: "5000 IU", whys: ["Most people are deficient — non-negotiable for immune function.", "K2 directs calcium to bones, not arteries."] },
+    { name: "Omega-3",              dose: "2g EPA/DHA", whys: ["Reduces systemic inflammation, my hs-CRP dropped significantly.", "Supports heart health and brain function long-term."] },
+    { name: "Vitamin D3 + K2",      dose: "5000 IU", whys: ["Most people are deficient, non-negotiable for immune function.", "K2 directs calcium to bones, not arteries."] },
     { name: "Creatine",             dose: "5g",    whys: ["Improves working memory and processing speed, not just muscle.", "Cheap, safe, and one of the most studied compounds."] },
     { name: "Ashwagandha",          dose: "600mg", whys: ["Measurable cortisol reduction after 4 weeks.", "Improved HRV and stress resilience."] },
-    { name: "CoQ10",                dose: "200mg", whys: ["Supports mitochondrial energy production.", "Essential if taking a statin — statins deplete CoQ10."] },
+    { name: "CoQ10",                dose: "200mg", whys: ["Supports mitochondrial energy production.", "Essential if taking a statin, statins deplete CoQ10."] },
     { name: "Alpha Lipoic Acid",    dose: "600mg", whys: ["Potent antioxidant that regenerates other antioxidants.", "Supports glucose metabolism and mitochondrial function."] },
-    { name: "Berberine",            dose: "500mg", whys: ["AMPK activator — clinically shown to improve insulin sensitivity.", "Mimics some effects of metformin on glucose metabolism."] },
-    { name: "Quercetin",            dose: "500mg", whys: ["Senolytic — helps clear senescent ('zombie') cells.", "Synergistic with NMN for anti-aging protocols."] },
+    { name: "Berberine",            dose: "500mg", whys: ["AMPK activator, clinically shown to improve insulin sensitivity.", "Mimics some effects of metformin on glucose metabolism."] },
+    { name: "Quercetin",            dose: "500mg", whys: ["Senolytic, helps clear senescent ('zombie') cells.", "Synergistic with NMN for anti-aging protocols."] },
     { name: "Lion's Mane",          dose: "1g",    whys: ["Stimulates NGF production for neurogenesis.", "Noticeable improvement in focus and long-term memory."] },
-    { name: "L-Theanine",           dose: "200mg", whys: ["Smooth calm focus — synergistic with caffeine.", "Reduces anxiety without sedation."] },
+    { name: "L-Theanine",           dose: "200mg", whys: ["Smooth calm focus, synergistic with caffeine.", "Reduces anxiety without sedation."] },
     { name: "Collagen Peptides",    dose: "10g",   whys: ["Supports skin elasticity, joints, and connective tissue.", "Visible improvement in skin quality after 3 months."] },
     { name: "Probiotics",           dose: "",      whys: ["Supports gut microbiome diversity and immune function.", "Reduced bloating significantly within 30 days."] },
     { name: "B-Complex",            dose: "",      whys: ["Key cofactors for methylation and energy metabolism.", "Supports nervous system function and stress resilience."] },
-    { name: "Spermidine",           dose: "1mg",   whys: ["Induces autophagy — cellular recycling and renewal.", "One of the most promising emerging longevity compounds."] },
-    { name: "Resveratrol",          dose: "500mg", whys: ["Sirtuin activator — supports longevity signaling pathways.", "Often stacked with NMN for synergistic effect."] },
-    { name: "NAC",                  dose: "600mg", whys: ["Glutathione precursor — major antioxidant support.", "Supports liver detoxification and respiratory health."] },
+    { name: "Spermidine",           dose: "1mg",   whys: ["Induces autophagy, cellular recycling and renewal.", "One of the most promising emerging longevity compounds."] },
+    { name: "Resveratrol",          dose: "500mg", whys: ["Sirtuin activator, supports longevity signaling pathways.", "Often stacked with NMN for synergistic effect."] },
+    { name: "NAC",                  dose: "600mg", whys: ["Glutathione precursor, major antioxidant support.", "Supports liver detoxification and respiratory health."] },
     { name: "Vitamin C",            dose: "1g",    whys: ["Antioxidant support and collagen synthesis cofactor.", "Immune function baseline I don't skip."] },
     { name: "Zinc",                 dose: "30mg",  whys: ["Supports immune function and testosterone production.", "Most people are borderline deficient."] },
     { name: "Custom supplement",    whys: [] },
   ],
   Wearables: [
-    { name: "Oura Ring Gen 4",       whys: ["Most accurate consumer sleep tracker — predicts illness early via HRV dip.", "Worn 24/7, tracks readiness, sleep stages, and temperature."] },
+    { name: "Oura Ring Gen 4",       whys: ["Most accurate consumer sleep tracker, predicts illness early via HRV dip.", "Worn 24/7, tracks readiness, sleep stages, and temperature."] },
     { name: "Apple Watch Series 10", whys: ["ECG, blood oxygen, and crash detection always on my wrist.", "Seamless HealthKit integration across all my health apps."] },
     { name: "Apple Watch Ultra 2",   whys: ["Military-grade durability with best-in-class GPS accuracy.", "2-day battery life makes it ideal for endurance and travel."] },
     { name: "WHOOP 4.0",             whys: ["Best strain and recovery coaching for serious athletes.", "Tells me when to push hard and when to hold back."] },
     { name: "Garmin Fenix 7",        whys: ["Best GPS accuracy for outdoor training and hiking.", "Body Battery score and morning HRV status is incredibly useful."] },
-    { name: "Garmin Instinct 3",     whys: ["Rugged, weeks of battery — set it and forget it.", "Solid HRV, sleep, and training-load tracking for the price."] },
+    { name: "Garmin Instinct 3",     whys: ["Rugged, weeks of battery, set it and forget it.", "Solid HRV, sleep, and training-load tracking for the price."] },
     { name: "Garmin Forerunner 965", whys: ["Training-focused with great running dynamics and recovery metrics.", "Lightweight AMOLED that doubles as a daily health tracker."] },
     { name: "Garmin Venu 3",         whys: ["Tracks sleep, stress, and nap detection in a slim form.", "Great balance of everyday wearable and health tracker."] },
     { name: "Levels CGM",            whys: ["Real-time glucose data revealed which foods spike me most.", "Completely changed my eating habits through data-driven decisions."] },
     { name: "Freestyle Libre 3",     whys: ["Affordable CGM without finger pricks.", "Identifies metabolic patterns throughout the day."] },
-    { name: "Eight Sleep Pod 4",     whys: ["Dynamic temperature regulation measurably improves deep sleep.", "HRV improved after switching — best sleep investment I've made."] },
+    { name: "Eight Sleep Pod 4",     whys: ["Dynamic temperature regulation measurably improves deep sleep.", "HRV improved after switching, best sleep investment I've made."] },
     { name: "Google Pixel Watch 3",  whys: ["Fitbit health tracking with Google ecosystem integration.", "Continuous heart rate, sleep, and stress monitoring."] },
     { name: "Fitbit Charge 6",       whys: ["Affordable, accurate sleep and activity tracking.", "Google integration makes it easy to share data with other apps."] },
     { name: "Polar H10",             whys: ["Gold standard chest-strap HRV monitor for accurate readings.", "Best data quality for recovery and training zone work."] },
@@ -1146,55 +1146,55 @@ const PREDEFINED_ITEMS = {
     { name: "Custom wearable",       whys: [] },
   ],
   Labs: [
-    { name: "Superpower Biannual Bloodwork",  whys: ["70+ biomarkers twice a year — caught a TSH drift early.", "Includes hormones, lipids, and inflammatory markers."] },
+    { name: "Superpower Biannual Bloodwork",  whys: ["70+ biomarkers twice a year, caught a TSH drift early.", "Includes hormones, lipids, and inflammatory markers."] },
     { name: "Function Health Panel",          whys: ["100+ biomarker panel with longitudinal trend tracking.", "Best value comprehensive bloodwork currently available."] },
     { name: "InsideTracker",                  whys: ["Blood + DNA with personalized optimization recommendations.", "Tracks 43 biomarkers against optimal (not just 'normal') zones."] },
-    { name: "TruAge Epigenetic Test",         whys: ["DNA methylation biological age — most accurate available.", "Tracks how fast (or slow) I'm aging at the cellular level."] },
-    { name: "Grail Galleri Cancer Screen",    whys: ["Multi-cancer early detection — screens for 50+ cancers.", "Catches signals before symptoms ever appear."] },
+    { name: "TruAge Epigenetic Test",         whys: ["DNA methylation biological age, most accurate available.", "Tracks how fast (or slow) I'm aging at the cellular level."] },
+    { name: "Grail Galleri Cancer Screen",    whys: ["Multi-cancer early detection, screens for 50+ cancers.", "Catches signals before symptoms ever appear."] },
     { name: "VO2 Max Test (Lab)",             whys: ["Gold standard cardiorespiratory fitness measurement.", "Strongest single predictor of all-cause mortality."] },
     { name: "DEXA Scan",                      whys: ["Most accurate body composition measurement available.", "Tracks visceral fat and bone density precisely."] },
     { name: "Gut Microbiome Test",            whys: ["Maps bacteria diversity and identifies imbalances.", "Informs my probiotic stack and dietary fiber targets."] },
     { name: "Custom lab test",                whys: [] },
   ],
   Nutrition: [
-    { name: "Intermittent fasting 16:8", whys: ["16-hour daily fast — sharper focus and steadier energy in the mornings.", "Simplest lever for managing weight without counting calories."] },
+    { name: "Intermittent fasting 16:8", whys: ["16-hour daily fast, sharper focus and steadier energy in the mornings.", "Simplest lever for managing weight without counting calories."] },
     { name: "High-protein diet",         whys: ["~1g per lb of bodyweight to preserve muscle as I age.", "Keeps me full and supports training recovery."] },
-    { name: "Mediterranean diet",        whys: ["Most evidence-backed eating pattern for longevity & heart health.", "Olive oil, fish, vegetables, legumes — easy to sustain."] },
+    { name: "Mediterranean diet",        whys: ["Most evidence-backed eating pattern for longevity & heart health.", "Olive oil, fish, vegetables, legumes, easy to sustain."] },
     { name: "Ketogenic diet",            whys: ["Stable energy with no afternoon crashes.", "Lowered my fasting glucose and triglycerides."] },
     { name: "Whole foods / low processed", whys: ["If it has a label with 10+ ingredients, I skip it.", "Biggest single change to how I feel day to day."] },
     { name: "Low added sugar",           whys: ["Cutting added sugar flattened my glucose spikes (confirmed on CGM).", "Better sleep and fewer cravings."] },
-    { name: "Vegetarian / plant-forward",whys: ["Mostly plants — high fiber, great for the microbiome.", "Lower inflammation markers on bloodwork."] },
+    { name: "Vegetarian / plant-forward",whys: ["Mostly plants, high fiber, great for the microbiome.", "Lower inflammation markers on bloodwork."] },
     { name: "Carnivore",                 whys: ["Elimination approach that calmed my gut issues.", "Simple, satiating, zero decision fatigue."] },
     { name: "Custom diet",               whys: [] },
   ],
   Fitness: [
-    { name: "Weight training",   whys: ["Strength is the #1 predictor of healthy aging — 3-4x per week.", "Muscle is the organ of longevity."] },
-    { name: "Zone 2 cardio",     whys: ["Builds my aerobic base and mitochondrial density.", "180 min/week, conversational pace — the longevity sweet spot."] },
+    { name: "Weight training",   whys: ["Strength is the #1 predictor of healthy aging, 3-4x per week.", "Muscle is the organ of longevity."] },
+    { name: "Zone 2 cardio",     whys: ["Builds my aerobic base and mitochondrial density.", "180 min/week, conversational pace, the longevity sweet spot."] },
     { name: "Running",           whys: ["Cheapest, most reliable way to keep my VO2 max high.", "Clears my head better than anything else."] },
-    { name: "Yoga",              whys: ["Mobility + stress relief in one — protects against injury.", "Noticeable improvement in sleep on yoga days."] },
+    { name: "Yoga",              whys: ["Mobility + stress relief in one, protects against injury.", "Noticeable improvement in sleep on yoga days."] },
     { name: "CrossFit",          whys: ["Community keeps me consistent better than solo training.", "Mix of strength and conditioning in 60 min."] },
     { name: "Cycling",           whys: ["Low-impact cardio that's easy on the joints.", "Great for long Zone 2 sessions."] },
-    { name: "Walking (10k steps)", whys: ["The most underrated health habit — daily non-negotiable.", "Post-meal walks blunt my glucose spikes."] },
-    { name: "HIIT",              whys: ["Time-efficient VO2 max booster — 2x/week.", "Big metabolic return for 20 minutes."] },
+    { name: "Walking (10k steps)", whys: ["The most underrated health habit, daily non-negotiable.", "Post-meal walks blunt my glucose spikes."] },
+    { name: "HIIT",              whys: ["Time-efficient VO2 max booster, 2x/week.", "Big metabolic return for 20 minutes."] },
     { name: "Custom workout",    whys: [] },
   ],
   Sleep: [
-    { name: "8-hour sleep target",     whys: ["Protected 8h in bed — the foundation everything else builds on.", "Single biggest driver of my next-day energy and mood."] },
-    { name: "Consistent wake time",    whys: ["Same wake time daily, even weekends — locks my circadian rhythm.", "Fall asleep faster and wake up clearer."] },
+    { name: "8-hour sleep target",     whys: ["Protected 8h in bed, the foundation everything else builds on.", "Single biggest driver of my next-day energy and mood."] },
+    { name: "Consistent wake time",    whys: ["Same wake time daily, even weekends, locks my circadian rhythm.", "Fall asleep faster and wake up clearer."] },
     { name: "Morning sunlight",        whys: ["10 min of sunlight within 30 min of waking sets my clock.", "Best free intervention for sleep and mood."] },
     { name: "Cool room (65°F)",        whys: ["Cooler room = more deep sleep (confirmed on Oura).", "Body temp needs to drop to fall asleep."] },
-    { name: "No screens before bed",   whys: ["Screens off 60 min before bed — fall asleep noticeably faster.", "Less blue light, calmer mind."] },
-    { name: "Mouth taping",            whys: ["Nasal breathing through the night — less snoring, drier mouth gone.", "Higher deep-sleep scores since starting."] },
+    { name: "No screens before bed",   whys: ["Screens off 60 min before bed, fall asleep noticeably faster.", "Less blue light, calmer mind."] },
+    { name: "Mouth taping",            whys: ["Nasal breathing through the night, less snoring, drier mouth gone.", "Higher deep-sleep scores since starting."] },
     { name: "Magnesium before bed",    whys: ["Calms the nervous system ~1h before sleep.", "Deeper, more restorative sleep."] },
     { name: "Custom sleep habit",      whys: [] },
   ],
   Mind: [
-    { name: "Daily meditation",   whys: ["10 min a day — measurably lower resting heart rate and stress.", "The reset that makes everything else easier."] },
+    { name: "Daily meditation",   whys: ["10 min a day, measurably lower resting heart rate and stress.", "The reset that makes everything else easier."] },
     { name: "Breathwork",         whys: ["Box breathing to down-regulate before sleep or after stress.", "Fastest way to shift out of fight-or-flight."] },
-    { name: "Cold plunge",        whys: ["Cold exposure spikes norepinephrine ~300% — huge mood and focus boost.", "Accelerates recovery and builds resilience."] },
+    { name: "Cold plunge",        whys: ["Cold exposure spikes norepinephrine ~300%, huge mood and focus boost.", "Accelerates recovery and builds resilience."] },
     { name: "Sauna",              whys: ["4+ sessions/week linked to ~40% lower cardiovascular mortality.", "Heat shock proteins + the best stress relief I've found."] },
-    { name: "Journaling",         whys: ["Brain-dump every morning — clearer head, less rumination.", "Tracks patterns in mood and energy over time."] },
-    { name: "Therapy",            whys: ["Mental health is health — foundational, not optional.", "Addresses root causes, not just symptoms."] },
+    { name: "Journaling",         whys: ["Brain-dump every morning, clearer head, less rumination.", "Tracks patterns in mood and energy over time."] },
+    { name: "Therapy",            whys: ["Mental health is health, foundational, not optional.", "Addresses root causes, not just symptoms."] },
     { name: "Red light therapy",  whys: ["Stimulates mitochondrial ATP in skin and muscle.", "Reduces inflammation and improves skin quality."] },
     { name: "Custom practice",    whys: [] },
   ],
@@ -1212,7 +1212,7 @@ const SHEHAN_STACK = {
   chronoAge: 41,
   items: [
     { id: 1, category: "Supplements", name: "NMN 500mg",
-      why: "Core longevity molecule — supports NAD+ production which declines ~50% by age 40. First thing in the morning, fasted.",
+      why: "Core longevity molecule, supports NAD+ production which declines ~50% by age 40. First thing in the morning, fasted.",
       years: 2, cost: 45,
       affiliateUrl: "https://amazon.com/s?k=NMN+500mg", // ← swap real affiliate URL here
       tags: ["longevity", "nad", "cognitive"] },
@@ -1227,7 +1227,7 @@ const SHEHAN_STACK = {
       affiliateUrl: "https://amazon.com/s?k=Omega-3+EPA+DHA+2g", // ← swap real affiliate URL here
       tags: ["longevity", "recovery", "inflammation"] },
     { id: 4, category: "Supplements", name: "Vitamin D3 + K2",
-      why: "K2 directs calcium to bones, not arteries. Essential cofactors — most people are unknowingly deficient.",
+      why: "K2 directs calcium to bones, not arteries. Essential cofactors, most people are unknowingly deficient.",
       years: 2, cost: 18,
       affiliateUrl: "https://amazon.com/s?k=Vitamin+D3+K2", // ← swap real affiliate URL here
       tags: ["longevity", "immunity"] },
@@ -1247,7 +1247,7 @@ const SHEHAN_STACK = {
       affiliateUrl: "https://levelshealth.com/join", // ← swap real referral URL here
       tags: ["metabolic", "longevity", "tracking"] },
     { id: 8, category: "Labs", name: "Superpower Biannual Bloodwork",
-      why: "70+ biomarkers twice a year — hormones, lipids, inflammatory markers. Caught a TSH drift early. Worth every penny.",
+      why: "70+ biomarkers twice a year, hormones, lipids, inflammatory markers. Caught a TSH drift early. Worth every penny.",
       years: 1, cost: 49,
       affiliateUrl: "https://superpower.com/referral", // ← swap real referral URL here
       tags: ["longevity", "preventive", "tracking"] },
@@ -1298,7 +1298,7 @@ function generateInsights(items) {
   const names = items.map(i => i.name.toLowerCase()).join(" ");
   const out = [];
   if (/nmn|nad/.test(names))
-    out.push({ type: "strength", text: "<strong>Strong NAD+ foundation.</strong> NMN supports cellular energy and DNA repair — one of the most evidence-backed longevity interventions." });
+    out.push({ type: "strength", text: "<strong>Strong NAD+ foundation.</strong> NMN supports cellular energy and DNA repair, one of the most evidence-backed longevity interventions." });
   if (!/vitamin d|d3/.test(names))
     out.push({ type: "gap", text: "<strong>Missing Vitamin D3/K2.</strong> ~42% of adults are deficient. Direct impact on immune regulation, mood, and bone health." });
   if (/magnesium/.test(names) && /oura/.test(names))
@@ -1306,16 +1306,16 @@ function generateInsights(items) {
   if (!/ashwagandha/.test(names) && items.length >= 3)
     out.push({ type: "gap", text: "<strong>No stress adaptogen.</strong> Ashwagandha has strong evidence for cortisol reduction and improved recovery metrics." });
   if (/creatine/.test(names))
-    out.push({ type: "strength", text: "<strong>Creatine is underrated.</strong> Studies show 3-5% improvements in working memory and reasoning — beyond just muscle." });
+    out.push({ type: "strength", text: "<strong>Creatine is underrated.</strong> Studies show 3-5% improvements in working memory and reasoning, beyond just muscle." });
   if (!items.find(i => i.category === "Labs"))
-    out.push({ type: "gap", text: "<strong>No lab testing detected.</strong> Biannual bloodwork is the highest-leverage intervention — you can't optimize what you can't measure." });
+    out.push({ type: "gap", text: "<strong>No lab testing detected.</strong> Biannual bloodwork is the highest-leverage intervention, you can't optimize what you can't measure." });
   if (/cgm|levels|glucose|libre/.test(names))
     out.push({ type: "strength", text: "<strong>Metabolic awareness is elite.</strong> CGM users consistently reduce post-meal glucose spikes 20-40% through behavioral changes alone." });
   return out.slice(0, 3);
 }
 
 // ── SUPABASE (backend) ────────────────────────────────────────────────────────
-// Publishable key is safe to ship — protected by row-level security.
+// Publishable key is safe to ship, protected by row-level security.
 const SUPABASE_URL = "https://dkfakvqckkifsmqjkdag.supabase.co";
 const SUPABASE_KEY = "sb_publishable_l9zVNN_xl6Ybk9ZGMVt70Q_XolRKq3D";
 let sb = null;
@@ -1400,7 +1400,7 @@ function relativeTime(ts) {
   if (days < 30) return `${Math.floor(days / 7)} week${Math.floor(days / 7) > 1 ? "s" : ""} ago`;
   return new Date(ts).toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" });
 }
-// Curated, fictional demo persona — shown on the home reel + "See the full example"
+// Curated, fictional demo persona, shown on the home reel + "See the full example"
 // so visitors see the full breadth of the product (not the owner's real stack).
 const DEMO_STACK = {
   username: "marcus",
@@ -1414,27 +1414,27 @@ const DEMO_STACK = {
   highlight: { type: "metric", value: "58", label: "VO₂ max" },
   items: [
     { id: 1, category: "Supplements", name: "NMN", dose: "500mg", freq: "Once daily", years: 3, cost: 45, costPeriod: "mo",
-      why: "Core longevity molecule — supports NAD+ which declines ~50% by 40. Taken fasted, first thing.", affiliateUrl: "", tags: ["longevity","nad"] },
+      why: "Core longevity molecule, supports NAD+ which declines ~50% by 40. Taken fasted, first thing.", affiliateUrl: "", tags: ["longevity","nad"] },
     { id: 2, category: "Supplements", name: "Magnesium Glycinate", dose: "400mg", freq: "Nightly", years: 2, cost: 20, costPeriod: "mo",
-      why: "Most bioavailable form — deep sleep on Oura jumped within two weeks.", affiliateUrl: "", tags: ["sleep"] },
+      why: "Most bioavailable form, deep sleep on Oura jumped within two weeks.", affiliateUrl: "", tags: ["sleep"] },
     { id: 3, category: "Supplements", name: "Omega-3", dose: "2g EPA/DHA", freq: "Once daily", years: 4, cost: 30, costPeriod: "mo",
-      why: "Anti-inflammatory — my hs-CRP dropped from 1.8 to 0.6 in six months.", affiliateUrl: "", tags: ["inflammation"] },
+      why: "Anti-inflammatory, my hs-CRP dropped from 1.8 to 0.6 in six months.", affiliateUrl: "", tags: ["inflammation"] },
     { id: 4, category: "Supplements", name: "Creatine", dose: "5g", freq: "Once daily", years: 5, cost: 15, costPeriod: "mo",
       why: "Cognitive + strength. The most studied, safest compound I take.", affiliateUrl: "", tags: ["cognitive"] },
     { id: 5, category: "Supplements", name: "Vitamin D3 + K2", dose: "5000 IU", freq: "Once daily", years: 3, cost: 18, costPeriod: "mo",
       why: "K2 directs calcium to bones, not arteries. Non-negotiable for immunity.", affiliateUrl: "", tags: ["immunity"] },
     { id: 6, category: "Supplements", name: "Ashwagandha", dose: "600mg", freq: "AM", years: 1, cost: 22, costPeriod: "mo",
-      why: "Measurable cortisol drop after 4 weeks — calmer baseline, better HRV.", affiliateUrl: "", tags: ["stress"] },
-    { id: 7, category: "Wearables", name: "Oura Ring Gen 4", years: 3, cost: 30, costPeriod: "mo",
+      why: "Measurable cortisol drop after 4 weeks, calmer baseline, better HRV.", affiliateUrl: "", tags: ["stress"] },
+    { id: 7, category: "Wearables", name: "Oura Ring Gen 4", years: 3, cost: 349, costPeriod: "once",
       why: "Best consumer sleep + readiness tracker. Flagged illness 2 days early via HRV.", affiliateUrl: "", tags: ["sleep","recovery"] },
-    { id: 8, category: "Wearables", name: "Levels CGM", years: 1, cost: 99, costPeriod: "mo",
-      why: "Continuous glucose data reshaped how I eat — rice spikes me, pasta doesn't.", affiliateUrl: "", tags: ["metabolic"] },
+    { id: 8, category: "Wearables", name: "Levels CGM", years: 1, cost: 199, costPeriod: "once",
+      why: "Continuous glucose data reshaped how I eat, rice spikes me, pasta doesn't.", affiliateUrl: "", tags: ["metabolic"] },
     { id: 9, category: "Sleep", name: "Eight Sleep Pod 4", years: 2, cost: 89, costPeriod: "mo",
-      why: "Cools the bed to 62°F — deep sleep up 22% vs my old mattress.", affiliateUrl: "", tags: ["sleep"] },
+      why: "Cools the bed to 62°F, deep sleep up 22% vs my old mattress.", affiliateUrl: "", tags: ["sleep"] },
     { id: 10, category: "Labs", name: "Superpower Biannual Bloodwork", freq: "2×/year", years: 2, cost: 49, costPeriod: "mo",
       why: "70+ biomarkers twice a year. Caught a TSH drift before symptoms.", affiliateUrl: "", tags: ["preventive"] },
     { id: 11, category: "Labs", name: "Function Health", freq: "2×/year", years: 1, cost: 42, costPeriod: "mo",
-      why: "100+ lab panel with trends over time — the data backbone of my protocol.", affiliateUrl: "", tags: ["preventive"] },
+      why: "100+ lab panel with trends over time, the data backbone of my protocol.", affiliateUrl: "", tags: ["preventive"] },
   ],
 };
 
@@ -1449,9 +1449,9 @@ const EXAMPLE_STACKS = [
       { id: 1, category: "Supplements", name: "Collagen Peptides", dose: "10g", freq: "Once daily", years: 2, cost: 28, costPeriod: "mo", why: "Visible skin elasticity + nail strength after 3 months.", affiliateUrl: "", tags: ["skin"] },
       { id: 2, category: "Supplements", name: "Omega-3", dose: "2g EPA/DHA", freq: "Once daily", years: 3, cost: 30, costPeriod: "mo", why: "Skin hydration and an anti-inflammatory baseline.", affiliateUrl: "", tags: ["skin","inflammation"] },
       { id: 3, category: "Supplements", name: "Magnesium Glycinate", dose: "400mg", freq: "Nightly", years: 2, cost: 20, costPeriod: "mo", why: "Falling asleep faster, deeper sleep on Oura.", affiliateUrl: "", tags: ["sleep"] },
-      { id: 4, category: "Supplements", name: "Vitamin D3 + K2", dose: "4000 IU", freq: "Once daily", years: 2, cost: 16, costPeriod: "mo", why: "Was deficient — energy and mood lifted noticeably.", affiliateUrl: "", tags: ["immunity"] },
-      { id: 5, category: "Supplements", name: "Probiotics", freq: "Once daily", years: 1, cost: 34, costPeriod: "mo", why: "Gut + skin axis — less bloating, clearer skin.", affiliateUrl: "", tags: ["gut","skin"] },
-      { id: 6, category: "Wearables", name: "Oura Ring Gen 4", years: 2, cost: 30, costPeriod: "mo", why: "Tracks sleep stages, temperature, and cycle.", affiliateUrl: "", tags: ["sleep"] },
+      { id: 4, category: "Supplements", name: "Vitamin D3 + K2", dose: "4000 IU", freq: "Once daily", years: 2, cost: 16, costPeriod: "mo", why: "Was deficient, energy and mood lifted noticeably.", affiliateUrl: "", tags: ["immunity"] },
+      { id: 5, category: "Supplements", name: "Probiotics", freq: "Once daily", years: 1, cost: 34, costPeriod: "mo", why: "Gut + skin axis, less bloating, clearer skin.", affiliateUrl: "", tags: ["gut","skin"] },
+      { id: 6, category: "Wearables", name: "Oura Ring Gen 4", years: 2, cost: 349, costPeriod: "once", why: "Tracks sleep stages, temperature, and cycle.", affiliateUrl: "", tags: ["sleep"] },
       { id: 7, category: "Sleep", name: "Eight Sleep Pod 4", years: 1, cost: 89, costPeriod: "mo", why: "Cool sleep transformed my deep-sleep numbers.", affiliateUrl: "", tags: ["sleep"] },
       { id: 8, category: "Mind", name: "Daily meditation (Calm)", freq: "10 min", years: 2, cost: 8, costPeriod: "mo", why: "Lower resting HR and far less reactive.", affiliateUrl: "", tags: ["stress"] },
     ],
@@ -1461,15 +1461,15 @@ const EXAMPLE_STACKS = [
     avatarUrl: "/tom-avatar.jpg", verified: true, bioAge: 52, chronoAge: 64,
     highlight: { type: "metric", value: "52", label: "Biological age" },
     items: [
-      { id: 1, category: "Supplements", name: "NMN", dose: "1g", freq: "Once daily", years: 4, cost: 60, costPeriod: "mo", why: "NAD+ support — the cornerstone of my longevity protocol.", affiliateUrl: "", tags: ["longevity"] },
+      { id: 1, category: "Supplements", name: "NMN", dose: "1g", freq: "Once daily", years: 4, cost: 60, costPeriod: "mo", why: "NAD+ support, the cornerstone of my longevity protocol.", affiliateUrl: "", tags: ["longevity"] },
       { id: 2, category: "Supplements", name: "Resveratrol", dose: "500mg", freq: "Once daily", years: 4, cost: 24, costPeriod: "mo", why: "Stacked with NMN for sirtuin activation.", affiliateUrl: "", tags: ["longevity"] },
       { id: 3, category: "Supplements", name: "CoQ10", dose: "200mg", freq: "Once daily", years: 5, cost: 22, costPeriod: "mo", why: "Heart + mitochondrial support, essential on a statin.", affiliateUrl: "", tags: ["heart"] },
       { id: 4, category: "Supplements", name: "Omega-3", dose: "3g EPA/DHA", freq: "Once daily", years: 6, cost: 32, costPeriod: "mo", why: "Cardiovascular and cognitive insurance.", affiliateUrl: "", tags: ["heart"] },
       { id: 5, category: "Supplements", name: "Vitamin D3 + K2", dose: "5000 IU", freq: "Once daily", years: 5, cost: 18, costPeriod: "mo", why: "Bone density + immune resilience.", affiliateUrl: "", tags: ["bones"] },
       { id: 6, category: "Supplements", name: "Berberine", dose: "500mg", freq: "2× daily", years: 2, cost: 26, costPeriod: "mo", why: "Keeps fasting glucose in a tight range.", affiliateUrl: "", tags: ["metabolic"] },
-      { id: 7, category: "Wearables", name: "Oura Ring Gen 4", years: 3, cost: 30, costPeriod: "mo", why: "HRV and sleep are my daily readiness gauge.", affiliateUrl: "", tags: ["recovery"] },
-      { id: 8, category: "Labs", name: "Function Health", freq: "2×/year", years: 2, cost: 42, costPeriod: "mo", why: "100+ biomarkers trended — how I know it's working.", affiliateUrl: "", tags: ["preventive"] },
-      { id: 9, category: "Labs", name: "Superpower Biannual Bloodwork", freq: "2×/year", years: 2, cost: 49, costPeriod: "mo", why: "Hormones, lipids, inflammation — twice a year.", affiliateUrl: "", tags: ["preventive"] },
+      { id: 7, category: "Wearables", name: "Oura Ring Gen 4", years: 3, cost: 349, costPeriod: "once", why: "HRV and sleep are my daily readiness gauge.", affiliateUrl: "", tags: ["recovery"] },
+      { id: 8, category: "Labs", name: "Function Health", freq: "2×/year", years: 2, cost: 42, costPeriod: "mo", why: "100+ biomarkers trended, how I know it's working.", affiliateUrl: "", tags: ["preventive"] },
+      { id: 9, category: "Labs", name: "Superpower Biannual Bloodwork", freq: "2×/year", years: 2, cost: 49, costPeriod: "mo", why: "Hormones, lipids, inflammation, twice a year.", affiliateUrl: "", tags: ["preventive"] },
       { id: 10, category: "Fitness", name: "Strength + Zone 2", freq: "5×/week", years: 8, cost: 0, costPeriod: "mo", why: "Muscle is the organ of longevity. Non-negotiable.", affiliateUrl: "", tags: ["strength"] },
     ],
   },
@@ -1481,7 +1481,7 @@ const EXAMPLE_STACKS = [
       { id: 1, category: "Supplements", name: "Creatine", dose: "5g", freq: "Once daily", years: 5, cost: 12, costPeriod: "mo", why: "Strength + cognition. The one supplement I'd never drop.", affiliateUrl: "", tags: ["strength"] },
       { id: 2, category: "Supplements", name: "Vitamin D3 + K2", dose: "4000 IU", freq: "Once daily", years: 3, cost: 14, costPeriod: "mo", why: "Cheap insurance I was deficient without.", affiliateUrl: "", tags: ["immunity"] },
       { id: 3, category: "Supplements", name: "Magnesium Glycinate", dose: "300mg", freq: "Nightly", years: 2, cost: 16, costPeriod: "mo", why: "Better sleep, fewer cramps after training.", affiliateUrl: "", tags: ["sleep"] },
-      { id: 4, category: "Wearables", name: "Apple Watch Series 10", years: 2, cost: 0, costPeriod: "mo", why: "Already had it — tracks Zone 2 and sleep well enough.", affiliateUrl: "", tags: ["tracking"] },
+      { id: 4, category: "Wearables", name: "Apple Watch Series 10", years: 2, cost: 0, costPeriod: "once", why: "Already had it, tracks Zone 2 and sleep well enough.", affiliateUrl: "", tags: ["tracking"] },
       { id: 5, category: "Fitness", name: "Walking + 2 lifts/week", freq: "Daily walk", years: 4, cost: 0, costPeriod: "mo", why: "Consistency beats intensity. 9k steps + two lifts.", affiliateUrl: "", tags: ["movement"] },
       { id: 6, category: "Nutrition", name: "1g protein / lb", freq: "Daily", years: 3, cost: 0, costPeriod: "mo", why: "The highest-leverage diet change I ever made.", affiliateUrl: "", tags: ["protein"] },
     ],
@@ -1495,7 +1495,7 @@ function getStack(u) {
   return getStacks()[u] || null;
 }
 function isUserStack(u) { return u !== "shehan" && !!getStacks()[u]; }
-// Curated demo/example stacks (not a real user's) — hide share + QR chrome on these.
+// Curated demo/example stacks (not a real user's), hide share + QR chrome on these.
 function isExampleStack(u) { return u === "shehan" || EXAMPLE_STACKS.some(s => s.username === u); }
 function toUsername(h) { return h.replace(/^@/, "").toLowerCase().replace(/[^a-z0-9_]/g, ""); }
 // Derive a unique URL slug from a name (handle field removed). Appends a number on collision.
@@ -1508,10 +1508,15 @@ function uniqueUsername(name) {
   return base + i;
 }
 // Monthly-equivalent total (annual costs ÷ 12) so the banner can mix mo/yr items.
-function totalCost(items) { return Math.round(items.reduce((s, i) => s + (i.cost || 0) * (i.costPeriod === "yr" ? 1 / 12 : 1), 0)); }
-function costLabel(item) { return item.cost > 0 ? `$${item.cost}/${item.costPeriod === "yr" ? "yr" : "mo"}` : ""; }
+// Monthly-equivalent recurring spend. One-time fees ("once") aren't recurring, so they don't count.
+function totalCost(items) { return Math.round(items.reduce((s, i) => { if (i.costPeriod === "once") return s; return s + (i.cost || 0) * (i.costPeriod === "yr" ? 1 / 12 : 1); }, 0)); }
+function costLabel(item) {
+  if (!(item.cost > 0)) return "";
+  if (item.costPeriod === "once") return `$${item.cost}`;
+  return `$${item.cost}/${item.costPeriod === "yr" ? "yr" : "mo"}`;
+}
 
-// Bryan Johnson's Blueprint protocol runs ~$2M/yr ≈ $167K/mo — the viral benchmark.
+// Bryan Johnson's Blueprint protocol runs ~$2M/yr ≈ $167K/mo, the viral benchmark.
 const BJ_MONTHLY = 166667;
 function bjPercent(cost) {
   const pct = (cost / BJ_MONTHLY) * 100;
@@ -1543,7 +1548,7 @@ function BryanCompareCard({ cost, handle, name, url, compact }) {
         </div>
         <div className="bj-r">
           <div className="bj-big">{bjPercent(cost)}%</div>
-          <div className="bj-sub">of <b>Bryan Johnson's</b> monthly longevity budget — that's my whole stack 🧬</div>
+          <div className="bj-sub">of <b>Bryan Johnson's</b> monthly longevity budget, that's my whole stack 🧬</div>
           <div className="bj-context">⏳ Bryan Johnson blows my annual health budget in {bjTimeToMatch(cost)}.</div>
         </div>
       </div>
@@ -1555,7 +1560,7 @@ function BryanCompareCard({ cost, handle, name, url, compact }) {
   );
 }
 
-// In-rail B2 card (my sliver inside Bryan's box) — the visible Bryan card on the dashboard.
+// In-rail B2 card (my sliver inside Bryan's box), the visible Bryan card on the dashboard.
 function BryanCardB2({ stack, cost, url, onShare }) {
   if (!cost || cost <= 0) return null;
   const avatar = stack.avatarUrl || DEFAULT_AVATAR;
@@ -1592,7 +1597,7 @@ function BryanCardB2({ stack, cost, url, onShare }) {
   );
 }
 
-// Off-screen 540×540 card (B2: my sliver inside Bryan's box) — captured to a PNG for sharing.
+// Off-screen 540×540 card (B2: my sliver inside Bryan's box), captured to a PNG for sharing.
 function ShareCardB2({ stack, cost, cardRef }) {
   const avatar = stack.avatarUrl || DEFAULT_AVATAR;
   const username = stack.username || toUsername(stack.name || "");
@@ -1627,7 +1632,7 @@ async function shareCardTo(platform, node, stack, cost, onToast) {
   if (!node || !window.htmlToImage) { onToast && onToast("Sharing not available"); return; }
   const pageUrl = `${window.location.origin}${window.location.pathname}#/stack/${stack.username}`;
   const text = `My entire health stack is ${bjPercent(cost)}% of Bryan Johnson's budget 🧬 Same longevity game, a tiny fraction of the cost.`;
-  // html-to-image logs caught DOMExceptions while trying to read cross-origin font CSS — harmless, just noisy. Mute during capture.
+  // html-to-image logs caught DOMExceptions while trying to read cross-origin font CSS, harmless, just noisy. Mute during capture.
   const _err = console.error;
   console.error = (...a) => { if (/cssRules|inlining remote css|remote stylesheet|reading CSS rules/i.test(String(a[0] || ""))) return; _err.apply(console, a); };
   try {
@@ -1641,17 +1646,17 @@ async function shareCardTo(platform, node, stack, cost, onToast) {
       try { await navigator.share({ files: [file], text: `${text} ${pageUrl}` }); return; } catch (e) { if (e && e.name === "AbortError") return; }
     }
 
-    // Desktop fallback — download the image so it can be attached to the post.
+    // Desktop fallback, download the image so it can be attached to the post.
     const a = document.createElement("a"); a.href = dataUrl; a.download = "healthstack-card.png"; a.click();
 
     if (platform === "x") {
       // Try to also copy the image to the clipboard so it can be pasted into the composer.
       try { await navigator.clipboard.write([new window.ClipboardItem({ "image/png": blob })]); } catch (_) {}
       window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(`${text} ${pageUrl}`)}`, "_blank", "noopener");
-      onToast && onToast("Card saved & copied — paste or attach it to your post 𝕏");
+      onToast && onToast("Card saved & copied, paste or attach it to your post 𝕏");
     } else {
       window.open("https://www.instagram.com/", "_blank", "noopener");
-      onToast && onToast("Card saved — upload it to your Instagram post 📸");
+      onToast && onToast("Card saved, upload it to your Instagram post 📸");
     }
   } catch (e) { console.debug("shareCardTo", e); onToast && onToast("Couldn't generate the card"); }
 }
@@ -1782,7 +1787,7 @@ function matchByText(text, category) {
 // ── ROUTER ────────────────────────────────────────────────────────────────────
 
 function parseHash(h) {
-  // Magic-link redirect lands with auth tokens in the hash — treat as home (Supabase consumes them).
+  // Magic-link redirect lands with auth tokens in the hash, treat as home (Supabase consumes them).
   if (/access_token|refresh_token|error_code|[?&]error=/.test(h || "")) return { route: "home" };
   // Strip any ?query (e.g. ?ref=maya) before parsing the path
   const p = (h || "").replace(/^#/, "").split("?")[0] || "/";
@@ -1862,7 +1867,7 @@ function myStackUsername() {
   return entries.length ? entries[0][0] : null;
 }
 
-// Primary CTA — "Build mine" for new visitors, "Update my stack" once signed in with a stack.
+// Primary CTA, "Build mine" for new visitors, "Update my stack" once signed in with a stack.
 function BuildCTA({ className = "btn btn-primary btn-sm", style, buildLabel = "Build mine", updateLabel = "Update my stack" }) {
   const user = useAuth();
   const mine = user ? myStackUsername() : null;
@@ -1936,7 +1941,7 @@ function AuthModal({ onClose }) {
               <button className="modal-close" onClick={onClose}>×</button>
             </div>
             <div style={{ fontSize: 13, color: "var(--text-muted)", lineHeight: 1.5, marginBottom: 14 }}>
-              Sign in to claim your stack, edit it from any device, and keep it yours. No password — we'll email you a link.
+              Sign in to claim your stack, edit it from any device, and keep it yours. No password, we'll email you a link.
             </div>
             <input className="form-input" type="email" placeholder="you@email.com" value={email}
               onChange={e => setEmail(e.target.value)} onKeyDown={e => e.key === "Enter" && send()} autoFocus />
@@ -2209,7 +2214,7 @@ function EditSheet({ stack, onSave, onClose }) {
   }
   function handleAddOrUpdate() {
     if (!form.name.trim()) return;
-    const clean = { ...form, dose: form.dose.trim() || undefined, freq: form.freq.trim() || undefined };
+    const clean = { ...form, dose: form.dose.trim() || undefined, freq: form.freq.trim() || undefined, costPeriod: form.category === "Wearables" ? "once" : (form.costPeriod || "mo") };
     if (editingItem) {
       setItems(prev => prev.map(i => i.id === editingItem.id ? { ...i, ...clean, years: parseFloat(form.years)||0, cost: parseFloat(form.cost)||0 } : i));
       setEditingItem(null);
@@ -2306,13 +2311,17 @@ function EditSheet({ stack, onSave, onClose }) {
               <textarea className="form-textarea" value={form.why} onChange={e => setForm(f => ({ ...f, why: e.target.value }))} />
             </div>
             <div className="form-row">
-              <div className="form-group"><label className="form-label">Cost ($)</label>
-                <div style={{ display: "flex", gap: 6 }}>
-                  <input className="form-input" type="number" value={form.cost} onChange={e => setForm(f => ({ ...f, cost: e.target.value }))} />
-                  <select className="form-select" style={{ width: 74, paddingRight: 26 }} value={form.costPeriod} onChange={e => setForm(f => ({ ...f, costPeriod: e.target.value }))}>
-                    <option value="mo">/mo</option><option value="yr">/yr</option>
-                  </select>
-                </div>
+              <div className="form-group"><label className="form-label">{form.category === "Wearables" ? "One-time fee ($)" : "Cost ($)"}</label>
+                {form.category === "Wearables" ? (
+                  <input className="form-input" type="number" placeholder="349" value={form.cost} onChange={e => setForm(f => ({ ...f, cost: e.target.value }))} />
+                ) : (
+                  <div style={{ display: "flex", gap: 6 }}>
+                    <input className="form-input" type="number" value={form.cost} onChange={e => setForm(f => ({ ...f, cost: e.target.value }))} />
+                    <select className="form-select" style={{ width: 74, paddingRight: 26 }} value={form.costPeriod} onChange={e => setForm(f => ({ ...f, costPeriod: e.target.value }))}>
+                      <option value="mo">/mo</option><option value="yr">/yr</option>
+                    </select>
+                  </div>
+                )}
               </div>
               <div className="form-group"><label className="form-label">Link</label><input className="form-input" value={form.affiliateUrl} onChange={e => setForm(f => ({ ...f, affiliateUrl: e.target.value }))} /></div>
             </div>
@@ -2426,8 +2435,7 @@ function ClaimModal({ stack, onClaim, onClose, celebrate }) {
                 {celebrate ? "Your stack is live!" : "Join the earnings waitlist"}
               </div>
               <div style={{ fontSize: 14, color: "var(--text-muted)", lineHeight: 1.5 }}>
-                Want to get paid when people buy from your stack? Affiliate payouts are coming soon —
-                drop your email to claim <strong style={{ color: "var(--accent)" }}>@{stack.username}</strong> and
+                Want to get paid when people buy from your stack? Affiliate payouts are coming soon,                 drop your email to claim <strong style={{ color: "var(--accent)" }}>@{stack.username}</strong> and
                 be first in line to earn.
               </div>
             </div>
@@ -2465,9 +2473,9 @@ function ClaimModal({ stack, onClaim, onClose, celebrate }) {
 // Craft a tweet message for a stack (uses the proud-metric / highlight if set).
 function tweetMessage(stack) {
   const h = stack.highlight;
-  if (h && h.type === "metric") return `${h.value} — ${h.label}. 🫀 Here's the full health stack that got me there — every supplement, wearable & lab, with why I use each. Steal what works 👇`;
-  if (h && (h.type === "win" || h.type === "tip")) return `“${h.text}” — here's my full health stack, no gatekeeping. Every supplement, wearable & lab 👇`;
-  return `🧬 Everything I take, track & test to feel my best — my full health stack in one link. Supplements, wearables, labs, and why I use each. Steal what works 👇`;
+  if (h && h.type === "metric") return `${h.value}, ${h.label}. 🫀 Here's the full health stack that got me there, every supplement, wearable & lab, with why I use each. Steal what works 👇`;
+  if (h && (h.type === "win" || h.type === "tip")) return `“${h.text}”, here's my full health stack, no gatekeeping. Every supplement, wearable & lab 👇`;
+  return `🧬 Everything I take, track & test to feel my best, my full health stack in one link. Supplements, wearables, labs, and why I use each. Steal what works 👇`;
 }
 function tweetIntent(stack, url) {
   return `https://twitter.com/intent/tweet?text=${encodeURIComponent(tweetMessage(stack))}&url=${encodeURIComponent(url)}`;
@@ -2539,7 +2547,7 @@ function Healthstack({ username }) {
         <div className="topbar-actions">
           {editable && stack.claimed && <button className="btn btn-ghost btn-sm" onClick={() => navigate(`#/earnings/${username}`)}>💸 Earnings</button>}
           {editable && <button className="btn btn-ghost btn-sm" onClick={() => setShowEdit(true)}>Edit</button>}
-          {/* Compare hidden for now — it compares protocol scores, which are paused. Re-enable when scoring is credible. */}
+          {/* Compare hidden for now, it compares protocol scores, which are paused. Re-enable when scoring is credible. */}
         </div>
       } />
       <div className="page page-stack">
@@ -2600,10 +2608,10 @@ function Healthstack({ username }) {
 const REFERRAL_PCT = 10;       // % of an invited creator's earnings you receive
 const REFERRAL_MONTHS = 3;     // for how many months
 
-// Pickable invite tones — the sender chooses how the message sounds.
+// Pickable invite tones, the sender chooses how the message sounds.
 const INVITE_TONES = [
-  { id: "warm", label: "Warm", build: (url) => `You're one of the healthiest people I know 🙌\n\nI've always wondered what you actually take & do. If you're up for sharing, build your health stack here — takes 2 min, and you'll see mine too 👇\n${url}` },
-  { id: "sincere", label: "Sincere", build: (url) => `Honestly, you've inspired me to take my health more seriously.\n\nWould you share what's in your routine — supplements, wearables, habits? I'd love to see what works for you 👇\n${url}` },
+  { id: "warm", label: "Warm", build: (url) => `You're one of the healthiest people I know 🙌\n\nI've always wondered what you actually take & do. If you're up for sharing, build your health stack here, takes 2 min, and you'll see mine too 👇\n${url}` },
+  { id: "sincere", label: "Sincere", build: (url) => `Honestly, you've inspired me to take my health more seriously.\n\nWould you share what's in your routine, supplements, wearables, habits? I'd love to see what works for you 👇\n${url}` },
   { id: "humble", label: "Humble", build: (url) => `I'm trying to dial in my own health, and you clearly have it figured out.\n\nIf you don't mind sharing, what's your stack? Would mean a lot to see what's worked for you 👇\n${url}` },
 ];
 
@@ -2614,7 +2622,7 @@ function InviteModal({ username, onClose, onToast }) {
   const [message, setMessage] = useState(() => INVITE_TONES[0].build(inviteUrl));
   const [edited, setEdited] = useState(false);
 
-  // Switching tone loads that template — unless the user has hand-edited the text.
+  // Switching tone loads that template, unless the user has hand-edited the text.
   function pickTone(id) {
     setTone(id);
     if (!edited) {
@@ -2647,7 +2655,7 @@ function InviteModal({ username, onClose, onToast }) {
           <div className="invite-reward-icon">🎁</div>
           <div>
             <div className="invite-reward-title">Earn {REFERRAL_PCT}% of their earnings <span className="home-soon">Coming soon</span></div>
-            <div className="invite-reward-sub">For every creator you invite — for their first {REFERRAL_MONTHS} months. Stacks on top of your own commissions.</div>
+            <div className="invite-reward-sub">For every creator you invite, for their first {REFERRAL_MONTHS} months. Stacks on top of your own commissions.</div>
           </div>
         </div>
 
@@ -2824,7 +2832,7 @@ function EarningsPage({ username }) {
           <div className="earn-invite-top">
             <div>
               <div className="earn-invite-title">Invite creators, earn {REFERRAL_PCT}%</div>
-              <div className="earn-invite-sub">Get {REFERRAL_PCT}% of every creator you bring in — for {REFERRAL_MONTHS} months.</div>
+              <div className="earn-invite-sub">Get {REFERRAL_PCT}% of every creator you bring in, for {REFERRAL_MONTHS} months.</div>
             </div>
             <div className="earn-invite-count">
               <div className="earn-invite-count-num">{referralCount}</div>
@@ -2906,7 +2914,7 @@ function BuildFlow() {
 
   const stepDots = [1, 2, 3];
   const titleMap = { 1: "Create your stack", 2: "Build your stack", 3: "Preview your page" };
-  const subMap = { 1: "Start with your profile", 2: `${items.length} item${items.length !== 1 ? "s" : ""} added`, 3: "Here's how it'll look — looking good?" };
+  const subMap = { 1: "Start with your profile", 2: `${items.length} item${items.length !== 1 ? "s" : ""} added`, 3: "Here's how it'll look, looking good?" };
 
   return (
     <div>
@@ -3001,7 +3009,7 @@ function BuildFlow() {
                   <span className="build-preview-catn">{items.filter(i => i.category === cat).length}</span>
                 </div>
               ))}
-              {items.length === 0 && <div style={{ fontSize: 12, color: "var(--text-dim)", textAlign: "center", padding: "4px 0" }}>No items yet — you can add them after.</div>}
+              {items.length === 0 && <div style={{ fontSize: 12, color: "var(--text-dim)", textAlign: "center", padding: "4px 0" }}>No items yet, you can add them after.</div>}
               {totalCost(items) > 0 && (
                 <div className="build-preview-cost"><span>Monthly investment</span><strong>~${totalCost(items)}/mo</strong></div>
               )}
@@ -3088,7 +3096,7 @@ function FeedbackModal({ onClose }) {
         {done ? (
           <div style={{ textAlign: "center", padding: "20px 0" }}>
             <div style={{ fontSize: 40, marginBottom: 10 }}>🙏</div>
-            <div className="modal-title" style={{ marginBottom: 6 }}>Thanks — noted!</div>
+            <div className="modal-title" style={{ marginBottom: 6 }}>Thanks, noted!</div>
             <div style={{ fontSize: 14, color: "var(--text-muted)" }}>We're prioritizing new habit types by demand. Yours is counted.</div>
           </div>
         ) : (
@@ -3154,7 +3162,7 @@ function Step2Items({ items, setItems, onNext }) {
     if (!name) return;
     setItems(prev => [...prev, {
       id: Date.now(), category: openCat, name, dose: form.dose.trim() || undefined, freq: form.freq.trim() || undefined, why: form.why,
-      years: parseFloat(form.years)||0, cost: parseFloat(form.cost)||0, costPeriod: form.costPeriod || "mo",
+      years: parseFloat(form.years)||0, cost: parseFloat(form.cost)||0, costPeriod: openCat === "Wearables" ? "once" : (form.costPeriod || "mo"),
       affiliateUrl: form.affiliateUrl, tags: [],
       photoUrl: photoUrl || undefined,  // store captured photo with the item
     }]);
@@ -3188,7 +3196,7 @@ function Step2Items({ items, setItems, onNext }) {
         pickPredefined(matched[0]);
       }
     } else {
-      // TextDetector unavailable — still show photo, highlight nothing specific
+      // TextDetector unavailable, still show photo, highlight nothing specific
       setScanState("failed");
     }
   }
@@ -3275,7 +3283,7 @@ function Step2Items({ items, setItems, onNext }) {
 
   return (
     <div className="anim-2">
-      {/* Hidden file input — capture="environment" opens rear camera on mobile */}
+      {/* Hidden file input, capture="environment" opens rear camera on mobile */}
       <input
         ref={fileInputRef}
         type="file"
@@ -3309,12 +3317,12 @@ function Step2Items({ items, setItems, onNext }) {
         {/* Scan result note */}
         {scanState === "done" && scanMatches.length > 0 && !showForm && (
           <div className="scan-result-note">
-            📸 Found <strong>{scanMatches.length} possible match{scanMatches.length !== 1 ? "es" : ""}</strong> — highlighted below. Tap to select.
+            📸 Found <strong>{scanMatches.length} possible match{scanMatches.length !== 1 ? "es" : ""}</strong>, highlighted below. Tap to select.
           </div>
         )}
         {scanState === "failed" && !showForm && (
           <div className="scan-result-note" style={{ borderColor: "rgba(194,137,90,0.3)", background: "rgba(194,137,90,0.06)" }}>
-            📸 Photo saved — text reading isn't available on this browser. Pick from the list or type a name.
+            📸 Photo saved, text reading isn't available on this browser. Pick from the list or type a name.
           </div>
         )}
 
@@ -3427,15 +3435,19 @@ function Step2Items({ items, setItems, onNext }) {
                 <input className="form-input" type="number" placeholder="1" min="0" step="0.5" value={form.years} onChange={e => setForm(f => ({ ...f, years: e.target.value }))} />
               </div>
               <div className="form-group">
-                <label className="form-label">Cost ($)</label>
-                <div style={{ display: "flex", gap: 6 }}>
-                  <input className="form-input" type="number" placeholder={form.costPeriod === "yr" ? "300" : "30"} value={form.cost} onChange={e => setForm(f => ({ ...f, cost: e.target.value }))} />
-                  <select className="form-select" style={{ width: 78, paddingRight: 28 }} value={form.costPeriod} onChange={e => setForm(f => ({ ...f, costPeriod: e.target.value }))}>
-                    <option value="mo">/mo</option>
-                    <option value="yr">/yr</option>
-                  </select>
-                </div>
-                <div className="form-hint">{openCat === "Wearables" || openCat === "Labs" ? "Tip: use /yr for devices & lab panels" : "Monthly for ongoing, /yr for one-time"}</div>
+                <label className="form-label">{openCat === "Wearables" ? "One-time fee ($)" : "Cost ($)"}</label>
+                {openCat === "Wearables" ? (
+                  <input className="form-input" type="number" placeholder="349" value={form.cost} onChange={e => setForm(f => ({ ...f, cost: e.target.value }))} />
+                ) : (
+                  <div style={{ display: "flex", gap: 6 }}>
+                    <input className="form-input" type="number" placeholder={form.costPeriod === "yr" ? "300" : "30"} value={form.cost} onChange={e => setForm(f => ({ ...f, cost: e.target.value }))} />
+                    <select className="form-select" style={{ width: 78, paddingRight: 28 }} value={form.costPeriod} onChange={e => setForm(f => ({ ...f, costPeriod: e.target.value }))}>
+                      <option value="mo">/mo</option>
+                      <option value="yr">/yr</option>
+                    </select>
+                  </div>
+                )}
+                <div className="form-hint">{openCat === "Wearables" ? "What the device cost you, one-time." : "Monthly for ongoing, /yr for annual."}</div>
               </div>
             </div>
 
@@ -3470,14 +3482,14 @@ const LAND_SLIDES = [
     bg: "rgba(206,90,46,0.12)", border: "rgba(206,90,46,0.2)",
     label: "Step 2 of 3",
     title: <>One link.<br/>Endless reach.</>,
-    desc: "Drop your Healthstack link anywhere. Followers copy your exact protocol with one tap — and never DM \"what do you take?\" again.",
+    desc: "Drop your Healthstack link anywhere. Followers copy your exact protocol with one tap, and never DM \"what do you take?\" again.",
   },
   {
     n: 3, icon: "💸", color: "var(--amber)",
     bg: "rgba(194,137,90,0.12)", border: "rgba(194,137,90,0.2)",
     label: "Step 3 of 3",
     title: <>Get paid<br/>while you sleep.</>,
-    desc: "Every purchase from your links pays you a commission — automatically, forever, with zero extra work.",
+    desc: "Every purchase from your links pays you a commission, automatically, forever, with zero extra work.",
     earnings: true,
   },
 ];
@@ -3492,8 +3504,8 @@ const HOME_STEPS = [
 
 const HOME_VALUES = [
   { icon: "📲", title: "Made to be shared", desc: "One link, a scannable QR code, and native sharing. Your whole protocol travels in a single tap." },
-  { icon: "🙋", title: "Ask anyone's stack", desc: "Curious what a friend takes? Send a warm invite and they'll share their stack right back — a fun way to learn from the healthiest people you know." },
-  { icon: "✨", title: "Not just a link list", desc: "Linktree gives people a pile of links. Healthstack gives the story — what you take, why, how long, and the results — so people actually trust it and copy it." },
+  { icon: "🙋", title: "Ask anyone's stack", desc: "Curious what a friend takes? Send a warm invite and they'll share their stack right back, a fun way to learn from the healthiest people you know." },
+  { icon: "✨", title: "Not just a link list", desc: "Linktree gives people a pile of links. Healthstack gives the story, what you take, why, how long, and the results, so people actually trust it and copy it." },
   { icon: "💰", title: "Can turn habits into income", desc: "Affiliate links are built into every item, plus referral rewards when you invite other creators.", soon: true },
 ];
 
@@ -3509,9 +3521,9 @@ const REEL_STACK = [
 ];
 // Auto-cycling sample invite messages (the "gif") shown on the home page
 const INVITE_SAMPLES = [
-  { tone: "Warm", text: "You're one of the healthiest people I know 🙌 what's actually in your stack? Share yours — you'll see mine too 👇" },
+  { tone: "Warm", text: "You're one of the healthiest people I know 🙌 what's actually in your stack? Share yours, you'll see mine too 👇" },
   { tone: "Sincere", text: "You've inspired me to take my health more seriously. Would you share what's in your routine? 👇" },
-  { tone: "Humble", text: "You clearly have your health figured out. If you don't mind sharing — what's your stack? 👇" },
+  { tone: "Humble", text: "You clearly have your health figured out. If you don't mind sharing, what's your stack? 👇" },
 ];
 function InviteMessagesShowcase() {
   const [i, setI] = useState(0);
@@ -3626,12 +3638,12 @@ function HomePage() {
           The fun way to show friends exactly what you take, use, and test to optimize your health.
         </p>
         <div className="home-hero-cta">
-          <BuildCTA className="btn btn-primary" style={{ padding: "14px 22px", fontSize: 15 }} buildLabel="Build my stack — free →" updateLabel="Update my stack →" />
+          <BuildCTA className="btn btn-primary" style={{ padding: "14px 22px", fontSize: 15 }} buildLabel="Build my stack, free →" updateLabel="Update my stack →" />
         </div>
         <div className="home-trust">Free to share · No account to start · Setup in 2 min</div>
       </div>
 
-      {/* WHAT IS A HEALTH STACK — definition */}
+      {/* WHAT IS A HEALTH STACK, definition */}
       <div className="home-def anim-1">
         <div className="home-def-label">WHAT'S A HEALTH STACK?</div>
         <div className="home-def-text">Everything you take, wear, do, and test to optimize your health.</div>
@@ -3668,7 +3680,7 @@ function HomePage() {
       <div className="home-section anim-5" style={{ textAlign: "center", marginBottom: 30, marginTop: 48, paddingTop: 36, borderTop: "1px solid var(--border)" }}>
         <div className="home-section-label">KNOW SOMEONE HEALTHY?</div>
         <p style={{ fontSize: 14, color: "var(--text-muted)", lineHeight: 1.55, maxWidth: 320, margin: "0 auto 16px" }}>
-          Ask a friend to share the supplements, wearables &amp; habits they swear by — pick a tone, they build theirs in 2 minutes.
+          Ask a friend to share the supplements, wearables &amp; habits they swear by, pick a tone, they build theirs in 2 minutes.
         </p>
         <InviteMessagesShowcase />
         <button className="btn btn-outline" style={{ padding: "13px 24px", fontSize: 15 }} onClick={() => setShowInvite(true)}>🙋 Invite a friend</button>
@@ -3677,7 +3689,7 @@ function HomePage() {
       {/* FOOTER CTA */}
       <div className="home-footer anim-6">
         <div className="home-footer-title">Your stack is worth sharing.</div>
-        <BuildCTA className="btn btn-primary" style={{ width: "100%", padding: 16, fontSize: 16 }} buildLabel="Build my stack — free →" updateLabel="Update my stack →" />
+        <BuildCTA className="btn btn-primary" style={{ width: "100%", padding: 16, fontSize: 16 }} buildLabel="Build my stack, free →" updateLabel="Update my stack →" />
         <div className="home-trust" style={{ marginTop: 12 }}>Takes 2 minutes · No account needed</div>
       </div>
 
@@ -3757,7 +3769,7 @@ function Landing() {
             className="land-btn-next"
             onClick={() => i === last ? navigate("#/build") : go(1)}
           >
-            {i === last ? "Build my stack — free →" : "Next →"}
+            {i === last ? "Build my stack, free →" : "Next →"}
           </button>
         </div>
       </div>
@@ -3770,13 +3782,13 @@ const STATIC_CONTENT = {
   about: {
     title: "About healthstack",
     body: [
-      { p: "healthstack is the fun, honest way to share exactly what you take, wear, and test to optimize your health — and to learn from the people you admire." },
+      { p: "healthstack is the fun, honest way to share exactly what you take, wear, and test to optimize your health, and to learn from the people you admire." },
       { h: "Why we built it" },
-      { p: "Everyone's quietly running their own health experiment — supplements, wearables, labs, habits. That knowledge is scattered across DMs, screenshots, and group chats. healthstack turns your protocol into one clean, shareable page so friends can actually see what works, why, and what it costs." },
+      { p: "Everyone's quietly running their own health experiment, supplements, wearables, labs, habits. That knowledge is scattered across DMs, screenshots, and group chats. healthstack turns your protocol into one clean, shareable page so friends can actually see what works, why, and what it costs." },
       { h: "How it works" },
-      { p: "Build your stack in about two minutes — add items, the dosage and frequency, and a short \"why\" for each. Share it with one link or a QR code. Ask friends to share theirs back. No account required to start." },
+      { p: "Build your stack in about two minutes, add items, the dosage and frequency, and a short \"why\" for each. Share it with one link or a QR code. Ask friends to share theirs back. No account required to start." },
       { h: "Our promise" },
-      { p: "We keep it honest: real items, real reasons, transparent costs. healthstack is for sharing and learning — it is not medical advice. Always talk to a qualified professional before changing your protocol." },
+      { p: "We keep it honest: real items, real reasons, transparent costs. healthstack is for sharing and learning, it is not medical advice. Always talk to a qualified professional before changing your protocol." },
       { p: "Questions or press? Email hello@healthstack.app." },
     ],
   },
@@ -3790,7 +3802,7 @@ const STATIC_CONTENT = {
       { h: "How we use it" },
       { p: "To save and display your stack, let you edit it across devices, power sharing links, and understand aggregate usage. We do not sell your personal information." },
       { h: "What's public" },
-      { p: "Anything on your stack page is public by design — that's the point of a shareable link. Don't add information you don't want shared. You can edit or remove items at any time." },
+      { p: "Anything on your stack page is public by design, that's the point of a shareable link. Don't add information you don't want shared. You can edit or remove items at any time." },
       { h: "Storage & third parties" },
       { p: "Data is stored with our hosting and database providers (e.g. Supabase, Vercel). Sign-in emails are sent via an email provider. Analytics are processed by our analytics provider. These vendors process data on our behalf." },
       { h: "Affiliate links" },
@@ -3875,7 +3887,7 @@ function ExamplesPage() {
         <div className="examples-head">
           <div className="home-section-label" style={{ textAlign: "left", marginBottom: 8 }}>REAL HEALTHSTACKS</div>
           <h1 className="examples-title">See how others optimize.</h1>
-          <p className="examples-sub">Browse real example stacks — every supplement, wearable, and lab, with the why behind each. Then build your own in 2 minutes.</p>
+          <p className="examples-sub">Browse real example stacks, every supplement, wearable, and lab, with the why behind each. Then build your own in 2 minutes.</p>
         </div>
         <div className="examples-grid">
           {EXAMPLE_STACKS.map(s => {
@@ -3906,7 +3918,7 @@ function ExamplesPage() {
           })}
         </div>
         <div style={{ textAlign: "center", marginTop: 32 }}>
-          <BuildCTA className="btn btn-primary" style={{ padding: "14px 24px", fontSize: 15 }} buildLabel="Build my stack — free →" updateLabel="Update my stack →" />
+          <BuildCTA className="btn btn-primary" style={{ padding: "14px 24px", fontSize: 15 }} buildLabel="Build my stack, free →" updateLabel="Update my stack →" />
         </div>
       </div>
       <SiteFooter />
@@ -3941,7 +3953,7 @@ function App() {
   useEffect(() => {
     captureRef();  // stash incoming ?ref= for the build flow
     if (getRefParam()) track("ref_landed", { ref: getRefParam() });
-    // After a magic-link redirect, Supabase consumes the token from the URL — clean it up.
+    // After a magic-link redirect, Supabase consumes the token from the URL, clean it up.
     if (/access_token|refresh_token/.test(window.location.hash)) {
       setTimeout(() => navigate("#/"), 300);
     }
