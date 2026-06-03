@@ -313,6 +313,9 @@
     .sc-brand b { color: var(--accent2); font-weight: 800; }
     .sc-brand svg { width: 26px; height: 26px; }
     .sc-tag { font-size: 15px; color: #b8b0a4; }
+    .sc-view { display: inline-flex; align-items: center; gap: 9px; color: #fff; font-weight: 800; font-size: 21px; letter-spacing: -0.4px; }
+    .sc-view svg { width: 26px; height: 26px; }
+    .sc-view .sc-arrow { color: var(--accent2); }
     .sc-wrap { flex: 1; display: flex; flex-direction: column; justify-content: center; }
     .sc-cap { display: flex; justify-content: space-between; font-size: 14px; color: #cfc7bb; margin-bottom: 12px; }
     .sc-cap b { color: var(--accent2); }
@@ -340,9 +343,13 @@
     .bjb2-brand b { color: var(--accent2); }
     .bjb2-brand svg { width: 16px; height: 16px; }
     .bjb2-tag { font-size: 10px; color: #b8b0a4; }
+    .bjb2-view { display: inline-flex; align-items: center; gap: 7px; color: #fff; font-weight: 700; font-size: 13px; letter-spacing: -0.2px; text-decoration: none; cursor: pointer; }
+    .bjb2-view svg { width: 16px; height: 16px; flex-shrink: 0; }
+    .bjb2-view .bjb2-arrow { color: var(--accent2); }
+    .bjb2-view:hover { color: var(--accent2); }
     .bjb2-cap { display: flex; justify-content: space-between; gap: 8px; font-size: 10.5px; color: #cfc7bb; margin: 16px 0 9px; }
     .bjb2-cap b { color: var(--accent2); font-weight: 700; }
-    .bjb2-bar { height: 86px; border-radius: 12px; background: linear-gradient(160deg, #2a2420, #141019); border: 1px solid rgba(255,255,255,0.1); position: relative; display: flex; align-items: center; padding: 0 14px; }
+    .bjb2-bar { margin-top: 26px; height: 86px; border-radius: 12px; background: linear-gradient(160deg, #2a2420, #141019); border: 1px solid rgba(255,255,255,0.1); position: relative; display: flex; align-items: center; padding: 0 14px; }
     .bjb2-sliver { position: absolute; left: 0; top: 0; bottom: 0; width: 7px; background: linear-gradient(180deg, #E89A4B, #D9531F); box-shadow: 0 0 14px rgba(232,154,75,0.9); border-radius: 12px 0 0 12px; }
     .bjb2-me { position: absolute; left: 12px; top: -12px; display: flex; align-items: center; gap: 7px; background: #231d18; border: 1px solid rgba(232,154,75,0.45); border-radius: 99px; padding: 4px 11px 4px 4px; }
     .bjb2-me .bjb2-av { width: 26px; height: 26px; }
@@ -1465,13 +1472,11 @@ function BryanCardB2({ stack, cost, url, onShare }) {
   return (
     <div className="bjb2 anim-4">
       <div className="bjb2-top">
-        <div className="bjb2-brand">
+        <a className="bjb2-view" {...(stack.username ? { href: `#/stack/${stack.username}` } : {})}>
           <svg viewBox="0 0 40 40" fill="none"><rect x="6" y="24" width="28" height="6" rx="3" fill="#CE5A2E"/><rect x="9" y="15" width="22" height="6" rx="3" fill="#E89A4B"/><rect x="12" y="6" width="16" height="6" rx="3" fill="#E8B57A"/></svg>
-          <span>health<b>stack</b></span>
-        </div>
-        {stack.handle && <div className="bjb2-tag">{stack.handle}</div>}
+          View my health stack <span className="bjb2-arrow">↗</span>
+        </a>
       </div>
-      <div className="bjb2-cap"><span>The whole box = Bryan's monthly budget</span><b>{bjPercent(cost)}%</b></div>
       <div className="bjb2-bar">
         <div className="bjb2-sliver" />
         <div className="bjb2-me"><div className="bjb2-av" style={{ backgroundImage: `url(${avatar})` }} /><span className="bjb2-me-t"><b>${cost.toLocaleString()}</b> · me</span></div>
@@ -1506,14 +1511,12 @@ function ShareCardB2({ stack, cost, cardRef }) {
     <div className="sc-stage" aria-hidden="true">
       <div className="sc" ref={cardRef}>
         <div className="sc-top">
-          <div className="sc-brand">
+          <div className="sc-view">
             <svg viewBox="0 0 40 40" fill="none"><rect x="6" y="24" width="28" height="6" rx="3" fill="#CE5A2E"/><rect x="9" y="15" width="22" height="6" rx="3" fill="#E89A4B"/><rect x="12" y="6" width="16" height="6" rx="3" fill="#E8B57A"/></svg>
-            <span>health<b>stack</b></span>
+            View my health stack <span className="sc-arrow">↗</span>
           </div>
-          <div className="sc-tag">{stack.handle || ("@" + username)}</div>
         </div>
         <div className="sc-wrap">
-          <div className="sc-cap"><span>The whole box = Bryan's monthly budget</span><b>{bjPercent(cost)}%</b></div>
           <div className="sc-bar">
             <div className="sc-sliver" />
             <div className="sc-me"><div className="sc-av" style={{ backgroundImage: `url(${avatar})` }} /><span className="sc-me-t"><b>${cost.toLocaleString()}</b> · me</span></div>
