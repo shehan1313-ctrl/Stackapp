@@ -2082,10 +2082,7 @@ function Healthstack({ username }) {
                 <div><span className="cost-value">~${cost}</span><span className="cost-period"> /mo</span></div>
               </div>
             )}
-          </div>
-          <div className="stack-main">
-            <StackSection items={stack.items} />
-            <div className="qr-section anim-6" style={{ marginTop: 8 }}>
+            <div className="qr-section anim-6">
               <div className="qr-title">SCAN TO VIEW ON ANOTHER DEVICE</div>
               <div className="qr-wrapper"><QRWidget url={url} /></div>
               <div className="qr-subtitle">
@@ -2095,6 +2092,9 @@ function Healthstack({ username }) {
                 }}>Copy link</span>
               </div>
             </div>
+          </div>
+          <div className="stack-main">
+            <StackSection items={stack.items} />
           </div>
         </div>
       </div>
