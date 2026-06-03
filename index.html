@@ -2800,17 +2800,27 @@ const REEL_STACK = [
   { cat: "Sleep",       items: ["8h sleep target", "Morning sunlight"] },
   { cat: "Mind",        items: ["Daily meditation", "Cold plunge"] },
 ];
-function ReelBlock() {
+// The home reel reflects a real stack when available, else the sample above.
+const DEMO_USERNAME = "shehan1313";
+function ReelBlock({ stack }) {
+  const groups = stack && stack.items && stack.items.length
+    ? CATEGORIES.map(cat => ({ cat, items: stack.items.filter(i => i.category === cat).map(i => i.name) })).filter(g => g.items.length)
+    : REEL_STACK;
+  const name = stack ? stack.name : "Shehan Chandrasekera";
+  const handle = stack ? stack.handle : "@TheCryptoCPA";
+  const initials = (name || "").split(" ").map(w => w[0]).join("").slice(0, 2).toUpperCase();
   return (
     <div>
       <div className="reel-head">
-        <div className="avatar" style={{ width: 38, height: 38, fontSize: 14 }}>SC</div>
+        <div className="avatar" style={{ width: 38, height: 38, fontSize: 14, ...(stack && stack.avatarUrl ? { backgroundImage: `url(${stack.avatarUrl})`, backgroundSize: "cover", backgroundPosition: "center" } : {}) }}>
+          {!(stack && stack.avatarUrl) && initials}
+        </div>
         <div>
-          <div style={{ fontSize: 13, fontWeight: 700 }}>Shehan Chandrasekera</div>
-          <div style={{ fontSize: 11, color: "var(--text-muted)" }}>@TheCryptoCPA</div>
+          <div style={{ fontSize: 13, fontWeight: 700 }}>{name}</div>
+          <div style={{ fontSize: 11, color: "var(--text-muted)" }}>{handle}</div>
         </div>
       </div>
-      {REEL_STACK.map((g, gi) => (
+      {groups.map((g, gi) => (
         <div key={gi}>
           <div className="reel-cat"><span className="reel-dot" style={{ background: CATEGORY_COLORS[g.cat] }} />{g.cat}</div>
           <div className="reel-grid">
@@ -2835,6 +2845,14 @@ function ReelBlock() {
 }
 
 function HomePage() {
+  // Pull the real demo stack (shehan1313) from the backend so the card self-updates.
+  const [demo, setDemo] = useState(null);
+  useEffect(() => {
+    let alive = true;
+    fetchStackRemote(DEMO_USERNAME).then(s => { if (alive && s && s.items && s.items.length) setDemo(s); });
+    return () => { alive = false; };
+  }, []);
+  const exampleUser = demo ? DEMO_USERNAME : "shehan";  // fall back to built-in demo until the real one exists
   return (
     <div className="home-page">
       <div className="topbar">
@@ -2869,9 +2887,9 @@ function HomePage() {
       <div className="home-section anim-1" style={{ marginBottom: 28 }}>
         <div className="home-section-label">A REAL STACKPAGE</div>
         <div className="home-reel">
-          <div className="home-reel-track"><ReelBlock /><ReelBlock /></div>
+          <div className="home-reel-track"><ReelBlock stack={demo} /><ReelBlock stack={demo} /></div>
         </div>
-        <button className="home-example-link" onClick={() => navigate("#/stack/shehan")}>See the full example →</button>
+        <button className="home-example-link" onClick={() => navigate(`#/stack/${exampleUser}`)}>See the full example →</button>
       </div>
 
       {/* HOW IT WORKS */}
