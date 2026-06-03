@@ -2495,10 +2495,12 @@ function EditSheet({ stack, onSave, onClose, initialCategory }) {
             <button className="btn btn-outline" style={{ width: "100%" }} onClick={() => setShowAdd(true)}>+ Add item</button>
           </div>
         )}
-        <div style={{ padding: "16px 20px 0", display: "flex", gap: 10 }}>
-          <button className="btn btn-primary" style={{ flex: 1 }} onClick={handleSave}>Save changes</button>
-          <button className="btn btn-outline" onClick={onClose}>Cancel</button>
-        </div>
+        {!showAdd && (
+          <div style={{ padding: "16px 20px 0", display: "flex", gap: 10 }}>
+            <button className="btn btn-primary" style={{ flex: 1 }} onClick={handleSave}>Save changes</button>
+            <button className="btn btn-outline" onClick={onClose}>Cancel</button>
+          </div>
+        )}
       </div>
     </div>
   );
