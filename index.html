@@ -978,7 +978,7 @@ try { if (window.supabase) sb = window.supabase.createClient(SUPABASE_URL, SUPAB
 // All remote calls are best-effort: failures never break the local (localStorage) experience.
 async function remoteSaveStack(stack) {
   if (!sb || !stack || stack.username === "shehan") return;
-  try { await sb.from("stacks").upsert({ username: stack.username, name: stack.name, data: stack, updated_at: new Date().toISOString() }); }
+  try { await sb.from("stacks").upsert({ username: stack.username, name: stack.name, data: stack, owner_id: stack.owner_id || null, updated_at: new Date().toISOString() }); }
   catch (e) { console.debug("remoteSaveStack", e); }
 }
 async function fetchStackRemote(username) {
@@ -993,6 +993,38 @@ async function remoteWaitlist(email, username) {
 async function remoteFeedback(text) {
   if (!sb) return;
   try { await sb.from("feedback").insert({ text }); } catch (e) { console.debug("remoteFeedback", e); }
+}
+
+// ── AUTH (Supabase magic link) ────────────────────────────────────────────────
+let _authUser = null;
+const _authSubs = new Set();
+function setAuthUser(u) { _authUser = u; _authSubs.forEach(fn => fn(u)); }
+function currentUserId() { return _authUser ? _authUser.id : null; }
+function useAuth() {
+  const [u, setU] = useState(_authUser);
+  useEffect(() => { _authSubs.add(setU); return () => { _authSubs.delete(setU); }; }, []);
+  return u;
+}
+async function signInWithEmail(email) {
+  if (!sb) return { error: { message: "Backend unavailable" } };
+  return await sb.auth.signInWithOtp({ email, options: { emailRedirectTo: window.location.origin + window.location.pathname } });
+}
+async function signOut() { try { if (sb) await sb.auth.signOut(); } catch (_) {} }
+// When a user signs in, attach their id to any stacks they built on this device (claim ownership).
+function claimLocalStacks(uid) {
+  try {
+    const all = getStacks(); let changed = false;
+    Object.values(all).forEach(s => { if (!s.owner_id) { s.owner_id = uid; changed = true; remoteSaveStack(s); } });
+    if (changed) localStorage.setItem(STORAGE_KEY, JSON.stringify(all));
+  } catch (_) {}
+}
+if (sb) {
+  sb.auth.getSession().then(({ data }) => setAuthUser(data.session ? data.session.user : null));
+  sb.auth.onAuthStateChange((_e, session) => {
+    const u = session ? session.user : null;
+    setAuthUser(u);
+    if (u) claimLocalStacks(u.id);
+  });
 }
 
 // ── STORAGE (localStorage = offline cache + ownership; Supabase = source of truth) ──
@@ -1143,6 +1175,8 @@ function matchByText(text, category) {
 // ── ROUTER ────────────────────────────────────────────────────────────────────
 
 function parseHash(h) {
+  // Magic-link redirect lands with auth tokens in the hash — treat as home (Supabase consumes them).
+  if (/access_token|refresh_token|error_code|[?&]error=/.test(h || "")) return { route: "home" };
   // Strip any ?query (e.g. ?ref=maya) before parsing the path
   const p = (h || "").replace(/^#/, "").split("?")[0] || "/";
   const parts = p.split("/").filter(Boolean);
@@ -1209,8 +1243,75 @@ function useToast() {
 function Topbar({ rightContent }) {
   return (
     <div className="topbar">
-      <div className="topbar-logo" onClick={() => navigate("#/stack/shehan")}>StackPage</div>
-      {rightContent || <button className="btn btn-primary btn-sm" onClick={() => navigate("#/build")}>Build mine</button>}
+      <div className="topbar-logo" onClick={() => navigate("#/")}>StackPage</div>
+      <div className="topbar-actions">
+        <AuthButton />
+        {rightContent || <button className="btn btn-primary btn-sm" onClick={() => navigate("#/build")}>Build mine</button>}
+      </div>
+    </div>
+  );
+}
+
+// ── AUTH UI ───────────────────────────────────────────────────────────────────
+
+function AuthButton() {
+  const user = useAuth();
+  const [open, setOpen] = useState(false);
+  if (!sb) return null;
+  if (user) {
+    const label = (user.email || "account").split("@")[0];
+    return <button className="btn btn-ghost btn-sm" title={user.email} onClick={() => { if (window.confirm("Sign out?")) signOut(); }}>👤 {label}</button>;
+  }
+  return (
+    <>
+      <button className="btn btn-ghost btn-sm" onClick={() => setOpen(true)}>Sign in</button>
+      {open && <AuthModal onClose={() => setOpen(false)} />}
+    </>
+  );
+}
+
+function AuthModal({ onClose }) {
+  const [email, setEmail] = useState("");
+  const [sent, setSent] = useState(false);
+  const [err, setErr] = useState("");
+  const valid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim());
+  async function send() {
+    if (!valid) return;
+    setErr("");
+    const { error } = await signInWithEmail(email.trim());
+    if (error) setErr(error.message || "Something went wrong");
+    else { setSent(true); track("login_link_sent"); }
+  }
+  return (
+    <div className="modal-bg" onClick={e => e.target === e.currentTarget && onClose()}>
+      <div className="modal-sheet" style={{ paddingBottom: 32 }}>
+        {sent ? (
+          <div style={{ textAlign: "center", padding: "20px 0" }}>
+            <div style={{ fontSize: 40, marginBottom: 10 }}>📬</div>
+            <div className="modal-title" style={{ marginBottom: 6 }}>Check your inbox</div>
+            <div style={{ fontSize: 14, color: "var(--text-muted)", lineHeight: 1.5 }}>
+              We sent a sign-in link to <strong style={{ color: "var(--accent)" }}>{email}</strong>.<br/>Tap it to sign in.
+            </div>
+            <button className="btn btn-outline" style={{ width: "100%", marginTop: 18 }} onClick={onClose}>Done</button>
+          </div>
+        ) : (
+          <>
+            <div className="modal-header">
+              <div className="modal-title">Sign in</div>
+              <button className="modal-close" onClick={onClose}>×</button>
+            </div>
+            <div style={{ fontSize: 13, color: "var(--text-muted)", lineHeight: 1.5, marginBottom: 14 }}>
+              Sign in to claim your stack, edit it from any device, and keep it yours. No password — we'll email you a link.
+            </div>
+            <input className="form-input" type="email" placeholder="you@email.com" value={email}
+              onChange={e => setEmail(e.target.value)} onKeyDown={e => e.key === "Enter" && send()} autoFocus />
+            {err && <div style={{ color: "var(--amber)", fontSize: 13, marginTop: 8 }}>{err}</div>}
+            <button className="btn btn-primary" style={{ width: "100%", padding: 14, fontSize: 15, marginTop: 12 }} disabled={!valid} onClick={send}>
+              Email me a sign-in link →
+            </button>
+          </>
+        )}
+      </div>
     </div>
   );
 }
@@ -1656,7 +1757,9 @@ function StackPage({ username }) {
   const [showClaim, setShowClaim] = useState(false);
   const [justBuilt, setJustBuilt] = useState(false);
   const { msg, show: toast } = useToast();
-  const editable = isUserStack(username);  // ownership stays local — viewers can't edit
+  const user = useAuth();
+  // Editable if built on this device, or signed in as the stack's owner (cross-device).
+  const editable = isUserStack(username) || (!!user && !!stack && stack.owner_id === user.id);
   const url = window.location.href;
 
   // Cross-device: if the stack isn't on this device, fetch it from the backend.
@@ -2023,6 +2126,7 @@ function BuildFlow() {
       verified: false,
       items,
       ...(hl ? { highlight: hl } : {}),
+      ...(currentUserId() ? { owner_id: currentUserId() } : {}),  // tie to account if signed in
       // ── BACKEND ──: referredBy powers referral-commission payouts later
       ...(referredBy && referredBy !== username ? { referredBy } : {}),
     };
@@ -2581,7 +2685,10 @@ function HomePage() {
     <div className="home-page">
       <div className="topbar">
         <div className="topbar-logo" onClick={() => navigate("#/")}>StackPage</div>
-        <button className="btn btn-primary btn-sm" onClick={() => navigate("#/build")}>Build mine</button>
+        <div className="topbar-actions">
+          <AuthButton />
+          <button className="btn btn-primary btn-sm" onClick={() => navigate("#/build")}>Build mine</button>
+        </div>
       </div>
 
       {/* HERO */}
@@ -2762,6 +2869,10 @@ function App() {
   useEffect(() => {
     captureRef();  // stash incoming ?ref= for the build flow
     if (getRefParam()) track("ref_landed", { ref: getRefParam() });
+    // After a magic-link redirect, Supabase consumes the token from the URL — clean it up.
+    if (/access_token|refresh_token/.test(window.location.hash)) {
+      setTimeout(() => navigate("#/"), 300);
+    }
   }, []);
   // Fire a pageview on every route change (hash-based SPA)
   useEffect(() => { track("pageview", { route: loc.route, username: loc.username || "" }); }, [loc.route, loc.username]);
