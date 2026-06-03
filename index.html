@@ -356,6 +356,10 @@
     .bjb2-foot b { color: var(--accent2); }
     .bjb2-url { display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-top: 12px; padding-top: 12px; border-top: 1px solid rgba(255,255,255,0.14); font-size: 10.5px; color: #b8b0a4; }
     .bjb2-url b { color: #fff; white-space: nowrap; }
+    .bjb2-share { display: flex; gap: 8px; margin-top: 12px; }
+    .bjb2-sbtn { flex: 1; display: inline-flex; align-items: center; justify-content: center; gap: 7px; padding: 9px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.18); background: rgba(255,255,255,0.06); color: #fff; font-family: var(--font-sans); font-weight: 600; font-size: 12.5px; cursor: pointer; transition: all 0.15s ease; }
+    .bjb2-sbtn:hover { background: rgba(255,255,255,0.12); border-color: rgba(255,255,255,0.32); }
+    .reel-dash-rail .bjb2 { margin: 8px 14px 0; }
 
     /* Bryan Johnson comparison card (nested-scale share card, dark) */
     .bj-card { margin: 0 20px 16px; background: #171310; border-radius: var(--r-sm); padding: 18px; color: #fff; box-shadow: 0 12px 30px rgba(0,0,0,0.28); }
@@ -960,6 +964,7 @@
       .reel-head { padding: 4px 2px 6px; }
       .reel-hl { margin: 0; }
       .bj-card.bj-compact { margin: 0; }
+      .reel-dash-rail .bjb2 { margin: 0; }
       .reel-cat { padding: 24px 0 10px; }
       .reel-dash-main > div:first-child .reel-cat { padding-top: 2px; }
       .reel-grid { grid-template-columns: repeat(2, 1fr); padding: 0; gap: 10px; }
@@ -1454,7 +1459,7 @@ function BryanCompareCard({ cost, handle, name, url, compact }) {
 }
 
 // In-rail B2 card (my sliver inside Bryan's box) — the visible Bryan card on the dashboard.
-function BryanCardB2({ stack, cost, url }) {
+function BryanCardB2({ stack, cost, url, onShare }) {
   if (!cost || cost <= 0) return null;
   const avatar = stack.avatarUrl || DEFAULT_AVATAR;
   return (
@@ -1477,6 +1482,18 @@ function BryanCardB2({ stack, cost, url }) {
       </div>
       <div className="bjb2-foot">⏳ Bryan blows my <b>annual</b> health budget in <b>{bjTimeToMatch(cost)}</b>.</div>
       {url && <div className="bjb2-url"><span>${cost.toLocaleString()}/mo vs ~$167K/mo</span><b>{url}</b></div>}
+      {onShare && (
+        <div className="bjb2-share">
+          <button className="bjb2-sbtn" onClick={() => onShare("x")} aria-label="Share on X">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+            Post on X
+          </button>
+          <button className="bjb2-sbtn" onClick={() => onShare("instagram")} aria-label="Share on Instagram">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg>
+            Instagram
+          </button>
+        </div>
+      )}
     </div>
   );
 }
@@ -1513,22 +1530,35 @@ function ShareCardB2({ stack, cost, cardRef }) {
   );
 }
 
-// Capture the card node → PNG → native share (mobile) or download (desktop).
-async function shareStackCard(node, stack, cost, onToast) {
+// Capture the off-screen card → PNG, then post to X / Instagram with the image.
+async function shareCardTo(platform, node, stack, cost, onToast) {
   if (!node || !window.htmlToImage) { onToast && onToast("Sharing not available"); return; }
+  const pageUrl = `${window.location.origin}${window.location.pathname}#/stack/${stack.username}`;
+  const text = `My entire health stack is ${bjPercent(cost)}% of Bryan Johnson's budget 🧬 Same longevity game, a tiny fraction of the cost.`;
   try {
-    const dataUrl = await window.htmlToImage.toPng(node, { pixelRatio: 2, cacheBust: true, width: 540, height: 540, skipFonts: true });
+    const dataUrl = await window.htmlToImage.toPng(node, { pixelRatio: 2, cacheBust: true, width: 540, height: 540, skipFonts: true, fontEmbedCSS: "" });
     const blob = await (await fetch(dataUrl)).blob();
     const file = new File([blob], "healthstack-card.png", { type: "image/png" });
-    const text = `My entire health stack is ${bjPercent(cost)}% of Bryan Johnson's budget 🧬 Build yours free:`;
-    track("share_card", { username: stack.username });
+    track("share_card", { username: stack.username, platform });
+
+    // Mobile (and any browser that can share files): native sheet attaches the image directly → X / IG apps.
     if (navigator.canShare && navigator.canShare({ files: [file] })) {
-      await navigator.share({ files: [file], text });
-    } else {
-      const a = document.createElement("a"); a.href = dataUrl; a.download = "healthstack-card.png"; a.click();
-      onToast && onToast("Card image downloaded ✓");
+      try { await navigator.share({ files: [file], text: `${text} ${pageUrl}` }); return; } catch (e) { if (e && e.name === "AbortError") return; }
     }
-  } catch (e) { console.debug("shareStackCard", e); onToast && onToast("Couldn't generate the card"); }
+
+    // Desktop fallback — download the image so it can be attached to the post.
+    const a = document.createElement("a"); a.href = dataUrl; a.download = "healthstack-card.png"; a.click();
+
+    if (platform === "x") {
+      // Try to also copy the image to the clipboard so it can be pasted into the composer.
+      try { await navigator.clipboard.write([new window.ClipboardItem({ "image/png": blob })]); } catch (_) {}
+      window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(`${text} ${pageUrl}`)}`, "_blank", "noopener");
+      onToast && onToast("Card saved & copied — paste or attach it to your post 𝕏");
+    } else {
+      window.open("https://www.instagram.com/", "_blank", "noopener");
+      onToast && onToast("Card saved — upload it to your Instagram post 📸");
+    }
+  } catch (e) { console.debug("shareCardTo", e); onToast && onToast("Couldn't generate the card"); }
 }
 
 // ── REFERRALS (Path 2: creators inviting creators) ──
@@ -2422,12 +2452,7 @@ function Healthstack({ username }) {
             {stack.highlight
               ? <HighlightCard highlight={stack.highlight} />
               : (stack.bioAge > 0 && stack.chronoAge > 0 && <BioAgeCard bioAge={stack.bioAge} chronoAge={stack.chronoAge} />)}
-            <BryanCardB2 stack={stack} cost={cost} url={`healthstack.app/stack/${username}`} />
-            {cost > 0 && (
-              <button className="bj-share-btn anim-4" onClick={() => shareStackCard(shareCardRef.current, stack, cost, toast)}>
-                📸 Share this card
-              </button>
-            )}
+            <BryanCardB2 stack={stack} cost={cost} url={`healthstack.app/stack/${username}`} onShare={(p) => shareCardTo(p, shareCardRef.current, stack, cost, toast)} />
             <div className="qr-section anim-6">
               <div className="qr-title">SCAN TO VIEW ON ANOTHER DEVICE</div>
               <div className="qr-wrapper"><QRWidget url={url} /></div>
@@ -3431,7 +3456,7 @@ function ReelBlock({ stack }) {
               ? <div className="reel-hl"><div><div className="reel-hl-eyebrow">Proudest metric</div><div className="reel-hl-quote">“{stack.highlight.text}”</div></div></div>
               : null
         )}
-        <BryanCompareCard cost={reelCost} handle={handle} name={name} compact />
+        <BryanCardB2 stack={stack || { handle, name, username: "" }} cost={reelCost} url={stack && stack.username ? `healthstack.app/stack/${stack.username}` : undefined} />
       </div>
       <div className="reel-dash-main">
         {groups.map((g, gi) => (
