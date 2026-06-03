@@ -664,6 +664,14 @@
     .hl-tab { flex: 1; text-align: center; font-size: 12px; font-weight: 600; padding: 9px 4px; border-radius: var(--r-xs); background: var(--surface2); border: 1px solid var(--border); color: var(--text-muted); cursor: pointer; font-family: var(--font-sans); transition: all 0.15s ease; }
     .hl-tab.on { background: var(--accent); color: #FFFDF8; border-color: var(--accent); }
     .highlight-quote { font-family: var(--font-serif); font-style: italic; font-size: 22px; line-height: 1.35; color: var(--text); text-align: center; margin-top: 6px; }
+    /* gradient hero ring around the proud metric */
+    .hl-ring { width: 188px; height: 188px; border-radius: 50%; margin: 14px auto 0; display: flex; align-items: center; justify-content: center; position: relative;
+      background: conic-gradient(from -90deg, var(--accent), var(--accent2) 72%, var(--ringtrack, #EEEBE4) 72% 100%); }
+    .hl-ring::after { content: ""; position: absolute; inset: 15px; border-radius: 50%; background: var(--surface); }
+    .hl-ring-in { position: relative; z-index: 1; }
+    .hl-ring-val { font-family: var(--font-serif); font-size: 46px; letter-spacing: -1.5px; color: var(--accent); }
+    /* stack page dashboard layout (desktop styles live in the responsive block) */
+    .stack-layout { display: block; }
     .avatar-upload { display: flex; flex-direction: column; align-items: center; gap: 8px; margin-bottom: 20px; cursor: pointer; }
     .avatar-upload-circle { position: relative; width: 84px; height: 84px; border-radius: 50%; background: var(--surface2); background-size: cover; background-position: center; border: 2px dashed var(--border); display: flex; align-items: center; justify-content: center; transition: border-color 0.15s ease; }
     .avatar-upload:hover .avatar-upload-circle { border-color: var(--accent); }
@@ -761,20 +769,31 @@
     .isc-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--border); transition: all 0.2s; }
     .isc-dot.on { background: var(--accent); width: 18px; border-radius: 4px; }
 
-    /* ── RESPONSIVE: roomier framed layout on tablet/desktop ── */
+    /* ── RESPONSIVE: framed column for landing/build/earnings; wide dashboard for the stack page ── */
     @media (min-width: 768px) {
-      body { background: #E7E0D2; }                      /* frames the ivory app column */
-      #root { max-width: 720px; box-shadow: 0 0 0 1px rgba(70,55,30,0.05), 0 30px 80px rgba(70,55,30,0.13); }
-      .action-bar { max-width: 720px; }
-      .modal-sheet, .edit-sheet { max-width: 720px; border-radius: var(--r) var(--r) 0 0; }
-      .stack-grid { grid-template-columns: repeat(3, 1fr); }   /* 3 columns of stack tiles */
+      body { background: #E7E0D2; }
+      #root { max-width: 760px; box-shadow: 0 0 0 1px rgba(70,55,30,0.05), 0 30px 80px rgba(70,55,30,0.13); }
+      .action-bar { max-width: 760px; }
+      .modal-sheet, .edit-sheet { max-width: 760px; border-radius: var(--r) var(--r) 0 0; }
       .home-steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
       .home-step { flex-direction: column; align-items: flex-start; gap: 12px; }
       .home-headline { font-size: 46px; }
     }
-    @media (min-width: 1100px) {
-      #root { max-width: 800px; }
-      .action-bar { max-width: 800px; }
+    /* The stack page becomes a real desktop dashboard */
+    @media (min-width: 1000px) {
+      #root:has(.page-stack) { max-width: 1180px; }
+      .page-stack { max-width: 1180px; margin: 0 auto; }
+      .page-stack .stack-layout {
+        display: grid; grid-template-columns: 360px 1fr; gap: 4px 30px; align-items: start; padding: 4px 8px 0;
+      }
+      .page-stack .stack-rail { position: sticky; top: 84px; display: flex; flex-direction: column; }
+      .page-stack .stack-rail > * , .page-stack .stack-main > * { margin-left: 0 !important; margin-right: 0 !important; }
+      .page-stack .stack-main { min-width: 0; }
+      .page-stack .stack-grid { grid-template-columns: repeat(3, 1fr); }
+      .page-stack .action-bar { max-width: 1180px; }
+      .page-stack .claim-banner { margin-left: 8px !important; margin-right: 8px !important; }
+      /* in the wide main column, fit more tiles per row */
+      .page-stack .stack-grid { grid-template-columns: repeat(4, 1fr); }
     }
   </style>
 </head>
@@ -1473,8 +1492,8 @@ function HighlightCard({ highlight }) {
     return (
       <div className="bio-age-card anim-1" style={{ textAlign: "center" }}>
         <div className="bio-age-label">Proudest Metric</div>
-        <div className="bio-age-num bio" style={{ marginTop: 4 }}>{highlight.value}</div>
-        <div className="bio-age-sublabel" style={{ marginTop: 6 }}>{highlight.label}</div>
+        <div className="hl-ring"><div className="hl-ring-in"><span className="hl-ring-val">{highlight.value}</span></div></div>
+        <div className="bio-age-sublabel" style={{ marginTop: 14 }}>{highlight.label}</div>
       </div>
     );
   }
@@ -1918,7 +1937,7 @@ function Healthstack({ username }) {
           {/* Compare hidden for now — it compares protocol scores, which are paused. Re-enable when scoring is credible. */}
         </div>
       } />
-      <div className="page">
+      <div className="page page-stack">
         <div className="scroll-pad" />
         {editable && !stack.claimed && (
           <div className="claim-banner anim-0" onClick={() => { setJustBuilt(false); setShowClaim(true); }}>
@@ -1930,25 +1949,31 @@ function Healthstack({ username }) {
             <div className="claim-banner-arrow">→</div>
           </div>
         )}
-        <ProfileSection stack={stack} />
-        {stack.highlight
-          ? <HighlightCard highlight={stack.highlight} />
-          : (stack.bioAge > 0 && stack.chronoAge > 0 && <BioAgeCard bioAge={stack.bioAge} chronoAge={stack.chronoAge} />)}
-        {cost > 0 && (
-          <div className="cost-banner anim-4">
-            <div className="cost-label">Monthly investment</div>
-            <div><span className="cost-value">~${cost}</span><span className="cost-period"> /mo</span></div>
+        <div className="stack-layout">
+          <div className="stack-rail">
+            <ProfileSection stack={stack} />
+            {stack.highlight
+              ? <HighlightCard highlight={stack.highlight} />
+              : (stack.bioAge > 0 && stack.chronoAge > 0 && <BioAgeCard bioAge={stack.bioAge} chronoAge={stack.chronoAge} />)}
+            {cost > 0 && (
+              <div className="cost-banner anim-4">
+                <div className="cost-label">Monthly investment</div>
+                <div><span className="cost-value">~${cost}</span><span className="cost-period"> /mo</span></div>
+              </div>
+            )}
           </div>
-        )}
-        <StackSection items={stack.items} />
-        <div className="qr-section anim-6" style={{ marginTop: 8 }}>
-          <div className="qr-title">SCAN TO VIEW ON ANOTHER DEVICE</div>
-          <div className="qr-wrapper"><QRWidget url={url} /></div>
-          <div className="qr-subtitle">
-            healthstack.app/stack/{username}<br />
-            <span className="qr-copy-link" onClick={async () => {
-              try { await navigator.clipboard.writeText(url); toast("Link copied ✓"); } catch(_) {}
-            }}>Copy link</span>
+          <div className="stack-main">
+            <StackSection items={stack.items} />
+            <div className="qr-section anim-6" style={{ marginTop: 8 }}>
+              <div className="qr-title">SCAN TO VIEW ON ANOTHER DEVICE</div>
+              <div className="qr-wrapper"><QRWidget url={url} /></div>
+              <div className="qr-subtitle">
+                healthstack.app/stack/{username}<br />
+                <span className="qr-copy-link" onClick={async () => {
+                  try { await navigator.clipboard.writeText(url); toast("Link copied ✓"); } catch(_) {}
+                }}>Copy link</span>
+              </div>
+            </div>
           </div>
         </div>
       </div>
