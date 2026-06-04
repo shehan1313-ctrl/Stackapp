@@ -1754,7 +1754,7 @@ async function shareCardTo(platform, node, stack, cost, onToast) {
 // `step`/`frames` drive the animation for GIF capture; with no step it renders the final (static) frame.
 function ShareAddCard({ item, username, handle, stackCount, step, frames, cardRef }) {
   const color = CATEGORY_COLORS[item.category] || CATEGORY_COLORS.Other;
-  const meta = [item.category, item.dose, item.freq, costLabel(item)].filter(Boolean).join(" · ");
+  const meta = [item.category, item.dose, categoryFields(item.category).freq ? item.freq : "", costLabel(item)].filter(Boolean).join(" · ");
   const usesIni = usesInitials(item.category);
   const total = stackCount || 1;
   const animating = typeof step === "number" && frames > 1;
@@ -1997,8 +1997,9 @@ function isPurchasable(item) {
 function categoryFields(cat) {
   return {
     dose: cat === "Supplements",
-    freq: cat !== "Wearables",
+    freq: cat !== "Wearables" && cat !== "Sleep",
     oneTime: cat === "Wearables",
+    years: cat !== "Sleep",
   };
 }
 
@@ -2443,9 +2444,10 @@ function GridItemCard({ item, editable, username, handle, stackCount, onToast })
     finally { setSharing(false); }
   };
   const color = CATEGORY_COLORS[item.category] || CATEGORY_COLORS.Other;
-  const yearsLabel = item.years < 1 ? `${Math.round(item.years * 12)}mo` : item.years ? `${item.years}yr` : "";
+  const ef = categoryFields(item.category);
+  const yearsLabel = !ef.years ? "" : item.years < 1 ? `${Math.round(item.years * 12)}mo` : item.years ? `${item.years}yr` : "";
   const affUrl = item.affiliateUrl || `https://amazon.com/s?k=${encodeURIComponent(item.name)}`; // ← real affiliate URLs swap in here
-  const metaParts = [item.dose, item.freq, yearsLabel, costLabel(item)].filter(Boolean);
+  const metaParts = [item.dose, ef.freq ? item.freq : "", yearsLabel, costLabel(item)].filter(Boolean);
   const meta = metaParts.join(" · ");
   const tileInner = item.photoUrl
     ? <img src={item.photoUrl} alt="" />
@@ -2640,7 +2642,7 @@ function EditSheet({ stack, onSave, onClose, initialCategory }) {
             <div key={item.id} className="build-item-card">
               <div className="build-item-info">
                 <div className="build-item-name">{item.name}</div>
-                <div className="build-item-meta">{[item.category, item.years ? `${item.years}yr` : "", costLabel(item)].filter(Boolean).join(" · ")}</div>
+                <div className="build-item-meta">{[item.category, categoryFields(item.category).years && item.years ? `${item.years}yr` : "", costLabel(item)].filter(Boolean).join(" · ")}</div>
               </div>
               <button className="btn btn-ghost btn-sm" onClick={() => handleEditItem(item)}>Edit</button>
               <button className="build-item-remove" onClick={() => setItems(p => p.filter(i => i.id !== item.id))}>×</button>
@@ -2656,7 +2658,7 @@ function EditSheet({ stack, onSave, onClose, initialCategory }) {
                   {CATEGORIES.map(c => <option key={c}>{c}</option>)}
                 </select>
               </div>
-              <div className="form-group"><label className="form-label">Years</label><input className="form-input" type="number" value={form.years} onChange={e => setForm(f => ({ ...f, years: e.target.value }))} /></div>
+              {ef.years && <div className="form-group"><label className="form-label">Years</label><input className="form-input" type="number" value={form.years} onChange={e => setForm(f => ({ ...f, years: e.target.value }))} /></div>}
             </div>
             <div className="form-group"><label className="form-label">Name *</label><input className="form-input" placeholder={`Search or type a ${form.category.toLowerCase().replace(/s$/, "")}…`} value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))} /></div>
             {pickerList.length > 0 && (
@@ -3614,6 +3616,7 @@ function Step2Items({ items, setItems, onNext }) {
   // Dosage helps for supplements & nutrition; frequency mainly for supplements.
   const showDose = categoryFields(openCat).dose;
   const showFreq = categoryFields(openCat).freq;
+  const showYears = categoryFields(openCat).years;
 
   async function handlePhotoChange(e) {
     const file = e.target.files?.[0];
@@ -3876,10 +3879,12 @@ function Step2Items({ items, setItems, onNext }) {
             </div>
 
             <div className="form-row">
+              {showYears && (
               <div className="form-group">
                 <label className="form-label">Years used</label>
                 <input className="form-input" type="number" placeholder="1" min="0" step="0.5" value={form.years} onChange={e => setForm(f => ({ ...f, years: e.target.value }))} />
               </div>
+              )}
               <div className="form-group">
                 <label className="form-label">{openCat === "Wearables" ? "One-time fee ($)" : "Cost ($)"}</label>
                 {openCat === "Wearables" ? (
