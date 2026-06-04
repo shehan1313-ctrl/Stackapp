@@ -2988,7 +2988,7 @@ function ClaimModal({ stack, onClaim, onClose, celebrate }) {
     if (!valid) return;
     // ── BACKEND ──: this is where a real signup request would fire.
     const updated = claimStack(stack.username, email.trim());
-    track("waitlist_joined", { username: stack.username });
+    track(celebrate ? "stack_saved_email" : "waitlist_joined", { username: stack.username });
     setDone(true);
     if (window.confetti) window.confetti({ particleCount: 90, spread: 70, origin: { y: 0.4 }, colors: ["#2F7A55", "#5A9B74", "#C2895A"] });
     setTimeout(() => { onClaim(updated); onClose(); }, 1400);
@@ -3000,10 +3000,11 @@ function ClaimModal({ stack, onClaim, onClose, celebrate }) {
         {done ? (
           <div style={{ textAlign: "center", padding: "20px 0" }}>
             <div style={{ fontSize: 44, marginBottom: 12 }}>🎉</div>
-            <div className="modal-title" style={{ marginBottom: 6 }}>You're on the list! 🎉</div>
+            <div className="modal-title" style={{ marginBottom: 6 }}>{celebrate ? "Saved! 🎉" : "You're on the list! 🎉"}</div>
             <div style={{ fontSize: 14, color: "var(--text-muted)", lineHeight: 1.5 }}>
-              We saved <strong style={{ color: "var(--accent)" }}>@{stack.username}</strong> for you.<br/>
-              We'll email you the moment affiliate payouts go live.
+              {celebrate
+                ? <>We saved <strong style={{ color: "var(--accent)" }}>@{stack.username}</strong> to your email.<br/>Come back anytime to edit it, and we'll let you know when people view your stack.</>
+                : <>We saved <strong style={{ color: "var(--accent)" }}>@{stack.username}</strong> for you.<br/>We'll email you the moment affiliate payouts go live.</>}
             </div>
           </div>
         ) : (
@@ -3011,11 +3012,12 @@ function ClaimModal({ stack, onClaim, onClose, celebrate }) {
             <div style={{ textAlign: "center", marginBottom: 18 }}>
               {celebrate && <div style={{ fontSize: 40, marginBottom: 8 }}>🎉</div>}
               <div className="modal-title" style={{ marginBottom: 6 }}>
-                {celebrate ? "Your stack is live!" : "Join the earnings waitlist"}
+                {celebrate ? "Your stack is live! 🎉" : "Join the earnings waitlist"}
               </div>
               <div style={{ fontSize: 14, color: "var(--text-muted)", lineHeight: 1.5 }}>
-                Want to get paid when people buy from your stack? Affiliate payouts are coming soon,                 drop your email to claim <strong style={{ color: "var(--accent)" }}>@{stack.username}</strong> and
-                be first in line to earn.
+                {celebrate
+                  ? <>Don't lose your stack. Add your email and we'll keep <strong style={{ color: "var(--accent)" }}>@{stack.username}</strong> for you, edit it anytime from any device.</>
+                  : <>Want to get paid when people buy from your stack? Affiliate payouts are coming soon, drop your email to claim <strong style={{ color: "var(--accent)" }}>@{stack.username}</strong> and be first in line to earn.</>}
               </div>
             </div>
 
@@ -3030,7 +3032,7 @@ function ClaimModal({ stack, onClaim, onClose, celebrate }) {
                 autoFocus
               />
               <button className="btn btn-primary" style={{ width: "100%", padding: 14, fontSize: 15 }} disabled={!valid} onClick={handleClaim}>
-                Join the earnings waitlist →
+                {celebrate ? "Save my stack →" : "Join the earnings waitlist →"}
               </button>
               <button className="btn btn-ghost" style={{ width: "100%" }} onClick={onClose}>
                 {celebrate ? "Maybe later" : "Cancel"}
