@@ -2145,12 +2145,6 @@ function parseHash(h) {
   return { route: "404" };
 }
 function navigate(path) { window.location.hash = path; }
-// Jump to the pricing section on the home page (works from any route).
-function goToPricing() {
-  const onHome = !/^#\/(stack|earnings|build|examples|about|privacy|terms|tour)/.test(window.location.hash || "");
-  const scroll = () => { const el = document.getElementById("pricing"); if (el) el.scrollIntoView({ behavior: "smooth", block: "start" }); };
-  if (onHome) { scroll(); } else { navigate("#/"); setTimeout(scroll, 360); }
-}
 function useRouter() {
   const [loc, setLoc] = useState(() => parseHash(window.location.hash));
   useEffect(() => {
@@ -2231,7 +2225,6 @@ function Topbar({ rightContent }) {
       <Logo onClick={() => navigate("#/")} />
       <div className="topbar-actions">
         <button className="btn btn-ghost btn-sm topbar-examples" onClick={() => navigate("#/examples")}>Examples</button>
-        <button className="btn btn-ghost btn-sm topbar-examples" onClick={goToPricing}>Pricing</button>
         <AuthButton />
         {rightContent || <BuildCTA />}
       </div>
@@ -4099,7 +4092,6 @@ function HomePage() {
         <Logo onClick={() => navigate("#/")} />
         <div className="topbar-actions">
           <button className="btn btn-ghost btn-sm topbar-examples" onClick={() => navigate("#/examples")}>Examples</button>
-          <button className="btn btn-ghost btn-sm topbar-examples" onClick={goToPricing}>Pricing</button>
           <AuthButton />
           <BuildCTA />
         </div>
@@ -4151,56 +4143,15 @@ function HomePage() {
         ))}
       </div>
 
-      {/* PRICING */}
-      <div className="home-section anim-4" id="pricing" style={{ marginTop: 44, scrollMarginTop: 80 }}>
+      {/* PRICING — simplified while we test the core sharing loop */}
+      <div className="home-section anim-4" id="pricing" style={{ marginTop: 44, scrollMarginTop: 80, textAlign: "center" }}>
         <div className="home-section-label">PRICING</div>
-        <div className="home-def-text" style={{ fontSize: 20, textAlign: "center", margin: "0 auto 18px", maxWidth: 460 }}>Share for free. Earn when you're ready.</div>
-        <div className="pr-grid">
-          <div className="pr-card">
-            <div className="pr-tier">Free</div>
-            <div className="pr-who">For sharers</div>
-            <div className="pr-price"><span className="pr-price-num">$0</span><span className="pr-price-per">forever</span></div>
-            <div className="pr-price-note">No account needed to start.</div>
-            <div className="pr-vp">Track what you take, show it off, and <b>see what your healthiest friends take</b>.</div>
-            <BuildCTA className="pr-cta free" buildLabel="Build my stack — free" updateLabel="Go to my stack" />
-            <div className="pr-feat-label">What you get</div>
-            <ul className="pr-feats">
-              {[
-                ["Your shareable stack page", "One link + QR, beautiful anywhere"],
-                ["Ask friends for their stacks", "Invite anyone, see what they use"],
-                ["Unlimited items", "Supplements, wearables, labs, habits"],
-                ["Add by voice or camera", "Describe your stack, we sort it out"],
-                ["Viral share cards", "Post your Bryan Johnson card to X & IG"],
-              ].map(([t, s], i) => (
-                <li className="pr-feat" key={i}><span className="ic y"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3.5"><path d="M20 6 9 17l-5-5"/></svg></span><div><b>{t}</b><small>{s}</small></div></li>
-              ))}
-            </ul>
-          </div>
-          <div className="pr-card pro">
-            <div className="pr-badge">For creators</div>
-            <div className="pr-tier pro">Creator Pro</div>
-            <div className="pr-who">Turn your stack into income</div>
-            <div className="pr-price"><span className="pr-price-num">$5</span><span className="pr-price-per">/mo</span></div>
-            <div className="pr-price-note">billed annually at <b style={{ color: "var(--text)" }}>$59/yr</b> · or $9 month-to-month. Most creators recoup it in a few referrals.</div>
-            <div className="pr-vp">Use <b>your own affiliate links</b> on every item and <b>keep every dollar</b> of commission. No complicated splits.</div>
-            <div className="pr-recoup">💸 <b>Recoup it fast:</b> $59/yr ≈ one wearable referral (~$30) + 2–3 supplement orders. Most creators cover it in their first month.</div>
-            <button className="pr-cta pro" onClick={() => toast("Creator Pro is coming soon — we'll let you know ✓")}>Go Pro</button>
-            <div className="pr-feat-label">Everything in Free, plus</div>
-            <ul className="pr-feats">
-              {[
-                ["Your affiliate links, your money", "Connect your links, keep 100%"],
-                ["Click & conversion analytics", "See what gets tapped and converts"],
-                ["Shareable \"Just added\" cards", "Announce each new item → drive referrals"],
-                ["Custom URL + verified badge", "healthstack.app/yourname"],
-                ["Lead capture", "\"Email me this stack\" → your audience list"],
-                ["Invite a creator, get Pro free", "Each creator you bring earns a free month"],
-              ].map(([t, s], i) => (
-                <li className="pr-feat" key={i}><span className="ic p"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3.5"><path d="M20 6 9 17l-5-5"/></svg></span><div><b>{t}</b><small>{s}</small></div></li>
-              ))}
-            </ul>
-          </div>
-        </div>
-        <div className="pr-note">On the free plan, "Get it" links are healthstack's. Pro swaps in your own.</div>
+        <div className="home-def-text" style={{ fontSize: 22, margin: "0 auto 10px", maxWidth: 480 }}>Free to use. Always.</div>
+        <p style={{ fontSize: 14, color: "var(--text-muted)", lineHeight: 1.55, maxWidth: 420, margin: "0 auto 18px" }}>
+          Build your stack, share it, and see what your healthiest friends take, no account needed, no cost.
+          Tools for creators to earn from their stack are <b style={{ color: "var(--text)" }}>coming soon</b>.
+        </p>
+        <BuildCTA className="btn btn-primary" buildLabel="Build my stack — free" updateLabel="Go to my stack" style={{ padding: "13px 26px" }} />
       </div>
 
       {/* ASK A FRIEND */}
