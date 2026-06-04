@@ -1717,10 +1717,23 @@ function ShareCardB2({ stack, cost, cardRef }) {
 }
 
 // Capture the off-screen card → PNG, then post to X / Instagram with the image.
+// Does this device support sharing files via the native share sheet (mostly mobile)?
+function canShareFiles() {
+  try { return !!(navigator.canShare && navigator.canShare({ files: [new File([new Blob([""], { type: "image/png" })], "x.png", { type: "image/png" })] })); }
+  catch (_) { return false; }
+}
+// Send a (possibly pre-opened) window to a URL, or open a new one as a fallback.
+function sendShareWindow(win, url) {
+  if (win && !win.closed) { try { win.opener = null; } catch (_) {} win.location.href = url; }
+  else window.open(url, "_blank", "noopener");
+}
 async function shareCardTo(platform, node, stack, cost, onToast) {
   if (!node || !window.htmlToImage) { onToast && onToast("Sharing not available"); return; }
   const pageUrl = `${window.location.origin}${window.location.pathname}#/stack/${stack.username}`;
   const text = `My entire health stack is ${bjPercent(cost)}% of Bryan Johnson's budget 🧬 Same longevity game, a tiny fraction of the cost.`;
+  // Pre-open the share window NOW, inside the click gesture, so it isn't popup-blocked after the async image work.
+  const fileShare = canShareFiles();
+  const win = fileShare ? null : window.open("about:blank", "_blank");
   // html-to-image logs caught DOMExceptions while trying to read cross-origin font CSS, harmless, just noisy. Mute during capture.
   const _err = console.error;
   console.error = (...a) => { if (/cssRules|inlining remote css|remote stylesheet|reading CSS rules/i.test(String(a[0] || ""))) return; _err.apply(console, a); };
@@ -1731,7 +1744,7 @@ async function shareCardTo(platform, node, stack, cost, onToast) {
     track("share_card", { username: stack.username, platform });
 
     // Mobile (and any browser that can share files): native sheet attaches the image directly → X / IG apps.
-    if (navigator.canShare && navigator.canShare({ files: [file] })) {
+    if (fileShare && navigator.canShare && navigator.canShare({ files: [file] })) {
       try { await navigator.share({ files: [file], text: `${text} ${pageUrl}` }); return; } catch (e) { if (e && e.name === "AbortError") return; }
     }
 
@@ -1741,13 +1754,13 @@ async function shareCardTo(platform, node, stack, cost, onToast) {
     if (platform === "x") {
       // Try to also copy the image to the clipboard so it can be pasted into the composer.
       try { await navigator.clipboard.write([new window.ClipboardItem({ "image/png": blob })]); } catch (_) {}
-      window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(`${text} ${pageUrl}`)}`, "_blank", "noopener");
+      sendShareWindow(win, `https://twitter.com/intent/tweet?text=${encodeURIComponent(`${text} ${pageUrl}`)}`);
       onToast && onToast("Card saved & copied, paste or attach it to your post 𝕏");
     } else {
-      window.open("https://www.instagram.com/", "_blank", "noopener");
+      sendShareWindow(win, "https://www.instagram.com/");
       onToast && onToast("Card saved, upload it to your Instagram post 📸");
     }
-  } catch (e) { console.debug("shareCardTo", e); onToast && onToast("Couldn't generate the card"); }
+  } catch (e) { if (win && !win.closed) win.close(); console.debug("shareCardTo", e); onToast && onToast("Couldn't generate the card"); }
 }
 
 // "Just added" announcement card (design D — gamified "+1 / leveled up").
@@ -1795,10 +1808,12 @@ function ShareAddCard({ item, username, handle, stackCount, step, frames, cardRe
     </div>
   );
 }
-async function shareAdditionTo(platform, node, { item, username, handle }, onToast) {
-  if (!node || !window.htmlToImage) { onToast && onToast("Sharing not available"); return; }
+async function shareAdditionTo(platform, node, { item, username, handle }, onToast, win) {
+  if (!node || !window.htmlToImage) { if (win && !win.closed) win.close(); onToast && onToast("Sharing not available"); return; }
   const pageUrl = `${window.location.origin}${window.location.pathname}#/stack/${username}`;
   const text = `Just added ${item.name} to my health stack 🧬 Here's everything I take 👇`;
+  const fileShare = canShareFiles();
+  if (win === undefined) win = fileShare ? null : window.open("about:blank", "_blank");
   const _err = console.error;
   console.error = (...a) => { if (/cssRules|inlining remote css|remote stylesheet|reading CSS rules/i.test(String(a[0] || ""))) return; _err.apply(console, a); };
   try {
@@ -1806,19 +1821,19 @@ async function shareAdditionTo(platform, node, { item, username, handle }, onToa
     const blob = await (await fetch(dataUrl)).blob();
     const file = new File([blob], "healthstack-just-added.png", { type: "image/png" });
     track("share_addition", { username, platform, item: item.name });
-    if (navigator.canShare && navigator.canShare({ files: [file] })) {
+    if (fileShare && navigator.canShare && navigator.canShare({ files: [file] })) {
       try { await navigator.share({ files: [file], text: `${text} ${pageUrl}` }); return; } catch (e) { if (e && e.name === "AbortError") return; }
     }
     const a = document.createElement("a"); a.href = dataUrl; a.download = "healthstack-just-added.png"; a.click();
     if (platform === "x") {
       try { await navigator.clipboard.write([new window.ClipboardItem({ "image/png": blob })]); } catch (_) {}
-      window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(`${text} ${pageUrl}`)}`, "_blank", "noopener");
+      sendShareWindow(win, `https://twitter.com/intent/tweet?text=${encodeURIComponent(`${text} ${pageUrl}`)}`);
       onToast && onToast("Card saved & copied, paste it into your post 𝕏");
     } else {
-      window.open("https://www.instagram.com/", "_blank", "noopener");
+      sendShareWindow(win, "https://www.instagram.com/");
       onToast && onToast("Card saved, upload it to Instagram 📸");
     }
-  } catch (e) { console.debug("shareAdditionTo", e); onToast && onToast("Couldn't generate the card"); }
+  } catch (e) { if (win && !win.closed) win.close(); console.debug("shareAdditionTo", e); onToast && onToast("Couldn't generate the card"); }
 }
 
 // ── Animated GIF export for the "Just added" card (design D) ──
@@ -1849,29 +1864,32 @@ async function buildAdditionGif(node, setStep) {
 }
 async function shareAdditionGif(platform, { node, setStep, item, username, handle, onToast }) {
   if (!node) { onToast && onToast("Sharing not available"); return; }
+  // Pre-open the share window NOW, inside the click gesture, so it survives the async GIF encoding.
+  const fileShare = canShareFiles();
+  const win = fileShare ? null : window.open("about:blank", "_blank");
   onToast && onToast("Creating your GIF… 🎞️");
   let blob;
   try { blob = await buildAdditionGif(node, setStep); }
   catch (e) {
     console.debug("gif build failed, falling back to PNG", e);
     setStep && setStep(null);
-    return shareAdditionTo(platform, node, { item, username, handle }, onToast);
+    return shareAdditionTo(platform, node, { item, username, handle }, onToast, win);
   }
   setStep && setStep(null);
   const pageUrl = `${window.location.origin}${window.location.pathname}#/stack/${username}`;
   const text = `Just added ${item.name} to my health stack 🧬 Here's everything I take 👇`;
   const file = new File([blob], "healthstack-just-added.gif", { type: "image/gif" });
   track("share_addition", { username, platform, fmt: "gif" });
-  if (navigator.canShare && navigator.canShare({ files: [file] })) {
+  if (fileShare && navigator.canShare && navigator.canShare({ files: [file] })) {
     try { await navigator.share({ files: [file], text: `${text} ${pageUrl}` }); return; } catch (e) { if (e && e.name === "AbortError") return; }
   }
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a"); a.href = url; a.download = "healthstack-just-added.gif"; a.click();
   if (platform === "x") {
-    window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(`${text} ${pageUrl}`)}`, "_blank", "noopener");
+    sendShareWindow(win, `https://twitter.com/intent/tweet?text=${encodeURIComponent(`${text} ${pageUrl}`)}`);
     onToast && onToast("GIF saved, attach it to your post 𝕏");
   } else {
-    window.open("https://www.instagram.com/", "_blank", "noopener");
+    sendShareWindow(win, "https://www.instagram.com/");
     onToast && onToast("GIF saved, upload it to Instagram 📸");
   }
 }
