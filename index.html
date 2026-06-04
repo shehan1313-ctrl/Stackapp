@@ -1184,6 +1184,15 @@ function track(event, props) {
   if (!POSTHOG_KEY) console.debug("[track]", event, props || {});
 }
 
+// Tie the anonymous analytics person to a real identity so behavior is searchable by email.
+function identifyUser(distinctId, email) {
+  try {
+    if (!window.posthog || !distinctId) return;
+    window.posthog.identify(distinctId, email ? { email } : undefined);
+  } catch (_) {}
+}
+function resetIdentity() { try { if (window.posthog) window.posthog.reset(); } catch (_) {} }
+
 // ── CONSTANTS ─────────────────────────────────────────────────────────────────
 
 const CATEGORY_COLORS = {
@@ -1478,11 +1487,16 @@ function claimLocalStacks(uid) {
   } catch (_) {}
 }
 if (sb) {
-  sb.auth.getSession().then(({ data }) => setAuthUser(data.session ? data.session.user : null));
-  sb.auth.onAuthStateChange((_e, session) => {
+  sb.auth.getSession().then(({ data }) => {
+    const u = data.session ? data.session.user : null;
+    setAuthUser(u);
+    if (u) identifyUser(u.id, u.email);
+  });
+  sb.auth.onAuthStateChange((e, session) => {
     const u = session ? session.user : null;
     setAuthUser(u);
-    if (u) claimLocalStacks(u.id);
+    if (u) { identifyUser(u.id, u.email); claimLocalStacks(u.id); }
+    else if (e === "SIGNED_OUT") resetIdentity();
   });
 }
 
@@ -2119,6 +2133,7 @@ function claimStack(username, email) {
   all[username] = { ...all[username], email, claimed: true, claimedAt: Date.now() };
   localStorage.setItem(STORAGE_KEY, JSON.stringify(all));
   remoteWaitlist(email, username);      // record the signup so it reaches you in Supabase
+  identifyUser(email, email);           // tie behavior to this email in analytics
   remoteSaveStack(all[username]);       // persist the claimed flag
   return all[username];
 }
@@ -4555,7 +4570,8 @@ function FollowControl({ creator, name, variant = "card" }) {
       const f = getFollowed(); f[creator] = v; localStorage.setItem("followed_v1", JSON.stringify(f));
     } catch (_) {}
     remoteFollow(v, creator);
-    track("follow_creator", { creator });
+    identifyUser(v, v);                       // tie this anonymous visitor to their email
+    track("follow_creator", { creator, email: v });
     setFollowed(true); setJustFollowed(true); setOpen(false); setErr("");
   };
   const onToggle = (e) => {
