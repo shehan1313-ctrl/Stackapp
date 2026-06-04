@@ -4541,6 +4541,7 @@ function getFollowed() { try { return JSON.parse(localStorage.getItem("followed_
 // "Follow <creator> for weekly protocol updates" — contextual email capture on cards & stack pages.
 function FollowControl({ creator, name, variant = "card" }) {
   const [followed, setFollowed] = useState(() => !!getFollowed()[creator]);
+  const [justFollowed, setJustFollowed] = useState(false);
   const [open, setOpen] = useState(false);
   const [email, setEmail] = useState(() => getFollowEmail());
   const [err, setErr] = useState("");
@@ -4555,7 +4556,7 @@ function FollowControl({ creator, name, variant = "card" }) {
     } catch (_) {}
     remoteFollow(v, creator);
     track("follow_creator", { creator });
-    setFollowed(true); setOpen(false); setErr("");
+    setFollowed(true); setJustFollowed(true); setOpen(false); setErr("");
   };
   const onToggle = (e) => {
     e.stopPropagation();
@@ -4567,7 +4568,12 @@ function FollowControl({ creator, name, variant = "card" }) {
   const stop = (e) => e.stopPropagation();
 
   if (followed) {
-    return <button className={`follow-btn done ${variant}`} onClick={stop} type="button">✓ Following {first}</button>;
+    return (
+      <div className={`follow-wrap ${variant}`} onClick={stop}>
+        <button className={`follow-btn done ${variant}`} onClick={stop} type="button">✓ Following {first}</button>
+        {justFollowed && <div className="follow-note">Nice. We'll email you a 5-min digest after {first}'s next episode.</div>}
+      </div>
+    );
   }
   return (
     <div className={`follow-wrap ${variant}`} onClick={stop}>
