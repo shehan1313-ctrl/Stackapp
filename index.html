@@ -1530,6 +1530,69 @@ const DEMO_STACK = {
 // A few more curated example personas so the site feels populated.
 const EXAMPLE_STACKS = [
   DEMO_STACK,
+  // ── Public-figure stacks: illustrative, compiled from public interviews/posts. Not affiliated or endorsed. ──
+  {
+    username: "hubermanlab", name: "Andrew Huberman", handle: "@hubermanlab", credential: "Neuroscientist · Stanford · Huberman Lab",
+    avatarUrl: "", verified: false, publicFigure: true,
+    highlight: { type: "tip", text: "Get 5-10 minutes of sunlight in your eyes within an hour of waking. It anchors your whole day." },
+    items: [
+      { id: 1, category: "Supplements", name: "Omega-3 (EPA)", dose: "2g", freq: "Once daily", years: 8, cost: 35, costPeriod: "mo", why: "Aim for ~1g+ EPA daily for mood, focus and cardiovascular health.", affiliateUrl: "", tags: ["mood"] },
+      { id: 2, category: "Supplements", name: "Vitamin D3", dose: "5000 IU", freq: "Once daily", years: 8, cost: 12, costPeriod: "mo", why: "Hormone-like vitamin. Test blood levels and keep them in range.", affiliateUrl: "", tags: ["immunity"] },
+      { id: 3, category: "Supplements", name: "Creatine", dose: "5g", freq: "Once daily", years: 10, cost: 15, costPeriod: "mo", why: "Cognitive and physical performance. The most researched supplement.", affiliateUrl: "", tags: ["cognitive"] },
+      { id: 4, category: "Supplements", name: "Magnesium Threonate", dose: "144mg", freq: "Nightly", years: 5, cost: 32, costPeriod: "mo", why: "Crosses the blood-brain barrier. Part of my sleep stack.", affiliateUrl: "", tags: ["sleep"] },
+      { id: 5, category: "Supplements", name: "L-Theanine", dose: "200mg", freq: "Nightly", years: 5, cost: 12, costPeriod: "mo", why: "Calms the mind for sleep. Skip if you get very vivid dreams.", affiliateUrl: "", tags: ["sleep"] },
+      { id: 6, category: "Supplements", name: "Apigenin", dose: "50mg", freq: "Nightly", years: 4, cost: 16, costPeriod: "mo", why: "Eases anxiety and helps sleep onset.", affiliateUrl: "", tags: ["sleep"] },
+      { id: 7, category: "Supplements", name: "Tongkat Ali", dose: "400mg", freq: "AM", years: 4, cost: 28, costPeriod: "mo", why: "Supports free testosterone, drive and energy.", affiliateUrl: "", tags: ["hormones"] },
+      { id: 8, category: "Supplements", name: "Fadogia Agrestis", dose: "600mg", freq: "AM (cycled)", years: 3, cost: 30, costPeriod: "mo", why: "Luteinizing hormone support. I cycle it on and off.", affiliateUrl: "", tags: ["hormones"] },
+      { id: 9, category: "Supplements", name: "Alpha-GPC", dose: "300mg", freq: "Before focus work", years: 4, cost: 20, costPeriod: "mo", why: "Sharp focus and power output before deep work or training.", affiliateUrl: "", tags: ["focus"] },
+      { id: 10, category: "Wearables", name: "Oura Ring", years: 4, cost: 349, costPeriod: "once", why: "Sleep and recovery tracking I actually check daily.", affiliateUrl: "", tags: ["sleep","recovery"] },
+      { id: 11, category: "Sleep", name: "Eight Sleep Pod", years: 3, cost: 89, costPeriod: "mo", why: "Cooling the bed is the single biggest lever on my deep sleep.", affiliateUrl: "", tags: ["sleep"] },
+      { id: 12, category: "Labs", name: "Function Health", freq: "2x/year", years: 2, cost: 42, costPeriod: "mo", why: "Comprehensive bloodwork I review on a schedule.", affiliateUrl: "", tags: ["preventive"] },
+      { id: 13, category: "Mind", name: "NSDR / Yoga Nidra", freq: "10-20 min daily", years: 6, cost: 0, costPeriod: "mo", why: "Non-sleep deep rest to restore focus and dopamine.", affiliateUrl: "", tags: ["focus"] },
+      { id: 14, category: "Fitness", name: "Resistance + Zone 2", freq: "6x/week", years: 12, cost: 0, costPeriod: "mo", why: "Foundational protocol: strength plus cardiovascular base.", affiliateUrl: "", tags: ["strength"] },
+    ],
+  },
+  {
+    username: "sahilbloom", name: "Sahil Bloom", handle: "@SahilBloom", credential: "Writer & investor · The 5 Types of Wealth",
+    avatarUrl: "", verified: false, publicFigure: true,
+    highlight: { type: "tip", text: "Win the first hour: no phone, just sunlight, movement, and water. The day follows the morning." },
+    items: [
+      { id: 1, category: "Supplements", name: "Creatine", dose: "5g", freq: "Once daily", years: 6, cost: 15, costPeriod: "mo", why: "Daily non-negotiable for body and brain.", affiliateUrl: "", tags: ["strength"] },
+      { id: 2, category: "Supplements", name: "Omega-3", dose: "2g EPA/DHA", freq: "Once daily", years: 5, cost: 30, costPeriod: "mo", why: "Baseline anti-inflammatory and brain support.", affiliateUrl: "", tags: ["inflammation"] },
+      { id: 3, category: "Supplements", name: "Vitamin D3 + K2", dose: "5000 IU", freq: "Once daily", years: 4, cost: 16, costPeriod: "mo", why: "Was low. Energy and mood improved once corrected.", affiliateUrl: "", tags: ["immunity"] },
+      { id: 4, category: "Supplements", name: "Magnesium Glycinate", dose: "300mg", freq: "Nightly", years: 4, cost: 16, costPeriod: "mo", why: "Better, deeper sleep and recovery.", affiliateUrl: "", tags: ["sleep"] },
+      { id: 5, category: "Sleep", name: "Eight Sleep Pod", years: 2, cost: 89, costPeriod: "mo", why: "Cool sleep means more deep sleep, every night.", affiliateUrl: "", tags: ["sleep"] },
+      { id: 6, category: "Wearables", name: "Oura Ring", years: 3, cost: 349, costPeriod: "once", why: "Recovery score guides how hard I train that day.", affiliateUrl: "", tags: ["recovery"] },
+      { id: 7, category: "Fitness", name: "Strength + 10k steps", freq: "5x/week", years: 8, cost: 0, costPeriod: "mo", why: "Lift hard a few times a week, walk every day.", affiliateUrl: "", tags: ["movement"] },
+      { id: 8, category: "Nutrition", name: "1g protein / lb", freq: "Daily", years: 5, cost: 0, costPeriod: "mo", why: "Anchor every meal around protein.", affiliateUrl: "", tags: ["protein"] },
+      { id: 9, category: "Other", name: "Sauna", freq: "4x/week", years: 3, cost: 0, costPeriod: "mo", why: "20 minutes, 4x a week. The best stress reset I have.", affiliateUrl: "", tags: ["stress"] },
+      { id: 10, category: "Other", name: "Cold plunge", freq: "Most mornings", years: 2, cost: 0, costPeriod: "mo", why: "2-3 minutes cold most mornings. Sharpens focus.", affiliateUrl: "", tags: ["focus"] },
+      { id: 11, category: "Mind", name: "Daily journaling", freq: "5 min", years: 4, cost: 0, costPeriod: "mo", why: "Five minutes to clear the mind and set intent.", affiliateUrl: "", tags: ["clarity"] },
+    ],
+  },
+  {
+    username: "bryanjohnson", name: "Bryan Johnson", handle: "@bryan_johnson", credential: "Founder of Blueprint · Don't Die",
+    avatarUrl: "", verified: false, publicFigure: true, hideBryanCard: true,
+    highlight: { type: "metric", value: "0.64", label: "pace of aging (DunedinPACE)" },
+    items: [
+      { id: 1, category: "Supplements", name: "Collagen Peptides", dose: "12.5g", freq: "Once daily", years: 4, cost: 30, costPeriod: "mo", why: "Skin, nails and joint support.", affiliateUrl: "", tags: ["skin"] },
+      { id: 2, category: "Supplements", name: "Creatine", dose: "2.5g", freq: "Once daily", years: 5, cost: 12, costPeriod: "mo", why: "Muscle and cognitive support.", affiliateUrl: "", tags: ["strength"] },
+      { id: 3, category: "Supplements", name: "CoQ10", dose: "100mg", freq: "Once daily", years: 5, cost: 22, costPeriod: "mo", why: "Mitochondrial and heart support.", affiliateUrl: "", tags: ["heart"] },
+      { id: 4, category: "Supplements", name: "Omega-3 (EPA/DHA)", dose: "2g", freq: "Once daily", years: 6, cost: 35, costPeriod: "mo", why: "Cardiovascular and cognitive baseline.", affiliateUrl: "", tags: ["heart"] },
+      { id: 5, category: "Supplements", name: "Vitamin D3", dose: "2000 IU", freq: "Once daily", years: 6, cost: 12, costPeriod: "mo", why: "Immune and bone support.", affiliateUrl: "", tags: ["immunity"] },
+      { id: 6, category: "Supplements", name: "Ca-AKG", dose: "1g", freq: "2x daily", years: 4, cost: 50, costPeriod: "mo", why: "Calcium alpha-ketoglutarate, a Blueprint longevity staple.", affiliateUrl: "", tags: ["longevity"] },
+      { id: 7, category: "Supplements", name: "NAC", dose: "1800mg", freq: "Once daily", years: 4, cost: 24, costPeriod: "mo", why: "Glutathione precursor for antioxidant defense.", affiliateUrl: "", tags: ["longevity"] },
+      { id: 8, category: "Supplements", name: "Spermidine", dose: "10mg", freq: "Once daily", years: 3, cost: 40, costPeriod: "mo", why: "Triggers autophagy, the cell's cleanup process.", affiliateUrl: "", tags: ["longevity"] },
+      { id: 9, category: "Supplements", name: "Garlic (Kyolic)", freq: "Once daily", years: 4, cost: 14, costPeriod: "mo", why: "Cardiovascular and cholesterol support.", affiliateUrl: "", tags: ["heart"] },
+      { id: 10, category: "Supplements", name: "Lithium", dose: "1mg", freq: "Microdose daily", years: 3, cost: 10, costPeriod: "mo", why: "Low-dose for brain health and longevity.", affiliateUrl: "", tags: ["brain"] },
+      { id: 11, category: "Wearables", name: "Oura Ring", years: 3, cost: 349, costPeriod: "once", why: "Sleep and recovery tracking.", affiliateUrl: "", tags: ["sleep"] },
+      { id: 12, category: "Sleep", name: "Fixed 8:30pm bedtime", years: 5, cost: 0, costPeriod: "mo", why: "Same sleep and wake time every day. Sleep is priority #1.", affiliateUrl: "", tags: ["sleep"] },
+      { id: 13, category: "Labs", name: "Monthly diagnostics (MRI + bloodwork)", freq: "Monthly", years: 4, cost: 2500, costPeriod: "mo", why: "Whole-body MRI, ultrasound and 100+ biomarkers, every month.", affiliateUrl: "", tags: ["preventive"] },
+      { id: 14, category: "Other", name: "Red light therapy", freq: "Daily", years: 3, cost: 0, costPeriod: "mo", why: "Skin and mitochondrial support.", affiliateUrl: "", tags: ["skin"] },
+      { id: 15, category: "Fitness", name: "1 hr exercise daily", freq: "Daily", years: 6, cost: 0, costPeriod: "mo", why: "~25 min high intensity plus strength and mobility.", affiliateUrl: "", tags: ["strength"] },
+      { id: 16, category: "Nutrition", name: "Vegan, ~2,250 cal, last meal 11am", freq: "Daily", years: 4, cost: 0, costPeriod: "mo", why: "Calorie-restricted, nutrient-dense, time-restricted eating.", affiliateUrl: "", tags: ["diet"] },
+    ],
+  },
   {
     username: "priya", name: "Priya Anand", handle: "@priyaglows", credential: "Skin & sleep optimizer · NYC",
     avatarUrl: "/priya-avatar.jpg", verified: true, bioAge: 29, chronoAge: 34,
@@ -2971,7 +3034,7 @@ function Healthstack({ username }) {
             {stack.highlight
               ? <HighlightCard highlight={stack.highlight} />
               : (stack.bioAge > 0 && stack.chronoAge > 0 && <BioAgeCard bioAge={stack.bioAge} chronoAge={stack.chronoAge} />)}
-            <BryanCardB2 stack={stack} cost={cost} url={`healthstack.app/stack/${username}`} onShare={isExample ? undefined : (p) => shareCardTo(p, shareCardRef.current, stack, cost, toast)} />
+            {!stack.hideBryanCard && <BryanCardB2 stack={stack} cost={cost} url={`healthstack.app/stack/${username}`} onShare={isExample ? undefined : (p) => shareCardTo(p, shareCardRef.current, stack, cost, toast)} />}
           </div>
           <div className="stack-main">
             <StackSection items={stack.items} editable={editable} onEditCategory={(cat) => { setEditCategory(cat); setShowEdit(true); }} username={username} handle={stack.handle} onToast={toast} />
@@ -4066,8 +4129,8 @@ function ReelBlock({ stack }) {
 }
 
 function HomePage() {
-  // Curated fictional demo so visitors see the full breadth of the product.
-  const demo = DEMO_STACK;
+  // Lead the reel with a recognizable public-figure stack (compiled from public sources).
+  const demo = EXAMPLE_STACKS.find(s => s.username === "hubermanlab") || DEMO_STACK;
   const [showInvite, setShowInvite] = useState(false);
   const { msg, show: toast } = useToast();
   const reelRef = useRef(null);
@@ -4083,7 +4146,7 @@ function HomePage() {
     const t = setTimeout(measure, 300); // re-measure after fonts/layout settle
     return () => { window.removeEventListener("resize", measure); clearTimeout(t); };
   }, [demo]);
-  const exampleUser = DEMO_STACK.username;  // always link to the curated demo stack
+  const exampleUser = demo.username;  // "See the full example" links to whatever the reel shows
   // Inviter = the visitor's own stack (if they have one); otherwise the link just sends them to build.
   const myUsername = Object.keys(getStacks()).find(u => u !== "shehan") || "";
   return (
@@ -4365,7 +4428,8 @@ function ExamplesPage() {
         <div className="examples-head">
           <div className="home-section-label" style={{ textAlign: "left", marginBottom: 8 }}>REAL HEALTHSTACKS</div>
           <h1 className="examples-title">See how others optimize.</h1>
-          <p className="examples-sub">Browse real example stacks, every supplement, wearable, and lab, with the why behind each. Then build your own in 2 minutes.</p>
+          <p className="examples-sub">Browse example stacks, every supplement, wearable, and lab, with the why behind each. Then build your own in 2 minutes.</p>
+          <p className="examples-sub" style={{ fontSize: 12, color: "var(--text-dim)", marginTop: 6 }}>Public-figure stacks are illustrative, compiled from public interviews and posts. Not affiliated with or endorsed by the individuals.</p>
         </div>
         <div className="examples-grid">
           {EXAMPLE_STACKS.map(s => {
