@@ -1722,6 +1722,11 @@ function canShareFiles() {
   try { return !!(navigator.canShare && navigator.canShare({ files: [new File([new Blob([""], { type: "image/png" })], "x.png", { type: "image/png" })] })); }
   catch (_) { return false; }
 }
+// Desktop Chrome reports canShare(files)=true but its share sheet needs the click gesture
+// (which is gone after async image work). Only take the native-share path on real touch devices.
+function useNativeFileShare() {
+  return (navigator.maxTouchPoints > 0 || /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent || "")) && canShareFiles();
+}
 // Send a (possibly pre-opened) window to a URL, or open a new one as a fallback.
 function sendShareWindow(win, url) {
   if (win && !win.closed) { try { win.opener = null; } catch (_) {} win.location.href = url; }
@@ -1732,7 +1737,7 @@ async function shareCardTo(platform, node, stack, cost, onToast) {
   const pageUrl = `${window.location.origin}${window.location.pathname}#/stack/${stack.username}`;
   const text = `My entire health stack is ${bjPercent(cost)}% of Bryan Johnson's budget 🧬 Same longevity game, a tiny fraction of the cost.`;
   // Pre-open the share window NOW, inside the click gesture, so it isn't popup-blocked after the async image work.
-  const fileShare = canShareFiles();
+  const fileShare = useNativeFileShare();
   const win = fileShare ? null : window.open("about:blank", "_blank");
   // html-to-image logs caught DOMExceptions while trying to read cross-origin font CSS, harmless, just noisy. Mute during capture.
   const _err = console.error;
@@ -1752,10 +1757,10 @@ async function shareCardTo(platform, node, stack, cost, onToast) {
     const a = document.createElement("a"); a.href = dataUrl; a.download = "healthstack-card.png"; a.click();
 
     if (platform === "x") {
-      // Try to also copy the image to the clipboard so it can be pasted into the composer.
-      try { await navigator.clipboard.write([new window.ClipboardItem({ "image/png": blob })]); } catch (_) {}
       sendShareWindow(win, `https://twitter.com/intent/tweet?text=${encodeURIComponent(`${text} ${pageUrl}`)}`);
-      onToast && onToast("Card saved & copied, paste or attach it to your post 𝕏");
+      // Best-effort clipboard copy (not awaited: the new tab steals focus, which can hang clipboard.write).
+      try { if (navigator.clipboard && window.ClipboardItem) navigator.clipboard.write([new window.ClipboardItem({ "image/png": blob })]).catch(() => {}); } catch (_) {}
+      onToast && onToast("Card saved, paste or attach it to your post 𝕏");
     } else {
       sendShareWindow(win, "https://www.instagram.com/");
       onToast && onToast("Card saved, upload it to your Instagram post 📸");
@@ -1812,7 +1817,7 @@ async function shareAdditionTo(platform, node, { item, username, handle }, onToa
   if (!node || !window.htmlToImage) { if (win && !win.closed) win.close(); onToast && onToast("Sharing not available"); return; }
   const pageUrl = `${window.location.origin}${window.location.pathname}#/stack/${username}`;
   const text = `Just added ${item.name} to my health stack 🧬 Here's everything I take 👇`;
-  const fileShare = canShareFiles();
+  const fileShare = useNativeFileShare();
   if (win === undefined) win = fileShare ? null : window.open("about:blank", "_blank");
   const _err = console.error;
   console.error = (...a) => { if (/cssRules|inlining remote css|remote stylesheet|reading CSS rules/i.test(String(a[0] || ""))) return; _err.apply(console, a); };
@@ -1826,9 +1831,9 @@ async function shareAdditionTo(platform, node, { item, username, handle }, onToa
     }
     const a = document.createElement("a"); a.href = dataUrl; a.download = "healthstack-just-added.png"; a.click();
     if (platform === "x") {
-      try { await navigator.clipboard.write([new window.ClipboardItem({ "image/png": blob })]); } catch (_) {}
       sendShareWindow(win, `https://twitter.com/intent/tweet?text=${encodeURIComponent(`${text} ${pageUrl}`)}`);
-      onToast && onToast("Card saved & copied, paste it into your post 𝕏");
+      try { if (navigator.clipboard && window.ClipboardItem) navigator.clipboard.write([new window.ClipboardItem({ "image/png": blob })]).catch(() => {}); } catch (_) {}
+      onToast && onToast("Card saved, paste it into your post 𝕏");
     } else {
       sendShareWindow(win, "https://www.instagram.com/");
       onToast && onToast("Card saved, upload it to Instagram 📸");
@@ -1865,7 +1870,7 @@ async function buildAdditionGif(node, setStep) {
 async function shareAdditionGif(platform, { node, setStep, item, username, handle, onToast }) {
   if (!node) { onToast && onToast("Sharing not available"); return; }
   // Pre-open the share window NOW, inside the click gesture, so it survives the async GIF encoding.
-  const fileShare = canShareFiles();
+  const fileShare = useNativeFileShare();
   const win = fileShare ? null : window.open("about:blank", "_blank");
   onToast && onToast("Creating your GIF… 🎞️");
   let blob;
