@@ -3465,7 +3465,7 @@ function BuildFlow() {
   }
 
   function submit() {
-    if (!profile.name.trim()) return;
+    if (!profile.name.trim() || !EMAIL_RE.test(profile.email.trim())) return;
     // If a signed-in user already has a stack, update it in place (one canonical
     // username per account) instead of minting a new slug like shehan2/shehan3.
     const existing = currentUserId() ? myStackUsername() : null;
@@ -3479,6 +3479,7 @@ function BuildFlow() {
       twitter: profile.twitter.trim().replace(/^@/, ""),
       instagram: profile.instagram.trim().replace(/^@/, ""),
       email: profile.email.trim(),
+      claimed: true,           // email collected up front, so no need to re-prompt after build
       avatarUrl: profile.avatarUrl || "",
       verified: false,
       items,
@@ -3488,6 +3489,8 @@ function BuildFlow() {
       ...(referredBy && referredBy !== username ? { referredBy } : {}),
     };
     saveStack(stack);
+    remoteWaitlist(stack.email, username);   // collect the email server-side
+    identifyUser(stack.email, stack.email);  // tie behavior to this email in analytics
     track("stack_created", { items: items.length, has_highlight: !!hl, has_avatar: !!stack.avatarUrl, referred: !!referredBy });
     clearRef();
     // Flag so the stack page knows to surface the "claim your stack" prompt
@@ -3550,12 +3553,12 @@ function BuildFlow() {
               </div>
             </div>
             <div className="form-group">
-              <label className="form-label">Email <span style={{color:"var(--text-dim)",fontWeight:400}}>· optional</span></label>
+              <label className="form-label">Email</label>
               <input className="form-input" type="email" placeholder="you@email.com" value={profile.email} onChange={e => setProfile(p => ({ ...p, email: e.target.value }))} />
-              <div className="form-hint">We'll only use this to reach you about your stack.</div>
+              <div className="form-hint">So you can save your stack and edit it from any device. No spam.</div>
             </div>
             <button className="btn btn-primary" style={{ width: "100%", padding: 14, fontSize: 15, marginTop: 8 }}
-              disabled={!profile.name.trim()} onClick={() => setStep(2)}>
+              disabled={!profile.name.trim() || !EMAIL_RE.test(profile.email.trim())} onClick={() => setStep(2)}>
               Continue →
             </button>
           </div>
@@ -3641,7 +3644,7 @@ function BuildFlow() {
             </div>
 
             <button className="btn btn-primary" style={{ width: "100%", padding: 14, fontSize: 15, marginTop: 18 }}
-              disabled={!profile.name.trim()} onClick={submit}>
+              disabled={!profile.name.trim() || !EMAIL_RE.test(profile.email.trim())} onClick={submit}>
               Create my Healthstack 🎉
             </button>
           </div>
