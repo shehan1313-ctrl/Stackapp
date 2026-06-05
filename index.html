@@ -482,6 +482,26 @@
 
     /* Build flow */
     .build-page { padding: 0 0 40px; }
+    /* ── Build dashboard (reward-first onboarding) ── */
+    .build-dash { padding: 8px 16px 60px; }
+    .build-dash .build-header { text-align: left; margin-bottom: 12px; }
+    .dash-profile { display: flex; align-items: center; gap: 11px; margin-bottom: 12px; }
+    .dash-av { width: 46px; height: 46px; border-radius: 50%; flex-shrink: 0; border: 1px dashed var(--border); background: var(--surface-2, #F3F1ED); background-size: cover; background-position: center; color: var(--text-muted); font-weight: 700; font-size: 15px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+    .dash-av:hover { border-color: var(--accent); color: var(--accent); }
+    .dash-name { font-family: var(--font-serif); font-size: 20px; color: var(--text); border: none; background: none; width: 100%; padding: 0; }
+    .dash-name:focus { outline: none; }
+    .dash-name::placeholder { color: var(--text-dim); }
+    .dash-handle { font-size: 11px; color: var(--text-dim); margin-top: 1px; }
+    .dash-reward-empty { background: radial-gradient(120% 120% at 0 0, #2a2420, #141019 64%); color: #cfc7bb; border-radius: 14px; padding: 16px; font-size: 13px; line-height: 1.45; }
+    .dash-reward-empty b { color: var(--accent2); }
+    .dash-hl { margin-top: 12px; }
+    .dash-hl-toggle { width: 100%; text-align: left; background: var(--surface); border: 1px dashed var(--border); border-radius: 10px; padding: 10px 12px; font-size: 13px; font-weight: 600; color: var(--accent); cursor: pointer; }
+    .dash-hl-toggle span { color: var(--text-dim); font-weight: 400; }
+    .dash-hl-toggle:hover { border-color: var(--accent); }
+    .dash-save { width: 100%; padding: 13px; font-size: 15px; margin-top: 14px; }
+    .dash-saveerr { font-size: 12px; color: #C85B54; margin-top: 7px; text-align: center; font-weight: 600; }
+    .dash-savenote { font-size: 11.5px; color: var(--text-muted); margin-top: 8px; text-align: center; }
+    .dash-gate-prog { display: inline-flex; align-items: center; gap: 6px; font-size: 11px; font-weight: 700; color: #3E9B6E; background: rgba(62,155,110,0.12); border: 1px solid rgba(62,155,110,0.3); border-radius: 99px; padding: 3px 11px; }
     .build-header { padding: 20px 20px 16px; }
     .build-back {
       display: inline-flex; align-items: center; gap: 6px; font-size: 13px; color: var(--text-muted);
@@ -3482,28 +3502,33 @@ function EarningsPage({ username }) {
 // ── BUILD FLOW ────────────────────────────────────────────────────────────────
 
 function BuildFlow() {
-  const [step, setStep] = useState(1);
-  const [profile, setProfile] = useState({ name: "", twitter: "", instagram: "", email: "", avatarUrl: "" });
   const [items, setItems] = useState([]);
-  // Pickable hero highlight: type 'metric' | 'win' | 'tip'
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState(() => getFollowEmail());
+  const [emailGiven, setEmailGiven] = useState(() => EMAIL_RE.test(getFollowEmail()));
+  const [gateOpen, setGateOpen] = useState(false);
+  const [gateErr, setGateErr] = useState("");
+  const [saveErr, setSaveErr] = useState("");
   const [highlight, setHighlight] = useState({ type: "metric", value: "", label: "", text: "" });
+  const [avatarUrl, setAvatarUrl] = useState("");
+  const [showHl, setShowHl] = useState(false);
   const avatarInputRef = useRef(null);
+  const cost = totalCost(items);
+  const EMAIL_GATE_AFTER = 2;  // blocking email popup fires once the user has this many items
 
-  // ── Funnel instrumentation: where do people abandon onboarding? ──
   useEffect(() => { track("build_started"); }, []);
   const itemsTracked = useRef(false);
   useEffect(() => {
     if (!itemsTracked.current && items.length > 0) { itemsTracked.current = true; track("build_items_added"); }
   }, [items.length]);
+  useEffect(() => {
+    if (items.length >= EMAIL_GATE_AFTER && !emailGiven && !gateOpen) { setGateOpen(true); track("email_gate_shown"); }
+  }, [items.length, emailGiven, gateOpen]);
 
   async function handleAvatar(e) {
-    const file = e.target.files?.[0];
-    e.target.value = "";
-    if (!file) return;
-    const dataUrl = await resizeImage(file, 256);  // compact, square-ish for the avatar circle
-    if (dataUrl) setProfile(p => ({ ...p, avatarUrl: dataUrl }));
+    const file = e.target.files?.[0]; e.target.value = ""; if (!file) return;
+    const d = await resizeImage(file, 256); if (d) setAvatarUrl(d);
   }
-
   function buildHighlight() {
     if (highlight.type === "metric" && highlight.value.trim() && highlight.label.trim())
       return { type: "metric", value: highlight.value.trim(), label: highlight.label.trim() };
@@ -3511,193 +3536,117 @@ function BuildFlow() {
       return { type: highlight.type, text: highlight.text.trim() };
     return null;
   }
-
-  function submit() {
-    if (!profile.name.trim() || !EMAIL_RE.test(profile.email.trim())) return;
-    // If a signed-in user already has a stack, update it in place (one canonical
-    // username per account) instead of minting a new slug like shehan2/shehan3.
+  function submitGate() {
+    const v = email.trim();
+    if (!EMAIL_RE.test(v)) { setGateErr("Enter a valid email"); return; }
+    try { localStorage.setItem("follow_email", v); } catch (_) {}
+    identifyUser(v, v); remoteWaitlist(v, "(building)"); track("email_gate_submitted");
+    setEmailGiven(true); setGateOpen(false); setGateErr("");
+  }
+  function save() {
+    if (items.length === 0) return;
+    if (!emailGiven) { setGateOpen(true); return; }
+    if (!name.trim()) { setSaveErr("Add your name first ↑"); return; }
     const existing = currentUserId() ? myStackUsername() : null;
-    const username = existing || uniqueUsername(profile.name);
-    const referredBy = consumeRef();  // who invited this creator (Path 2), if anyone
+    const username = existing || uniqueUsername(name);
+    const referredBy = consumeRef();
     const hl = buildHighlight();
     const stack = {
-      username,
-      name: profile.name.trim(),
-      handle: "@" + username,
-      twitter: profile.twitter.trim().replace(/^@/, ""),
-      instagram: profile.instagram.trim().replace(/^@/, ""),
-      email: profile.email.trim(),
-      claimed: true,           // email collected up front, so no need to re-prompt after build
-      avatarUrl: profile.avatarUrl || "",
-      verified: false,
-      items,
+      username, name: name.trim(), handle: "@" + username,
+      email: email.trim(), claimed: true, avatarUrl: avatarUrl || "", verified: false, items,
       ...(hl ? { highlight: hl } : {}),
-      ...(currentUserId() ? { owner_id: currentUserId() } : {}),  // tie to account if signed in
-      // ── BACKEND ──: referredBy powers referral-commission payouts later
+      ...(currentUserId() ? { owner_id: currentUserId() } : {}),
       ...(referredBy && referredBy !== username ? { referredBy } : {}),
     };
     saveStack(stack);
-    remoteWaitlist(stack.email, username);   // collect the email server-side
-    identifyUser(stack.email, stack.email);  // tie behavior to this email in analytics
+    remoteWaitlist(stack.email, username);
+    identifyUser(stack.email, stack.email);
     track("stack_created", { items: items.length, has_highlight: !!hl, has_avatar: !!stack.avatarUrl, referred: !!referredBy });
     clearRef();
-    // Flag so the stack page knows to surface the "claim your stack" prompt
-    try { sessionStorage.setItem("sp_justBuilt", username); } catch(_) {}
+    try { sessionStorage.setItem("sp_justBuilt", username); } catch (_) {}
     if (window.confetti) window.confetti({ particleCount: 130, spread: 80, origin: { y: 0.5 }, colors: ["#2F7A55", "#5A9B74", "#C2895A", "#2A2620"] });
     navigate(`#/stack/${username}`);
   }
 
-  const stepDots = [1, 2, 3];
-  const titleMap = { 1: "Create your stack", 2: "Build your stack", 3: "Preview your page" };
-  const subMap = { 1: "Start with your profile", 2: `${items.length} item${items.length !== 1 ? "s" : ""} added`, 3: "Here's how it'll look, looking good?" };
-
   return (
     <div>
       <Topbar />
-      <div className="build-page">
-        <div className="build-header anim-0">
-          <button className="build-back" onClick={() => step > 1 ? setStep(s => s - 1) : navigate(`#/stack/${DEMO_STACK.username}`)}>
-            ← {step > 1 ? "Back" : "View demo"}
-          </button>
-          <div className="build-title">{titleMap[step]}</div>
-          <div className="build-subtitle">{subMap[step]}</div>
-        </div>
-        <div className="step-indicator anim-1">
-          {stepDots.map((n, i) => (
-            <React.Fragment key={n}>
-              {i > 0 && <div className={`step-line ${step > n - 1 ? "done" : ""}`} />}
-              <div className={`step-dot ${step === n ? "active" : step > n ? "done" : "pending"}`}>
-                {step > n ? "✓" : n}
-              </div>
-            </React.Fragment>
-          ))}
+      <div className="page page-stack build-dash">
+        <div className="build-header anim-0" style={{ paddingTop: 8 }}>
+          <button className="build-back" onClick={() => navigate(`#/stack/${DEMO_STACK.username}`)}>← View demo</button>
+          <div className="build-title">Build your stack</div>
+          <div className="build-subtitle">{items.length ? `${items.length} item${items.length !== 1 ? "s" : ""}${cost > 0 ? ` · $${cost}/mo` : ""}` : "Add your first item — talk, type, or tap a category"}</div>
         </div>
 
-        {step === 1 && (
-          <div className="form-section anim-2">
-            <input ref={avatarInputRef} type="file" accept="image/*" style={{ display: "none" }} onChange={handleAvatar} />
-            <div className="avatar-upload" onClick={() => avatarInputRef.current?.click()}>
-              <div className="avatar-upload-circle" style={profile.avatarUrl ? { backgroundImage: `url(${profile.avatarUrl})` } : undefined}>
-                {!profile.avatarUrl && (
-                  <span className="avatar-upload-plus">{profile.name ? profile.name.split(" ").map(w=>w[0]).join("").slice(0,2).toUpperCase() : "+"}</span>
-                )}
-                <div className="avatar-upload-cam">📷</div>
+        <div className="stack-layout">
+          <div className="stack-rail">
+            <div className="dash-profile">
+              <input ref={avatarInputRef} type="file" accept="image/*" style={{ display: "none" }} onChange={handleAvatar} />
+              <button className="dash-av" onClick={() => avatarInputRef.current?.click()} style={avatarUrl ? { backgroundImage: `url(${avatarUrl})` } : undefined} aria-label="Add photo">
+                {!avatarUrl && (name.trim() ? name.trim().split(" ").map(w => w[0]).join("").slice(0, 2).toUpperCase() : "＋")}
+              </button>
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <input className="dash-name" placeholder="Your name" value={name} onChange={e => { setName(e.target.value); setSaveErr(""); }} />
+                <div className="dash-handle">healthstack.app/stack/{toUsername(name) || "yourname"}</div>
               </div>
-              <div className="avatar-upload-label">{profile.avatarUrl ? "Change photo" : "Add a profile photo · optional"}</div>
-            </div>
-            <div className="form-group">
-              <label className="form-label">Name *</label>
-              <input className="form-input" placeholder="Jane Smith" value={profile.name} onChange={e => setProfile(p => ({ ...p, name: e.target.value }))} />
-              <div className="form-hint">Your page: healthstack.app/stack/{toUsername(profile.name) || "yourname"}</div>
-            </div>
-            <div className="form-row">
-              <div className="form-group">
-                <label className="form-label">Twitter / X <span style={{color:"var(--text-dim)",fontWeight:400}}>· optional</span></label>
-                <input className="form-input" placeholder="@handle" value={profile.twitter} onChange={e => setProfile(p => ({ ...p, twitter: e.target.value }))} />
-              </div>
-              <div className="form-group">
-                <label className="form-label">Instagram <span style={{color:"var(--text-dim)",fontWeight:400}}>· optional</span></label>
-                <input className="form-input" placeholder="@handle" value={profile.instagram} onChange={e => setProfile(p => ({ ...p, instagram: e.target.value }))} />
-              </div>
-            </div>
-            <div className="form-group">
-              <label className="form-label">Email *</label>
-              <input className="form-input" type="email" placeholder="you@email.com" value={profile.email} onChange={e => setProfile(p => ({ ...p, email: e.target.value }))} />
-              <div className="form-hint">So you can save your stack and edit it from any device. No spam.</div>
-            </div>
-            <button className="btn btn-primary" style={{ width: "100%", padding: 14, fontSize: 15, marginTop: 8 }}
-              disabled={!profile.name.trim() || !EMAIL_RE.test(profile.email.trim())} onClick={() => { track("build_profile_done"); setStep(2); }}>
-              Continue →
-            </button>
-          </div>
-        )}
-
-        {step === 2 && <Step2Items items={items} setItems={setItems} onNext={() => { track("build_previewed", { items: items.length }); setStep(3); }} />}
-
-        {step === 3 && (
-          <div className="form-section anim-2">
-            {/* Live preview of the page they're about to create */}
-            <div className="build-preview">
-              <div className="build-preview-top">
-                <div className="avatar" style={{ width: 48, height: 48, fontSize: 18, backgroundImage: `url(${profile.avatarUrl || DEFAULT_AVATAR})`, backgroundSize: "cover", backgroundPosition: "center" }}>
-                  {false && (profile.name || "Y").split(" ").map(w => w[0]).join("").slice(0,2).toUpperCase()}
-                </div>
-                <div style={{ flex: 1, minWidth: 0 }}>
-                  <div className="build-preview-name">{profile.name || "Your name"}</div>
-                  <div className="build-preview-handle">@{toUsername(profile.name) || "yourname"}</div>
-                </div>
-                {highlight.type === "metric" && highlight.value.trim() && (
-                  <div style={{ textAlign: "center" }}>
-                    <div style={{ fontFamily: "var(--font-serif)", fontSize: 24, color: "var(--accent)", lineHeight: 1 }}>{highlight.value}</div>
-                    <div style={{ fontSize: 9, color: "var(--text-muted)", letterSpacing: 0.5, marginTop: 2 }}>{(highlight.label || "").toUpperCase()}</div>
-                  </div>
-                )}
-              </div>
-              {(highlight.type === "win" || highlight.type === "tip") && highlight.text.trim() && (
-                <div style={{ fontFamily: "var(--font-serif)", fontStyle: "italic", fontSize: 14, color: "var(--text)", marginTop: 10, lineHeight: 1.4 }}>“{highlight.text}”</div>
-              )}
-              <div className="build-preview-divider" />
-              {CATEGORIES.filter(c => items.some(i => i.category === c)).map(cat => (
-                <div key={cat} className="build-preview-catrow">
-                  <span className="build-preview-dot" style={{ background: CATEGORY_COLORS[cat] }} />
-                  <span className="build-preview-cat">{cat}</span>
-                  <span className="build-preview-catn">{items.filter(i => i.category === cat).length}</span>
-                </div>
-              ))}
-              {items.length === 0 && <div style={{ fontSize: 12, color: "var(--text-dim)", textAlign: "center", padding: "4px 0" }}>No items yet, you can add them after.</div>}
-              {totalCost(items) > 0 && (
-                <div className="build-preview-cost"><span>Monthly investment</span><strong>~${totalCost(items)}/mo</strong></div>
-              )}
             </div>
 
-            {/* Pickable hero highlight */}
-            <div className="build-highlight">
-              <div className="form-label" style={{ marginBottom: 8 }}>Add a highlight <span style={{color:"var(--text-dim)",fontWeight:400}}>· optional, but makes your page pop</span></div>
-              <div className="hl-tabs">
-                {[["metric","📊 Proud metric"],["win","🏆 Health win"],["tip","💡 #1 tip"]].map(([t,lab]) => (
-                  <button key={t} className={`hl-tab ${highlight.type===t?"on":""}`} onClick={() => setHighlight(h => ({ ...h, type: t }))}>{lab}</button>
-                ))}
-              </div>
+            {cost > 0
+              ? <BryanCardB2 stack={{ name, handle: "@" + (toUsername(name) || "you"), username: "", avatarUrl }} cost={cost} />
+              : <div className="dash-reward-empty">⏳ Add items to see how your stack compares to Bryan Johnson&apos;s <b>$167K/mo</b>.</div>}
 
-              {highlight.type === "metric" && (
+            <div className="dash-hl">
+              {!showHl ? (
+                <button className="dash-hl-toggle" onClick={() => setShowHl(true)}>+ Add a highlight <span>optional</span></button>
+              ) : (
                 <>
-                  <div style={{ display: "flex", flexWrap: "wrap", gap: 6, margin: "12px 0" }}>
-                    {["Resting HR","VO2 max","Deep sleep","HRV","Biological age","Body fat %"].map(p => (
-                      <button key={p} className="feedback-chip" onClick={() => setHighlight(h => ({ ...h, label: p }))}>{p}</button>
-                    ))}
-                  </div>
-                  <div className="form-row">
-                    <div className="form-group" style={{ marginBottom: 0, flex: "0 0 38%" }}>
-                      <label className="form-label">Value</label>
-                      <input className="form-input" placeholder="48 bpm" value={highlight.value} onChange={e => setHighlight(h => ({ ...h, value: e.target.value }))} />
+                  <div className="hl-tabs">{[["metric", "📊 Metric"], ["win", "🏆 Win"], ["tip", "💡 Tip"]].map(([t, lab]) => (
+                    <button key={t} className={`hl-tab ${highlight.type === t ? "on" : ""}`} onClick={() => setHighlight(h => ({ ...h, type: t }))}>{lab}</button>
+                  ))}</div>
+                  {highlight.type === "metric" ? (
+                    <div className="form-row" style={{ marginTop: 10 }}>
+                      <div className="form-group" style={{ flex: "0 0 40%", marginBottom: 0 }}><input className="form-input" placeholder="48 bpm" value={highlight.value} onChange={e => setHighlight(h => ({ ...h, value: e.target.value }))} /></div>
+                      <div className="form-group" style={{ marginBottom: 0 }}><input className="form-input" placeholder="Resting HR" value={highlight.label} onChange={e => setHighlight(h => ({ ...h, label: e.target.value }))} /></div>
                     </div>
-                    <div className="form-group" style={{ marginBottom: 0 }}>
-                      <label className="form-label">Label</label>
-                      <input className="form-input" placeholder="Resting heart rate" value={highlight.label} onChange={e => setHighlight(h => ({ ...h, label: e.target.value }))} />
-                    </div>
-                  </div>
+                  ) : (
+                    <textarea className="form-textarea" style={{ marginTop: 10 }} maxLength={120}
+                      placeholder={highlight.type === "win" ? "e.g. Reversed my pre-diabetes in 6 months." : "e.g. Get morning sunlight in your eyes."}
+                      value={highlight.text} onChange={e => setHighlight(h => ({ ...h, text: e.target.value }))} />
+                  )}
                 </>
               )}
-
-              {highlight.type === "win" && (
-                <div style={{ marginTop: 12 }}>
-                  <textarea className="form-textarea" placeholder="e.g. Reversed my pre-diabetes in 6 months." value={highlight.text} onChange={e => setHighlight(h => ({ ...h, text: e.target.value }))} maxLength={120} />
-                </div>
-              )}
-              {highlight.type === "tip" && (
-                <div style={{ marginTop: 12 }}>
-                  <textarea className="form-textarea" placeholder="e.g. If you do one thing: get morning sunlight." value={highlight.text} onChange={e => setHighlight(h => ({ ...h, text: e.target.value }))} maxLength={120} />
-                </div>
-              )}
             </div>
 
-            <button className="btn btn-primary" style={{ width: "100%", padding: 14, fontSize: 15, marginTop: 18 }}
-              disabled={!profile.name.trim() || !EMAIL_RE.test(profile.email.trim())} onClick={submit}>
-              Create my Healthstack 🎉
-            </button>
+            <button className="btn btn-primary dash-save" onClick={save} disabled={items.length === 0}>Save &amp; share my stack →</button>
+            {saveErr && <div className="dash-saveerr">{saveErr}</div>}
+            {!emailGiven && items.length > 0 && items.length < EMAIL_GATE_AFTER && (
+              <div className="dash-savenote">Add one more and we&apos;ll save your stack to your email.</div>
+            )}
           </div>
-        )}
+
+          <div className="stack-main">
+            <Step2Items items={items} setItems={setItems} onNext={save} embedded />
+          </div>
+        </div>
       </div>
+
+      {gateOpen && (
+        <div className="modal-bg">
+          <div className="modal-sheet" style={{ paddingBottom: 28, textAlign: "center" }}>
+            <div style={{ fontSize: 34 }}>🧬</div>
+            <div className="dash-gate-prog">✓ {items.length} items added</div>
+            <div className="modal-title" style={{ margin: "6px 0" }}>Nice start. Let&apos;s save it.</div>
+            <div style={{ fontSize: 13.5, color: "var(--text-muted)", lineHeight: 1.5, marginBottom: 16 }}>
+              Drop your email so your stack is <b style={{ color: "var(--text)" }}>saved and yours</b> — pick up on any device, get your shareable link, and keep building.
+            </div>
+            <input className="form-input" type="email" autoFocus placeholder="you@email.com" value={email}
+              onChange={e => { setEmail(e.target.value); setGateErr(""); }} onKeyDown={e => e.key === "Enter" && submitGate()} />
+            {gateErr && <div className="dash-saveerr" style={{ marginTop: 8 }}>{gateErr}</div>}
+            <button className="btn btn-primary" style={{ width: "100%", padding: 13, fontSize: 15, marginTop: 10 }} onClick={submitGate}>Save &amp; keep building →</button>
+            <div style={{ fontSize: 11, color: "var(--text-dim)", marginTop: 11 }}>No password, no spam · unsubscribe anytime</div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
@@ -3818,7 +3767,7 @@ function MagicAdd({ existingItems, onAdd }) {
 
 // ── STEP 2: CATEGORY-BASED ITEM BUILDER ───────────────────────────────────────
 
-function Step2Items({ items, setItems, onNext }) {
+function Step2Items({ items, setItems, onNext, embedded }) {
   const [openCat, setOpenCat] = useState(null);
   const [search, setSearch] = useState("");
   const [selected, setSelected] = useState(null);
@@ -3952,11 +3901,13 @@ function Step2Items({ items, setItems, onNext }) {
           </div>
         </div>
 
-        <div style={{ padding: "16px 20px 0" }}>
-          <button className="btn btn-primary" style={{ width: "100%", padding: 14, fontSize: 15 }} onClick={onNext}>
-            {items.length === 0 ? "Skip for now →" : `Continue with ${items.length} item${items.length !== 1 ? "s" : ""} →`}
-          </button>
-        </div>
+        {!embedded && (
+          <div style={{ padding: "16px 20px 0" }}>
+            <button className="btn btn-primary" style={{ width: "100%", padding: 14, fontSize: 15 }} onClick={onNext}>
+              {items.length === 0 ? "Skip for now →" : `Continue with ${items.length} item${items.length !== 1 ? "s" : ""} →`}
+            </button>
+          </div>
+        )}
 
         {showFeedback && <FeedbackModal onClose={() => setShowFeedback(false)} />}
       </div>
