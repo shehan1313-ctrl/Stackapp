@@ -2311,6 +2311,7 @@ function parseHash(h) {
   if (parts[0] === "about") return { route: "about" };
   if (parts[0] === "privacy") return { route: "privacy" };
   if (parts[0] === "terms") return { route: "terms" };
+  if (parts[0] === "users") return { route: "users" };  // hidden admin, not linked anywhere
   return { route: "404" };
 }
 function navigate(path) { window.location.hash = path; }
@@ -4613,6 +4614,135 @@ function FollowControl({ creator, name, variant = "card" }) {
   );
 }
 
+// ── HIDDEN ADMIN: all user-built stacks (#/users). Not linked from anywhere. ──
+// NOTE: client-side passcode is a speed bump, not real security (the stacks table is
+// already anon-readable via the publishable key). For real protection, move reads behind
+// RLS + a service role / authenticated admin. Fine for a private early-stage dashboard.
+const ADMIN_CODE = "stackadmin";
+function AdminUsers() {
+  usePageTitle("Users · Healthstack admin");
+  const [authed, setAuthed] = useState(() => { try { return sessionStorage.getItem("admin_ok") === "1"; } catch (_) { return false; } });
+  const [code, setCode] = useState("");
+  const [rows, setRows] = useState(null);
+  const [err, setErr] = useState("");
+  const [hideTest, setHideTest] = useState(true);
+
+  useEffect(() => {
+    if (!authed) return;
+    let alive = true;
+    (async () => {
+      if (!sb) { setErr("Backend unavailable"); setRows([]); return; }
+      const { data, error } = await sb.from("stacks").select("username,name,created_at,updated_at,owner_id,data").order("created_at", { ascending: false });
+      if (!alive) return;
+      if (error) { setErr(error.message); setRows([]); return; }
+      setRows(data || []);
+    })();
+    return () => { alive = false; };
+  }, [authed]);
+
+  const enter = () => {
+    if (code.trim() === ADMIN_CODE) { try { sessionStorage.setItem("admin_ok", "1"); } catch (_) {} setAuthed(true); }
+    else setErr("Wrong passcode");
+  };
+
+  if (!authed) {
+    return (
+      <div className="static-page"><Topbar />
+        <div className="static-wrap" style={{ maxWidth: 360, textAlign: "center" }}>
+          <h1 className="static-title">Admin</h1>
+          <input className="form-input" type="password" placeholder="Passcode" value={code}
+                 onChange={e => { setCode(e.target.value); setErr(""); }} onKeyDown={e => e.key === "Enter" && enter()} autoFocus />
+          {err && <div style={{ color: "#C85B54", fontSize: 12, marginTop: 8 }}>{err}</div>}
+          <button className="btn btn-primary" style={{ width: "100%", marginTop: 12, padding: 12 }} onClick={enter}>Enter</button>
+        </div>
+      </div>
+    );
+  }
+
+  const all = rows || [];
+  const view = hideTest ? all.filter(r => !/^shehan/i.test(r.username || "")) : all;
+  const emails = [...new Set(view.map(r => (r.data && r.data.email) || "").filter(e => EMAIL_RE.test(e)))];
+  const stats = {
+    total: view.length,
+    withItems: view.filter(r => ((r.data && r.data.items) || []).length > 0).length,
+    withEmail: emails.length,
+    accounts: view.filter(r => r.owner_id).length,
+    items: view.reduce((n, r) => n + ((r.data && r.data.items) || []).length, 0),
+  };
+  const fmt = (s) => (s || "").replace("T", " ").slice(0, 16);
+  const csv = () => {
+    const head = ["username", "name", "email", "items", "categories", "claimed", "has_account", "created"];
+    const lines = view.map(r => {
+      const d = r.data || {}, items = d.items || [];
+      const cats = [...new Set(items.map(i => i.category))].join(" ");
+      const cell = (v) => `"${String(v == null ? "" : v).replace(/"/g, '""')}"`;
+      return [r.username, d.name || r.name, d.email || "", items.length, cats, d.claimed ? "yes" : "no", r.owner_id ? "yes" : "no", fmt(r.created_at)].map(cell).join(",");
+    });
+    const blob = new Blob([[head.join(","), ...lines].join("\n")], { type: "text/csv" });
+    const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = "healthstack-users.csv"; a.click();
+  };
+  const copyEmails = () => { try { navigator.clipboard.writeText(emails.join(", ")); } catch (_) {} };
+
+  const th = { textAlign: "left", padding: "8px 10px", fontSize: 11, textTransform: "uppercase", letterSpacing: ".5px", color: "var(--text-dim)", borderBottom: "1px solid var(--border)", whiteSpace: "nowrap" };
+  const td = { padding: "8px 10px", fontSize: 13, borderBottom: "1px solid var(--border)", verticalAlign: "top" };
+
+  return (
+    <div className="static-page"><Topbar />
+      <div className="static-wrap" style={{ maxWidth: 1100 }}>
+        <h1 className="static-title" style={{ marginBottom: 4 }}>Users</h1>
+        {rows === null ? <p style={{ color: "var(--text-muted)" }}>Loading…</p> : (
+          <>
+            <div style={{ display: "flex", gap: 18, flexWrap: "wrap", margin: "10px 0 16px", fontSize: 13, color: "var(--text-muted)" }}>
+              <span><b style={{ color: "var(--text)" }}>{stats.total}</b> stacks</span>
+              <span><b style={{ color: "var(--text)" }}>{stats.withItems}</b> with items</span>
+              <span><b style={{ color: "var(--text)" }}>{stats.withEmail}</b> with email</span>
+              <span><b style={{ color: "var(--text)" }}>{stats.accounts}</b> logged-in</span>
+              <span><b style={{ color: "var(--text)" }}>{stats.items}</b> total items</span>
+            </div>
+            <div style={{ display: "flex", gap: 8, alignItems: "center", marginBottom: 14, flexWrap: "wrap" }}>
+              <button className="btn btn-outline btn-sm" onClick={copyEmails}>Copy {emails.length} emails</button>
+              <button className="btn btn-outline btn-sm" onClick={csv}>Download CSV</button>
+              <label style={{ fontSize: 12, color: "var(--text-muted)", display: "flex", alignItems: "center", gap: 6, marginLeft: 4 }}>
+                <input type="checkbox" checked={hideTest} onChange={e => setHideTest(e.target.checked)} /> hide shehan* test rows
+              </label>
+            </div>
+            {err && <div style={{ color: "#C85B54", fontSize: 13, marginBottom: 10 }}>{err}</div>}
+            <div style={{ overflowX: "auto", border: "1px solid var(--border)", borderRadius: 12 }}>
+              <table style={{ width: "100%", borderCollapse: "collapse" }}>
+                <thead><tr>
+                  <th style={th}>#</th><th style={th}>User</th><th style={th}>Email</th><th style={th}>Items</th>
+                  <th style={th}>Categories</th><th style={th}>Claimed</th><th style={th}>Account</th><th style={th}>Created</th>
+                </tr></thead>
+                <tbody>
+                  {view.map((r, i) => {
+                    const d = r.data || {}, items = d.items || [];
+                    const cats = [...new Set(items.map(it => it.category))];
+                    return (
+                      <tr key={r.username}>
+                        <td style={{ ...td, color: "var(--text-dim)" }}>{i + 1}</td>
+                        <td style={td}>
+                          <a href={`#/stack/${r.username}`} style={{ color: "var(--accent)", fontWeight: 600, textDecoration: "none" }}>{d.name || r.name || r.username}</a>
+                          <div style={{ color: "var(--text-dim)", fontSize: 11 }}>@{r.username}</div>
+                        </td>
+                        <td style={{ ...td, fontSize: 12 }}>{d.email || <span style={{ color: "var(--text-dim)" }}>—</span>}</td>
+                        <td style={td}>{items.length}</td>
+                        <td style={{ ...td, fontSize: 11, color: "var(--text-muted)", maxWidth: 220 }}>{cats.join(", ")}</td>
+                        <td style={td}>{d.claimed ? "✓" : ""}</td>
+                        <td style={td}>{r.owner_id ? "✓" : ""}</td>
+                        <td style={{ ...td, fontSize: 11, color: "var(--text-muted)", whiteSpace: "nowrap" }}>{fmt(r.created_at)}</td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          </>
+        )}
+      </div>
+    </div>
+  );
+}
+
 function ExamplesPage() {
   usePageTitle("Health stacks of Huberman, Bryan Johnson, Attia & more · Healthstack");
   return (
@@ -4708,6 +4838,7 @@ function App() {
   if (loc.route === "about") return <StaticPage page="about" />;
   if (loc.route === "privacy") return <StaticPage page="privacy" />;
   if (loc.route === "terms") return <StaticPage page="terms" />;
+  if (loc.route === "users") return <AdminUsers />;
   return (
     <div><Topbar />
       <div className="not-found">
