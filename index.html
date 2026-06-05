@@ -507,6 +507,12 @@
     .dash-saveerr { font-size: 12px; color: #C85B54; margin-top: 7px; text-align: center; font-weight: 600; }
     .dash-savenote { font-size: 11.5px; color: var(--text-muted); margin-top: 8px; text-align: center; }
     .dash-gate-prog { display: inline-flex; align-items: center; gap: 6px; font-size: 11px; font-weight: 700; color: #3E9B6E; background: rgba(62,155,110,0.12); border: 1px solid rgba(62,155,110,0.3); border-radius: 99px; padding: 3px 11px; }
+    /* Mobile: show the builder first, name + reward + save below (so 'Save' isn't a disabled button above an empty builder) */
+    @media (max-width: 999px) {
+      .build-dash .stack-layout { display: flex; flex-direction: column; }
+      .build-dash .stack-main { order: 1; }
+      .build-dash .stack-rail { order: 2; margin-top: 16px; }
+    }
     .build-header { padding: 20px 20px 16px; }
     .build-back {
       display: inline-flex; align-items: center; gap: 6px; font-size: 13px; color: var(--text-muted);
@@ -1047,11 +1053,11 @@
     .example-card-cta { font-size: 13px; font-weight: 600; color: var(--accent); }
     .example-card-foot { margin-top: 14px; display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
     /* Follow / weekly-updates capture */
-    .follow-wrap.page { margin: 0 0 4px; }
+    .follow-wrap.fv-page { margin: 0 0 4px; }
     .follow-btn { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 600; border: 1px solid var(--border); background: var(--surface); color: var(--text-muted); border-radius: 999px; padding: 7px 12px; cursor: pointer; transition: all 0.15s ease; }
     .follow-btn:hover { border-color: var(--accent); color: var(--accent); }
     .follow-btn.done { background: rgba(62,155,110,0.1); border-color: rgba(62,155,110,0.38); color: #3E9B6E; cursor: default; }
-    .follow-btn.page { width: 100%; justify-content: center; padding: 11px; font-size: 13px; }
+    .follow-btn.fv-page { display: flex; width: 100%; justify-content: center; padding: 11px; font-size: 13px; }
     .follow-form { display: flex; gap: 6px; margin-top: 9px; }
     .follow-input { flex: 1; min-width: 0; font-size: 13px; padding: 9px 11px; border: 1px solid var(--border); border-radius: 10px; background: var(--surface); color: var(--text); }
     .follow-input:focus { outline: none; border-color: var(--accent); }
@@ -4592,15 +4598,15 @@ function FollowControl({ creator, name, variant = "card" }) {
 
   if (followed) {
     return (
-      <div className={`follow-wrap ${variant}`} onClick={stop}>
-        <button className={`follow-btn done ${variant}`} onClick={stop} type="button">✓ Following {first}</button>
+      <div className={`follow-wrap fv-${variant}`} onClick={stop}>
+        <button className={`follow-btn done fv-${variant}`} onClick={stop} type="button">✓ Following {first}</button>
         {justFollowed && <div className="follow-note">Nice. We'll email you a 5-min digest after {first}'s next episode.</div>}
       </div>
     );
   }
   return (
-    <div className={`follow-wrap ${variant}`} onClick={stop}>
-      <button className={`follow-btn ${variant}`} onClick={onToggle} type="button">🔔 Follow for weekly updates</button>
+    <div className={`follow-wrap fv-${variant}`} onClick={stop}>
+      <button className={`follow-btn fv-${variant}`} onClick={onToggle} type="button">🔔 Follow for weekly updates</button>
       {open && (
         <form className="follow-form" onClick={stop} onSubmit={(e) => { e.preventDefault(); doFollow(email); }}>
           <input className="follow-input" type="email" inputMode="email" autoFocus placeholder="you@email.com"
