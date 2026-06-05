@@ -221,6 +221,28 @@
     /* Option B, gradient tile grid */
     /* Tile B, clean neutral card, 3 columns, color only in the icon, quiet "Get it" */
     .stack-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+    /* ── B1 tabular stack: per-category panel with gradient header ── */
+    .spanel { margin-bottom: 14px; border-radius: 16px; overflow: hidden; background: var(--surface); border: 1px solid rgba(0,0,0,0.04); }
+    .spanel-h { display: flex; align-items: center; gap: 9px; padding: 11px 16px; color: #fff; font-size: 11px; font-weight: 700; letter-spacing: 0.8px; text-transform: uppercase; }
+    .spanel-ic { font-size: 13px; filter: drop-shadow(0 1px 1px rgba(0,0,0,0.2)); }
+    .spanel-cnt { margin-left: auto; font-size: 11px; font-weight: 700; background: rgba(255,255,255,0.22); color: #fff; border-radius: 999px; padding: 2px 9px; }
+    .spanel-edit { margin-left: auto; display: inline-flex; align-items: center; justify-content: center; width: 22px; height: 22px; border: none; background: rgba(255,255,255,0.18); color: #fff; border-radius: 6px; cursor: pointer; transition: background 0.12s ease; padding: 0; }
+    .spanel-edit + .spanel-cnt { margin-left: 0; }
+    .spanel-edit:hover { background: rgba(255,255,255,0.34); }
+    .srow { display: flex; align-items: flex-start; gap: 11px; padding: 10px 16px; cursor: pointer; transition: background 0.12s ease; }
+    .srow + .srow { border-top: 1px solid #F1EEE8; }
+    .srow:hover { background: #FCFAF7; }
+    .srow-chip { width: 30px; height: 30px; border-radius: 8px; display: flex; align-items: center; justify-content: center; overflow: hidden; flex-shrink: 0; margin-top: 1px; box-shadow: 0 2px 5px rgba(0,0,0,0.10), inset 0 1px 0 rgba(255,255,255,0.7); }
+    .srow-chip img { width: 100%; height: 100%; object-fit: cover; }
+    .srow-chip .gitem-ini, .srow-chip .gitem-emoji { font-size: 13px; }
+    .srow-body { flex: 1; min-width: 0; }
+    .srow-name { font-size: 13px; font-weight: 600; letter-spacing: -0.1px; color: var(--text); }
+    .srow-sub { font-size: 10px; color: var(--text-dim); margin-top: 1px; }
+    .srow-why { font-size: 11.5px; color: #5f574b; line-height: 1.4; margin-top: 2px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+    .srow-right { display: flex; flex-direction: column; align-items: flex-end; gap: 3px; white-space: nowrap; margin-top: 1px; }
+    .srow-cost { font-size: 11.5px; color: var(--text-muted); }
+    .srow-get { font-size: 11px; font-weight: 600; color: var(--accent); text-decoration: none; }
+    .srow-get:hover { text-decoration: underline; }
     .gitem {
       display: flex; flex-direction: column; gap: 9px; padding: 13px;
       border-radius: 16px; border: 1px solid var(--border); background: var(--surface);
@@ -2615,6 +2637,13 @@ function hexA(hex, a) {
   const r = parseInt(h.slice(0, 2), 16), g = parseInt(h.slice(2, 4), 16), b = parseInt(h.slice(4, 6), 16);
   return `rgba(${r},${g},${b},${a})`;
 }
+// Lighten (p>0) or darken (p<0) a hex toward white/black by |p| (0..1).
+function shade(hex, p) {
+  const h = (hex || "#888888").replace("#", "");
+  let r = parseInt(h.slice(0, 2), 16), g = parseInt(h.slice(2, 4), 16), b = parseInt(h.slice(4, 6), 16);
+  const t = p < 0 ? 0 : 255, q = Math.abs(p), f = v => Math.round((t - v) * q + v);
+  return `rgb(${f(r)},${f(g)},${f(b)})`;
+}
 const CATEGORY_EMOJI = { Supplements: "💊", Wearables: "⌚", Labs: "🔬", Nutrition: "🥗", Fitness: "🏃", Sleep: "😴", Mind: "🧘", Services: "✨", Other: "✦" };
 // Supplements & Nutrition feel like "named products" → serif initials; others → category emoji.
 function usesInitials(cat) { return cat === "Supplements" || cat === "Nutrition"; }
@@ -2643,6 +2672,8 @@ function GridItemCard({ item, editable, username, handle, stackCount, onToast })
   const affUrl = item.affiliateUrl || `https://amazon.com/s?k=${encodeURIComponent(item.name)}`; // ← real affiliate URLs swap in here
   const metaParts = [item.dose, ef.freq ? item.freq : "", yearsLabel, costLabel(item)].filter(Boolean);
   const meta = metaParts.join(" · ");
+  const subParts = [item.dose, ef.freq ? item.freq : "", yearsLabel].filter(Boolean);  // cost shown in its own column
+  const costStr = costLabel(item);
   const tileInner = item.photoUrl
     ? <img src={item.photoUrl} alt="" />
     : usesInitials(item.category)
@@ -2659,13 +2690,19 @@ function GridItemCard({ item, editable, username, handle, stackCount, onToast })
 
   return (
     <React.Fragment>
-      <div className="gitem" onClick={() => setShow(true)}>
-        <div className="gitem-tile" style={tileBg}>{tileInner}</div>
-        <div className="gitem-body">
-          <div className="gitem-name">{item.name}</div>
-          {meta && <div className="gitem-sub">{meta}</div>}
+      <div className="srow" onClick={() => setShow(true)}>
+        <div className="srow-chip" style={tileBg}>{tileInner}</div>
+        <div className="srow-body">
+          <div className="srow-name">{item.name}</div>
+          {subParts.length > 0 && <div className="srow-sub">{subParts.join(" · ")}</div>}
+          {item.why && <div className="srow-why">{item.why}</div>}
         </div>
-        {isPurchasable(item) && <a className="gitem-get" href={affUrl} target="_blank" rel="noopener noreferrer" onClick={e => e.stopPropagation()}>Get it ↗</a>}
+        {(costStr || isPurchasable(item)) && (
+          <div className="srow-right">
+            {costStr && <span className="srow-cost">{costStr}</span>}
+            {isPurchasable(item) && <a className="srow-get" href={affUrl} target="_blank" rel="noopener noreferrer" onClick={e => e.stopPropagation()}>Get it ↗</a>}
+          </div>
+        )}
       </div>
       {show && ReactDOM.createPortal(
         <div className="item-modal-backdrop" onClick={() => setShow(false)}>
@@ -2722,23 +2759,26 @@ function StackSection({ items, editable, onEditCategory, username, handle, onToa
   return (
     <div className="stack-section anim-5">
       <div className="section-title" style={{ marginBottom: 16 }}>The Stack</div>
-      {Object.entries(grouped).map(([cat, ci]) => (
-        <div key={cat} className="category-group">
-          <div className="category-header">
-            <div className="category-dot" style={{ background: CATEGORY_COLORS[cat] }} />
-            <div className="category-name">{cat}</div>
-            {editable && (
-              <button className="category-edit" onClick={() => onEditCategory && onEditCategory(cat)} aria-label={`Edit ${cat}`} title={`Edit ${cat}`}>
-                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
-              </button>
-            )}
-            <div className="category-count">{ci.length}</div>
+      {Object.entries(grouped).map(([cat, ci]) => {
+        const color = CATEGORY_COLORS[cat] || CATEGORY_COLORS.Other;
+        return (
+          <div key={cat} className="spanel" style={{ boxShadow: `0 1px 2px rgba(60,34,15,0.06), 0 14px 30px ${hexA(color, 0.16)}` }}>
+            <div className="spanel-h" style={{ background: `linear-gradient(135deg, ${color}, ${shade(color, -0.22)})` }}>
+              <span className="spanel-ic">{CATEGORY_EMOJI[cat] || "✦"}</span>
+              <span className="spanel-ttl">{cat}</span>
+              {editable && (
+                <button className="spanel-edit" onClick={() => onEditCategory && onEditCategory(cat)} aria-label={`Edit ${cat}`} title={`Edit ${cat}`}>
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
+                </button>
+              )}
+              <span className="spanel-cnt">{ci.length}</span>
+            </div>
+            <div className="spanel-rows">
+              {ci.map(item => <GridItemCard key={item.id} item={item} editable={editable} username={username} handle={handle} stackCount={items.length} onToast={onToast} />)}
+            </div>
           </div>
-          <div className="stack-grid">
-            {ci.map(item => <GridItemCard key={item.id} item={item} editable={editable} username={username} handle={handle} stackCount={items.length} onToast={onToast} />)}
-          </div>
-        </div>
-      ))}
+        );
+      })}
     </div>
   );
 }
