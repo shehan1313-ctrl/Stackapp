@@ -3449,6 +3449,13 @@ function BuildFlow() {
   const [highlight, setHighlight] = useState({ type: "metric", value: "", label: "", text: "" });
   const avatarInputRef = useRef(null);
 
+  // ── Funnel instrumentation: where do people abandon onboarding? ──
+  useEffect(() => { track("build_started"); }, []);
+  const itemsTracked = useRef(false);
+  useEffect(() => {
+    if (!itemsTracked.current && items.length > 0) { itemsTracked.current = true; track("build_items_added"); }
+  }, [items.length]);
+
   async function handleAvatar(e) {
     const file = e.target.files?.[0];
     e.target.value = "";
@@ -3559,13 +3566,13 @@ function BuildFlow() {
               <div className="form-hint">So you can save your stack and edit it from any device. No spam.</div>
             </div>
             <button className="btn btn-primary" style={{ width: "100%", padding: 14, fontSize: 15, marginTop: 8 }}
-              disabled={!profile.name.trim() || !EMAIL_RE.test(profile.email.trim())} onClick={() => setStep(2)}>
+              disabled={!profile.name.trim() || !EMAIL_RE.test(profile.email.trim())} onClick={() => { track("build_profile_done"); setStep(2); }}>
               Continue →
             </button>
           </div>
         )}
 
-        {step === 2 && <Step2Items items={items} setItems={setItems} onNext={() => setStep(3)} />}
+        {step === 2 && <Step2Items items={items} setItems={setItems} onNext={() => { track("build_previewed", { items: items.length }); setStep(3); }} />}
 
         {step === 3 && (
           <div className="form-section anim-2">
